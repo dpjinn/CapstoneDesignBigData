@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+        <h2>AI Chat</h2>
+
+        <button id="newChatBtn">
+            + New Chat
+        </button>
+
+        <div class="chat-history">
+            <p>Previous chats</p>
+        </div>
+    </aside>
+
+    <main class="chat-container">
+
+        <header class="chat-header">
+            <h1>LLM Assistant</h1>
+        </header>
+
+        <section id="chatMessages" class="chat-messages">
+
+            <div class="message assistant">
+                <div class="message-content">
+                    Hello! How can I help you today?
+                </div>
+            </div>
+
+        </section>
+
+        <div class="input-area">
+
+            <textarea
+                id="messageInput"
+                placeholder="Send a message..."
+                rows="1"
+            ></textarea>
+
+            <button id="sendBtn">
+                Send
+            </button>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
