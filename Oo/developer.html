@@ -1,1 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개발자 전용 게임 리뷰 AI 분석 대시보드</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; }
+        body { background-color: #f8f9fa; color: #202124; padding: 20px; }
+        .dashboard-container { max-width: 1100px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        
+        /* Header & Selector */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h1 { font-size: 20px; font-weight: 700; }
+        .game-select { padding: 8px 16px; border-radius: 8px; border: 1px solid #1a73e8; background-color: #e8f0fe; color: #1967d2; font-weight: bold; cursor: pointer; }
 
+        /* KPI Cards */
+        .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .kpi-card { background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; padding: 16px; }
+        .kpi-card.danger { background: #fce8e6; border-color: #f28b82; }
+        .kpi-title { font-size: 13px; color: #5f6368; margin-bottom: 8px; }
+        .kpi-card.danger .kpi-title { color: #c5221f; font-weight: bold; }
+        .kpi-value { font-size: 24px; font-weight: 700; color: #202124; }
+        .kpi-card.danger .kpi-value { color: #d93025; }
+
+        /* Middle Grid */
+        .middle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .content-box { background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; padding: 16px; }
+        .content-box h3 { font-size: 15px; margin-bottom: 12px; }
+
+        /* Keywords List & Alert */
+        .kw-list { list-style: none; margin-bottom: 16px; }
+        .kw-list li { font-size: 14px; margin-bottom: 8px; padding: 4px 0; border-bottom: 1px dashed #f1f3f4; }
+        .ai-alert { background: #feefc3; color: #b06000; font-weight: bold; padding: 10px; border-radius: 6px; font-size: 12px; }
+
+        /* FAQ Section */
+        .faq-box { background: #e8f0fe; border: 1px solid #aecbfa; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+        .faq-box h2 { font-size: 16px; color: #1967d2; margin-bottom: 16px; }
+        .faq-card { background: #ffffff; border-left: 4px solid #1a73e8; border-radius: 4px; padding: 12px 16px; margin-bottom: 12px; }
+        .faq-q { font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #202124; }
+        .faq-a { font-size: 13px; color: #5f6368; }
+
+        /* Raw Data Table */
+        .table-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .filter-btns button { padding: 6px 12px; border-radius: 6px; border: 1px solid #dadce0; background: #ffffff; cursor: pointer; font-size: 12px; }
+        .filter-btns button.active { background: #d93025; color: white; border-color: #d93025; font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f8f9fa; text-align: left; padding: 10px; color: #5f6368; font-weight: 600; }
+        td { padding: 12px 10px; border-top: 1px solid #f1f3f4; color: #202124; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <!-- 1. Header & Game Selector -->
+    <div class="header">
+        <h1>🎮 개발자 전용 게임 리뷰 AI 분석 대시보드</h1>
+        <select class="game-select">
+            <option>게임 선택: 엘든링 ▼</option>
+            <option>게임 선택: 사이버펑크 2077 ▼</option>
+        </select>
+    </div>
+
+    <!-- 2. Top 3 KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title">전체 수집된 리뷰</div>
+            <div class="kpi-value">12,450건</div>
+        </div>
+        <div class="kpi-card danger">
+            <div class="kpi-title">부정 리뷰 비율 🚨</div>
+            <div class="kpi-value">68.4%</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">최근 부정 이슈 건수</div>
+            <div class="kpi-value" style="color:#1a73e8;">14건</div>
+        </div>
+    </div>
+
+    <!-- 3. Middle Section: Trend & Keywords -->
+    <div class="middle-grid">
+        <div class="content-box">
+            <h3>📈 타임스탬프 기반 긍/부정 추이</h3>
+            <p style="font-size: 12px; color: #70757a; margin-top: 40px; text-align: center;">[v1.3 패치 적용 이후 부정 리뷰 급증 차트 영역]</p>
+        </div>
+        <div class="content-box">
+            <h3>🏷️ 부정 키워드 TOP 3</h3>
+            <ul class="kw-list">
+                <li>1. <b>#프레임드랍</b> (도읍 로데일 구간) - 142건</li>
+                <li>2. <b>#로딩튕김</b> (멀티플레이) - 89건</li>
+                <li>3. <b>#무기밸런스</b> - 45건</li>
+            </ul>
+            <div class="ai-alert">⚡ AI 권장: [긴급: 최적화 패치 우선 진행]</div>
+        </div>
+    </div>
+
+    <!-- 4. LLM FAQ Section -->
+    <div class="faq-box">
+        <h2>✨ LLM 기반 자동 생성 FAQ (핵심 Q&A)</h2>
+        <div class="faq-card">
+            <div class="faq-q">Q. 최근 패치 이후 유저들이 가장 크게 호소하는 문제는?</div>
+            <div class="faq-a">A. 특정 맵(도읍 로데일) 진입 시 메모리 누수로 프레임 드랍 발생 (부정 의견의 68% 차지)</div>
+        </div>
+        <div class="faq-card">
+            <div class="faq-q">Q. 멀티플레이 관련 주요 버그 제보는?</div>
+            <div class="faq-a">A. 보스전 멀티 진입 시 로딩바 90%에서 간헐적 튕김 현상이 보고됨</div>
+        </div>
+    </div>
+
+    <!-- 5. Raw Data Table -->
+    <div class="content-box">
+        <div class="table-header-flex">
+            <h3>📋 원본 리뷰 검증 테이블</h3>
+            <div class="filter-btns">
+                <button>전체</button>
+                <button class="active">부정만</button>
+                <button>긍정만</button>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>게임명</th>
+                    <th>작성시간</th>
+                    <th>원문 리뷰 내용</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>엘든링</b></td>
+                    <td>2026-09-18</td>
+                    <td>패치하고 나서 로데일 마을 들어갈 때마다 프레임 반토막 남...</td>
+                </tr>
+                <tr>
+                    <td><b>엘든링</b></td>
+                    <td>2026-09-17</td>
+                    <td>보스전 멀티로 들어갈 때 로딩바 90%에서 자꾸 튕깁니다.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
