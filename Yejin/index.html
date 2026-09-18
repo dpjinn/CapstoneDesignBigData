@@ -2824,19 +2824,16 @@ async function loadCSV(filePath) {
      */
 
     const url =
-        `https://raw.githubusercontent.com/` +
-        `${GITHUB_OWNER}/` +
-        `${GITHUB_REPO}/` +
-        `${GITHUB_BRANCH}/` +
-        filePath
-            .split("/")
-            .map(
-                part =>
-                    encodeURIComponent(
-                        part
-                    )
-            )
-            .join("/");
+    `https://raw.githubusercontent.com/` +
+    `dpjinn/CapstoneDesignBigData/` +
+    `main/Yejin/` +
+    filePath
+        .split("/")
+        .map(
+            part =>
+                encodeURIComponent(part)
+        )
+        .join("/");
 
 
     const response =
