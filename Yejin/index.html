@@ -1,0 +1,5337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>DevInsight AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family:
+        Inter,
+        Pretendard,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 28px;
+
+    background: rgba(255,255,255,0.95);
+
+    border-bottom: 1px solid #e2e8f0;
+
+    backdrop-filter: blur(10px);
+}
+
+.logo {
+    width: 220px;
+
+    font-size: 20px;
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+}
+
+.logo span {
+    color: #6366f1;
+}
+
+.global-search {
+    flex: 1;
+
+    max-width: 650px;
+
+    display: flex;
+
+    margin: 0 auto;
+}
+
+.global-search input {
+    width: 100%;
+
+    padding: 12px 16px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px 0 0 10px;
+
+    outline: none;
+
+    background: #f8fafc;
+}
+
+.global-search input:focus {
+    border-color: #6366f1;
+}
+
+.global-search button {
+    width: 52px;
+
+    border: none;
+
+    border-radius: 0 10px 10px 0;
+
+    background: #6366f1;
+
+    color: white;
+
+    font-size: 18px;
+}
+
+.header-actions {
+    width: 220px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+}
+
+.header-actions button {
+    padding: 9px 12px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 8px;
+
+    background: white;
+
+    color: #475569;
+}
+
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.layout {
+    display: flex;
+
+    min-height: calc(100vh - 70px);
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+    position: sticky;
+    top: 70px;
+
+    width: 220px;
+    height: calc(100vh - 70px);
+
+    padding: 24px 14px;
+
+    border-right: 1px solid #e2e8f0;
+
+    background: white;
+}
+
+.sidebar-title {
+    padding: 0 12px 12px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #94a3b8;
+
+    text-transform: uppercase;
+}
+
+.nav-button {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 11px 12px;
+
+    margin-bottom: 4px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #64748b;
+
+    text-align: left;
+}
+
+.nav-button:hover,
+.nav-button.active {
+    background: #eef2ff;
+
+    color: #4f46e5;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 30px;
+
+    padding-bottom: 180px;
+}
+
+.page-header {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 24px;
+}
+
+.page-title h1 {
+    margin: 0 0 7px;
+
+    font-size: 28px;
+
+    letter-spacing: -0.8px;
+}
+
+.page-title p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.page-actions {
+    display: flex;
+
+    gap: 8px;
+}
+
+.primary-button,
+.secondary-button {
+    padding: 10px 14px;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+}
+
+.primary-button {
+    border: none;
+
+    background: #6366f1;
+
+    color: white;
+}
+
+.secondary-button {
+    border: 1px solid #e2e8f0;
+
+    background: white;
+
+    color: #475569;
+}
+
+
+/* =========================================================
+   GAME SELECTOR
+========================================================= */
+
+.game-selector-card {
+    position: relative;
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    background: white;
+
+    box-shadow:
+        0 2px 8px rgba(15,23,42,0.03);
+}
+
+.game-selector-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 12px;
+}
+
+.game-selector-header strong {
+    font-size: 15px;
+}
+
+.game-count {
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+.game-search {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #f8fafc;
+}
+
+.game-search:focus {
+    border-color: #6366f1;
+
+    background: white;
+}
+
+.game-list {
+    max-height: 250px;
+
+    overflow-y: auto;
+
+    margin-top: 8px;
+}
+
+.game-item {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 11px 13px;
+
+    border: none;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    background: white;
+
+    color: #1e293b;
+
+    text-align: left;
+}
+
+.game-item:hover {
+    background: #f8fafc;
+}
+
+.game-item.active {
+    background: #eef2ff;
+
+    color: #4f46e5;
+}
+
+.game-name {
+    font-weight: 600;
+}
+
+.game-id {
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+.no-games {
+    padding: 25px;
+
+    text-align: center;
+
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   FILTER BAR
+========================================================= */
+
+.filter-bar {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    padding: 16px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: white;
+}
+
+.filter-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.filter-group label {
+    font-size: 10px;
+
+    font-weight: 700;
+
+    color: #94a3b8;
+
+    text-transform: uppercase;
+}
+
+.filter-group select,
+.filter-group input {
+    min-width: 130px;
+
+    padding: 9px 11px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 7px;
+
+    outline: none;
+
+    background: white;
+
+    color: #334155;
+}
+
+.reset-button {
+    align-self: flex-end;
+
+    padding: 9px 12px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 7px;
+
+    background: white;
+
+    color: #64748b;
+}
+
+
+/* =========================================================
+   COMPARE
+========================================================= */
+
+.section {
+    margin-bottom: 22px;
+}
+
+.section-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+}
+
+.section-header h2 {
+    margin: 0;
+
+    font-size: 17px;
+}
+
+.section-header span {
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+.compare-card {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 1px;
+
+    overflow: hidden;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: #e2e8f0;
+}
+
+.compare-column {
+    padding: 20px;
+
+    background: white;
+}
+
+.compare-title {
+    margin-bottom: 16px;
+
+    font-weight: 700;
+}
+
+.compare-stat {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    font-size: 13px;
+}
+
+.compare-stat strong {
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   AI INSIGHT
+========================================================= */
+
+.insight-card {
+    padding: 22px;
+
+    border: 1px solid #c7d2fe;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #ffffff
+        );
+}
+
+.insight-top {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+}
+
+.ai-badge {
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    background: #6366f1;
+
+    color: white;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+.insight-title {
+    font-weight: 800;
+}
+
+.insight-text {
+    margin: 0;
+
+    color: #475569;
+
+    line-height: 1.7;
+
+    font-size: 14px;
+}
+
+.insight-actions {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 15px;
+}
+
+.insight-actions button {
+    padding: 8px 11px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 7px;
+
+    background: white;
+
+    color: #475569;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   STAT CARDS
+========================================================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-top: 20px;
+}
+
+.stat-card {
+    padding: 18px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: white;
+}
+
+.stat-label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 25px;
+
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+}
+
+.stat-sub {
+    margin-top: 5px;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   CHARTS
+========================================================= */
+
+.chart-grid {
+    display: grid;
+
+    grid-template-columns: 1.4fr 1fr;
+
+    gap: 16px;
+}
+
+.chart-card {
+    padding: 20px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: white;
+}
+
+.chart-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+}
+
+.chart-header h3 {
+    margin: 0;
+
+    font-size: 14px;
+}
+
+.chart-header span {
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+.chart-container {
+    position: relative;
+
+    height: 280px;
+}
+
+
+/* =========================================================
+   ISSUE TABLE
+========================================================= */
+
+.table-card {
+    overflow: hidden;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: white;
+}
+
+.table-toolbar {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 15px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-toolbar input {
+    width: 230px;
+
+    padding: 9px 11px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 7px;
+
+    outline: none;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+th {
+    padding: 12px 15px;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    font-size: 11px;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+td {
+    padding: 13px 15px;
+
+    border-top: 1px solid #f1f5f9;
+
+    font-size: 13px;
+}
+
+.priority {
+    display: inline-block;
+
+    padding: 4px 7px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+.priority.high {
+    background: #fee2e2;
+
+    color: #b91c1c;
+}
+
+.priority.medium {
+    background: #fef3c7;
+
+    color: #92400e;
+}
+
+.priority.low {
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+
+/* =========================================================
+   REVIEWS
+========================================================= */
+
+.review-toolbar {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 12px;
+}
+
+.review-toolbar input,
+.review-toolbar select {
+    padding: 9px 11px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 7px;
+
+    outline: none;
+
+    background: white;
+}
+
+.review-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.review-card {
+    padding: 16px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+
+    background: white;
+}
+
+.review-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+}
+
+.sentiment {
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+.sentiment.positive {
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+.sentiment.negative {
+    background: #fee2e2;
+
+    color: #b91c1c;
+}
+
+.review-date {
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+.review-text {
+    margin: 0;
+
+    color: #334155;
+
+    line-height: 1.6;
+
+    font-size: 13px;
+
+    word-break: break-word;
+}
+
+.review-footer {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+.review-tag {
+    padding: 4px 7px;
+
+    border-radius: 5px;
+
+    background: #f1f5f9;
+
+    color: #64748b;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.pagination {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    padding: 20px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 7px;
+
+    background: white;
+
+    color: #475569;
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+
+    cursor: not-allowed;
+}
+
+.pagination span {
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   AI CHAT
+========================================================= */
+
+.chat-panel {
+    position: fixed;
+
+    right: 25px;
+    bottom: 20px;
+
+    z-index: 900;
+
+    width: 390px;
+
+    overflow: hidden;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 15px;
+
+    background: white;
+
+    box-shadow:
+        0 20px 50px
+        rgba(15,23,42,0.15);
+}
+
+.chat-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 13px 16px;
+
+    background: #0f172a;
+
+    color: white;
+}
+
+.chat-title {
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.chat-status {
+    color: #86efac;
+
+    font-size: 10px;
+}
+
+.chat-messages {
+    height: 220px;
+
+    padding: 13px;
+
+    overflow-y: auto;
+
+    background: #f8fafc;
+}
+
+.message {
+    max-width: 85%;
+
+    padding: 9px 11px;
+
+    margin-bottom: 8px;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+.message.ai {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+}
+
+.message.user {
+    margin-left: auto;
+
+    background: #6366f1;
+
+    color: white;
+}
+
+.chat-input {
+    display: flex;
+
+    padding: 10px;
+
+    gap: 7px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+.chat-input input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 10px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 8px;
+
+    outline: none;
+}
+
+.chat-input button {
+    width: 42px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #6366f1;
+
+    color: white;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(15,23,42,0.45);
+
+    backdrop-filter: blur(3px);
+}
+
+.loading-box {
+    padding: 30px 40px;
+
+    border-radius: 14px;
+
+    background: white;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,0.15);
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+
+    margin: 0 auto 14px;
+
+    border: 3px solid #e2e8f0;
+
+    border-top-color: #6366f1;
+
+    border-radius: 50%;
+
+    animation:
+        spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .sidebar {
+        width: 180px;
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        padding: 18px;
+
+        padding-bottom: 330px;
+    }
+
+    .topbar {
+        padding: 0 15px;
+    }
+
+    .logo {
+        width: auto;
+
+        margin-right: 12px;
+    }
+
+    .header-actions {
+        display: none;
+    }
+
+    .page-header {
+        flex-direction: column;
+    }
+
+    .compare-card {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-panel {
+        right: 10px;
+        left: 10px;
+
+        width: auto;
+    }
+}
+
+
+@media (max-width: 550px) {
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .global-search {
+        display: none;
+    }
+
+    .table-card {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 650px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOP BAR
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="logo">
+        DevInsight <span>AI</span>
+    </div>
+
+
+    <div class="global-search">
+
+        <input
+            id="globalSearch"
+            type="text"
+            placeholder="Search reviews, issues..."
+        >
+
+        <button
+            onclick="runGlobalSearch()"
+        >
+            🔍
+        </button>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <button onclick="loadGitHubFileList()">
+            ↻ Refresh
+        </button>
+
+        <button onclick="exportCurrentCSV()">
+            Export
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<div class="layout">
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-title">
+        Analysis
+    </div>
+
+    <button
+        class="nav-button active"
+        onclick="scrollToSection('overview')"
+    >
+        ◉ Overview
+    </button>
+
+    <button
+        class="nav-button"
+        onclick="scrollToSection('issues')"
+    >
+        ⚠ Issues
+    </button>
+
+    <button
+        class="nav-button"
+        onclick="scrollToSection('reviews')"
+    >
+        ☰ Reviews
+    </button>
+
+    <button
+        class="nav-button"
+        onclick="scrollToSection('compare')"
+    >
+        ⇄ Compare
+    </button>
+
+    <button
+        class="nav-button"
+        onclick="copyInsight()"
+    >
+        ⧉ Copy Insight
+    </button>
+
+    <button
+        class="nav-button"
+        onclick="exportCurrentCSV()"
+    >
+        ↓ Export Data
+    </button>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+
+<!-- =====================================================
+     PAGE HEADER
+===================================================== -->
+
+<div class="page-header">
+
+    <div class="page-title">
+
+        <h1 id="gameTitle">
+            Select a Game
+        </h1>
+
+        <p id="gameDescription">
+            Select a game from GitHub CSV data
+            to start analysis.
+        </p>
+
+    </div>
+
+
+    <div class="page-actions">
+
+        <button
+            class="secondary-button"
+            onclick="copyInsight()"
+        >
+            Copy Insight
+        </button>
+
+        <button
+            class="primary-button"
+            onclick="exportCurrentCSV()"
+        >
+            Export CSV
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     GAME SELECTOR
+===================================================== -->
+
+<div class="game-selector-card">
+
+    <div class="game-selector-header">
+
+        <strong>
+            Game Database
+        </strong>
+
+        <span
+            class="game-count"
+            id="gameCount"
+        >
+            Loading...
+        </span>
+
+    </div>
+
+
+    <input
+        id="gameSearch"
+        class="game-search"
+        type="text"
+        placeholder="Search game name or App ID..."
+        autocomplete="off"
+    >
+
+
+    <div
+        id="gameList"
+        class="game-list"
+    >
+
+        <div class="no-games">
+            Loading games from GitHub...
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     FILTER
+===================================================== -->
+
+<div class="filter-bar">
+
+    <div class="filter-group">
+
+        <label>Sentiment</label>
+
+        <select id="sentimentFilter">
+
+            <option value="all">
+                All
+            </option>
+
+            <option value="positive">
+                Positive
+            </option>
+
+            <option value="negative">
+                Negative
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="filter-group">
+
+        <label>Review Search</label>
+
+        <input
+            id="reviewFilter"
+            placeholder="Search review..."
+        >
+
+    </div>
+
+
+    <div class="filter-group">
+
+        <label>Sort</label>
+
+        <select id="reviewSort">
+
+            <option value="recent">
+                Recent
+            </option>
+
+            <option value="oldest">
+                Oldest
+            </option>
+
+            <option value="positive">
+                Positive
+            </option>
+
+            <option value="negative">
+                Negative
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <button
+        class="reset-button"
+        onclick="resetFilters()"
+    >
+        Reset
+    </button>
+
+</div>
+
+
+
+<!-- =====================================================
+     OVERVIEW
+===================================================== -->
+
+<section
+    id="overview"
+    class="section"
+>
+
+
+<div class="section-header">
+
+    <h2>
+        Developer Overview
+    </h2>
+
+    <span id="dataStatus">
+        No game selected
+    </span>
+
+</div>
+
+
+
+<!-- =====================================================
+     AI INSIGHT
+===================================================== -->
+
+<div class="insight-card">
+
+    <div class="insight-top">
+
+        <span class="ai-badge">
+            AI INSIGHT
+        </span>
+
+        <span
+            class="insight-title"
+            id="insightTitle"
+        >
+            Waiting for data
+        </span>
+
+    </div>
+
+
+    <p
+        class="insight-text"
+        id="insightText"
+    >
+        Select a game to generate developer-focused
+        insights from its Steam reviews.
+    </p>
+
+
+    <div class="insight-actions">
+
+        <button onclick="copyInsight()">
+            Copy
+        </button>
+
+        <button onclick="generateInsight()">
+            Generate Insight
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     STATISTICS
+===================================================== -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <span class="stat-label">
+            Total Reviews
+        </span>
+
+        <div
+            class="stat-value"
+            id="totalReviews"
+        >
+            0
+        </div>
+
+        <div class="stat-sub">
+            Loaded from CSV
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span class="stat-label">
+            Positive Rate
+        </span>
+
+        <div
+            class="stat-value"
+            id="positiveRate"
+        >
+            0%
+        </div>
+
+        <div class="stat-sub">
+            Positive reviews
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span class="stat-label">
+            Negative Rate
+        </span>
+
+        <div
+            class="stat-value"
+            id="negativeRate"
+        >
+            0%
+        </div>
+
+        <div class="stat-sub">
+            Negative reviews
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span class="stat-label">
+            Identified Issues
+        </span>
+
+        <div
+            class="stat-value"
+            id="issueCount"
+        >
+            0
+        </div>
+
+        <div class="stat-sub">
+            Keyword-based topics
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CHARTS
+===================================================== -->
+
+<section class="section">
+
+<div class="section-header">
+
+    <h2>
+        Review Analytics
+    </h2>
+
+    <span>
+        Based on loaded CSV
+    </span>
+
+</div>
+
+
+<div class="chart-grid">
+
+
+    <div class="chart-card">
+
+        <div class="chart-header">
+
+            <h3>
+                Sentiment Trend
+            </h3>
+
+            <span>
+                Monthly
+            </span>
+
+        </div>
+
+        <div class="chart-container">
+
+            <canvas
+                id="sentimentChart"
+            ></canvas>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="chart-card">
+
+        <div class="chart-header">
+
+            <h3>
+                Issue Mentions
+            </h3>
+
+            <span>
+                Reviews
+            </span>
+
+        </div>
+
+        <div class="chart-container">
+
+            <canvas
+                id="issueChart"
+            ></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ISSUES
+===================================================== -->
+
+<section
+    id="issues"
+    class="section"
+>
+
+<div class="section-header">
+
+    <h2>
+        Developer Issues
+    </h2>
+
+    <span>
+        Frequency × Negative Rate
+    </span>
+
+</div>
+
+
+<div class="table-card">
+
+
+    <div class="table-toolbar">
+
+        <strong>
+            Issue Detection
+        </strong>
+
+        <input
+            id="issueSearch"
+            placeholder="Search issue..."
+        >
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Issue
+                </th>
+
+                <th>
+                    Mentions
+                </th>
+
+                <th>
+                    Negative
+                </th>
+
+                <th>
+                    Negative Rate
+                </th>
+
+                <th>
+                    Priority
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="issuesTableBody">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     REVIEWS
+===================================================== -->
+
+<section
+    id="reviews"
+    class="section"
+>
+
+<div class="section-header">
+
+    <h2>
+        Review Evidence
+    </h2>
+
+    <span>
+        <span id="reviewCount">0</span>
+        reviews
+    </span>
+
+</div>
+
+
+<div class="review-toolbar">
+
+    <input
+        id="reviewSearch"
+        placeholder="Search review text..."
+    >
+
+
+    <select id="sentimentSelect">
+
+        <option value="all">
+            All Sentiment
+        </option>
+
+        <option value="positive">
+            Positive
+        </option>
+
+        <option value="negative">
+            Negative
+        </option>
+
+    </select>
+
+
+    <select id="sortSelect">
+
+        <option value="recent">
+            Recent
+        </option>
+
+        <option value="oldest">
+            Oldest
+        </option>
+
+        <option value="positive">
+            Positive
+        </option>
+
+        <option value="negative">
+            Negative
+        </option>
+
+    </select>
+
+</div>
+
+
+<div
+    id="reviewsList"
+    class="review-list"
+>
+
+</div>
+
+
+<div class="pagination">
+
+    <button
+        id="previousPage"
+        onclick="previousPage()"
+    >
+        Previous
+    </button>
+
+
+    <span>
+
+        Page
+
+        <strong id="currentPage">
+            1
+        </strong>
+
+        /
+
+        <strong id="totalPages">
+            1
+        </strong>
+
+    </span>
+
+
+    <button
+        id="nextPage"
+        onclick="nextPage()"
+    >
+        Next
+    </button>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     COMPARE
+===================================================== -->
+
+<section
+    id="compare"
+    class="section"
+>
+
+<div class="section-header">
+
+    <h2>
+        Game Comparison
+    </h2>
+
+    <span>
+        Current game vs selected comparison
+    </span>
+
+</div>
+
+
+<div class="compare-card">
+
+
+    <div class="compare-column">
+
+        <div
+            class="compare-title"
+            id="compareGameA"
+        >
+            Current Game
+        </div>
+
+
+        <div class="compare-stat">
+
+            <span>
+                Reviews
+            </span>
+
+            <strong id="compareReviewsA">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="compare-stat">
+
+            <span>
+                Positive
+            </span>
+
+            <strong id="comparePositiveA">
+                0%
+            </strong>
+
+        </div>
+
+
+        <div class="compare-stat">
+
+            <span>
+                Negative
+            </span>
+
+            <strong id="compareNegativeA">
+                0%
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="compare-column">
+
+        <div
+            class="compare-title"
+            id="compareGameB"
+        >
+            Select another game
+        </div>
+
+
+        <div class="compare-stat">
+
+            <span>
+                Reviews
+            </span>
+
+            <strong id="compareReviewsB">
+                -
+            </strong>
+
+        </div>
+
+
+        <div class="compare-stat">
+
+            <span>
+                Positive
+            </span>
+
+            <strong id="comparePositiveB">
+                -
+            </strong>
+
+        </div>
+
+
+        <div class="compare-stat">
+
+            <span>
+                Negative
+            </span>
+
+            <strong id="compareNegativeB">
+                -
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+
+<!-- =====================================================
+     AI CHAT
+===================================================== -->
+
+<div class="chat-panel">
+
+    <div class="chat-header">
+
+        <div>
+
+            <div class="chat-title">
+                DevInsight AI Assistant
+            </div>
+
+            <div class="chat-status">
+                ● Dashboard context available
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="chatMessages"
+        class="chat-messages"
+    >
+
+        <div class="message ai">
+
+            안녕하세요.
+            게임 리뷰 데이터를 기반으로
+            개발자 관점의 인사이트를 확인할 수 있습니다.
+
+        </div>
+
+    </div>
+
+
+    <div class="chat-input">
+
+        <input
+            id="chatInput"
+            placeholder="Ask about this game..."
+            onkeydown="
+                if(event.key === 'Enter')
+                    sendChat();
+            "
+        >
+
+        <button
+            onclick="sendChat()"
+        >
+            ↑
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     LOADING
+===================================================== -->
+
+<div
+    id="loadingOverlay"
+    class="loading-overlay"
+>
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <div id="loadingMessage">
+            Loading...
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* =========================================================
+   GITHUB CONFIGURATION
+========================================================= */
+
+const GITHUB_CONFIG = {
+
+    /*
+        반드시 본인 GitHub 정보로 변경하세요.
+    */
+
+    owner:
+        "dpjinn",
+
+    repo:
+        "CapstoneDesignBigData/Yejin",
+
+    branch:
+        "main",
+
+    dataPath:
+        "data"
+};
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let githubFiles = [];
+
+let games = [];
+
+let currentGame = null;
+
+let allReviews = [];
+
+let filteredReviews = [];
+
+let comparisonGame = null;
+
+let currentPage = 1;
+
+const REVIEWS_PER_PAGE = 10;
+
+let sentimentChart = null;
+
+let issueChart = null;
+
+
+/* =========================================================
+   ISSUE KEYWORDS
+========================================================= */
+
+const ISSUE_KEYWORDS = {
+
+    "Server Stability": [
+        "서버",
+        "server",
+        "접속",
+        "connection",
+        "disconnect",
+        "렉",
+        "lag",
+        "핑",
+        "ping"
+    ],
+
+    "Matchmaking": [
+        "매칭",
+        "matchmaking",
+        "match",
+        "플레이어",
+        "player",
+        "queue"
+    ],
+
+    "Bug": [
+        "버그",
+        "bug",
+        "오류",
+        "에러",
+        "error",
+        "crash",
+        "충돌"
+    ],
+
+    "Gameplay": [
+        "게임플레이",
+        "gameplay",
+        "전투",
+        "combat",
+        "플레이",
+        "조작"
+    ],
+
+    "Graphics": [
+        "그래픽",
+        "graphic",
+        "화질",
+        "texture",
+        "visual"
+    ],
+
+    "UI/UX": [
+        "ui",
+        "ux",
+        "인터페이스",
+        "메뉴",
+        "interface",
+        "controls"
+    ],
+
+    "Difficulty": [
+        "난이도",
+        "어렵",
+        "쉬운",
+        "difficulty",
+        "hard",
+        "easy"
+    ],
+
+    "Performance": [
+        "프레임",
+        "fps",
+        "성능",
+        "performance",
+        "optimization",
+        "최적화",
+        "끊김"
+    ],
+
+    "Content": [
+        "콘텐츠",
+        "content",
+        "맵",
+        "map",
+        "업데이트",
+        "update"
+    ]
+};
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        setupEventListeners();
+
+        loadGitHubFileList();
+
+    }
+);
+
+
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
+
+function setupEventListeners() {
+
+    document
+        .getElementById("gameSearch")
+        .addEventListener(
+            "input",
+            event => {
+
+                renderGameList(
+                    event.target.value
+                );
+
+            }
+        );
+
+
+    document
+        .getElementById("reviewSearch")
+        .addEventListener(
+            "input",
+            applyReviewFilters
+        );
+
+
+    document
+        .getElementById("sentimentSelect")
+        .addEventListener(
+            "change",
+            applyReviewFilters
+        );
+
+
+    document
+        .getElementById("sortSelect")
+        .addEventListener(
+            "change",
+            applyReviewFilters
+        );
+
+
+    document
+        .getElementById("issueSearch")
+        .addEventListener(
+            "input",
+            renderIssues
+        );
+
+
+    document
+        .getElementById("sentimentFilter")
+        .addEventListener(
+            "change",
+            applyReviewFilters
+        );
+
+
+    document
+        .getElementById("reviewFilter")
+        .addEventListener(
+            "input",
+            applyReviewFilters
+        );
+
+
+    document
+        .getElementById("reviewSort")
+        .addEventListener(
+            "change",
+            event => {
+
+                document
+                    .getElementById("sortSelect")
+                    .value =
+                    event.target.value;
+
+                applyReviewFilters();
+
+            }
+        );
+
+
+    document
+        .getElementById("globalSearch")
+        .addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    runGlobalSearch();
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   LOAD GITHUB FILE LIST
+========================================================= */
+
+async function loadGitHubFileList() {
+
+    try {
+
+        showLoading(
+            "GitHub에서 게임 목록을 가져오는 중..."
+        );
+
+
+        const url =
+            `https://api.github.com/repos/` +
+            `${GITHUB_CONFIG.owner}/` +
+            `${GITHUB_CONFIG.repo}/git/trees/` +
+            `${GITHUB_CONFIG.branch}?recursive=1`;
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `GitHub API Error: ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        githubFiles =
+            data.tree.filter(
+                file =>
+                    file.type === "blob" &&
+                    file.path.startsWith(
+                        GITHUB_CONFIG.dataPath + "/"
+                    ) &&
+                    file.path
+                        .toLowerCase()
+                        .endsWith(".csv")
+            );
+
+
+        console.log(
+            "CSV files:",
+            githubFiles.length
+        );
+
+
+        createGameList();
+
+
+        hideLoading();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        hideLoading();
+
+
+        document
+            .getElementById("gameList")
+            .innerHTML = `
+
+                <div class="no-games">
+
+                    GitHub 데이터를 불러오지 못했습니다.
+
+                    <br><br>
+
+                    Repository 설정을 확인하세요.
+
+                </div>
+
+            `;
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE GAME LIST
+========================================================= */
+
+function createGameList() {
+
+    const gameMap =
+        new Map();
+
+
+    githubFiles.forEach(
+        file => {
+
+            const filename =
+                file.path
+                    .split("/")
+                    .pop();
+
+
+            const parsed =
+                parseFilename(
+                    filename
+                );
+
+
+            if (!parsed) return;
+
+
+            if (
+                !gameMap.has(
+                    parsed.appId
+                )
+            ) {
+
+                gameMap.set(
+                    parsed.appId,
+                    {
+
+                        appId:
+                            parsed.appId,
+
+                        gameName:
+                            parsed.gameName,
+
+                        positiveFile:
+                            null,
+
+                        negativeFile:
+                            null
+
+                    }
+                );
+
+            }
+
+
+            const game =
+                gameMap.get(
+                    parsed.appId
+                );
+
+
+            if (
+                parsed.sentiment ===
+                "positive"
+            ) {
+
+                game.positiveFile =
+                    file.path;
+
+            }
+
+
+            if (
+                parsed.sentiment ===
+                "negative"
+            ) {
+
+                game.negativeFile =
+                    file.path;
+
+            }
+
+        }
+    );
+
+
+    games =
+        Array.from(
+            gameMap.values()
+        );
+
+
+    games.sort(
+        (a,b) =>
+            a.gameName.localeCompare(
+                b.gameName
+            )
+    );
+
+
+    document
+        .getElementById("gameCount")
+        .textContent =
+        `${games.length.toLocaleString()} games`;
+
+
+    renderGameList("");
+
+}
+
+
+/* =========================================================
+   PARSE FILENAME
+========================================================= */
+
+function parseFilename(filename) {
+
+    /*
+        70_Half-Life_negative.csv
+
+        app_id:
+        70
+
+        game:
+        Half-Life
+
+        sentiment:
+        negative
+    */
+
+
+    const name =
+        filename
+            .replace(
+                /\.csv$/i,
+                ""
+            );
+
+
+    const match =
+        name.match(
+            /^(\d+)_(.+)_(positive|negative)$/i
+        );
+
+
+    if (!match) {
+
+        console.warn(
+            "Invalid filename:",
+            filename
+        );
+
+        return null;
+
+    }
+
+
+    return {
+
+        appId:
+            match[1],
+
+        gameName:
+            match[2],
+
+        sentiment:
+            match[3].toLowerCase()
+
+    };
+
+}
+
+
+/* =========================================================
+   RENDER GAME LIST
+========================================================= */
+
+function renderGameList(keyword) {
+
+    const list =
+        document.getElementById(
+            "gameList"
+        );
+
+
+    const search =
+        keyword
+            .trim()
+            .toLowerCase();
+
+
+    const result =
+        games
+            .filter(
+                game =>
+
+                    game.gameName
+                        .toLowerCase()
+                        .includes(search)
+
+                    ||
+
+                    game.appId
+                        .includes(search)
+            )
+            .slice(
+                0,
+                50
+            );
+
+
+    if (
+        result.length === 0
+    ) {
+
+        list.innerHTML =
+            `<div class="no-games">
+                No games found.
+             </div>`;
+
+        return;
+
+    }
+
+
+    list.innerHTML =
+        result.map(
+            game => `
+
+                <button
+                    class="
+                        game-item
+                        ${
+                            currentGame &&
+                            currentGame.appId ===
+                            game.appId
+                                ? "active"
+                                : ""
+                        }
+                    "
+                    onclick="
+                        selectGame('${escapeAttribute(
+                            game.appId
+                        )}')
+                    "
+                >
+
+                    <span class="game-name">
+
+                        ${escapeHtml(
+                            game.gameName
+                        )}
+
+                    </span>
+
+                    <span class="game-id">
+
+                        App ${escapeHtml(
+                            game.appId
+                        )}
+
+                    </span>
+
+                </button>
+
+            `
+        ).join("");
+
+}
+
+
+/* =========================================================
+   SELECT GAME
+========================================================= */
+
+async function selectGame(appId) {
+
+    const game =
+        games.find(
+            item =>
+                item.appId ===
+                appId
+        );
+
+
+    if (!game) return;
+
+
+    currentGame =
+        game;
+
+
+    showLoading(
+        `${game.gameName} 리뷰를 불러오는 중...`
+    );
+
+
+    try {
+
+        const reviews = [];
+
+
+        if (
+            game.positiveFile
+        ) {
+
+            const positive =
+                await loadCSV(
+                    game.positiveFile
+                );
+
+            reviews.push(
+                ...positive
+            );
+
+        }
+
+
+        if (
+            game.negativeFile
+        ) {
+
+            const negative =
+                await loadCSV(
+                    game.negativeFile
+                );
+
+            reviews.push(
+                ...negative
+            );
+
+        }
+
+
+        allReviews =
+            removeDuplicateReviews(
+                reviews
+            );
+
+
+        filteredReviews =
+            [...allReviews];
+
+
+        currentPage = 1;
+
+
+        comparisonGame =
+            null;
+
+
+        updateDashboard();
+
+
+        renderGameList(
+            document
+                .getElementById(
+                    "gameSearch"
+                )
+                .value
+        );
+
+
+        hideLoading();
+
+
+        document
+            .getElementById(
+                "overview"
+            )
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        hideLoading();
+
+        alert(
+            "CSV 데이터를 읽는 중 오류가 발생했습니다."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD CSV
+========================================================= */
+
+async function loadCSV(path) {
+
+    const url =
+        `https://raw.githubusercontent.com/` +
+        `${GITHUB_CONFIG.owner}/` +
+        `${GITHUB_CONFIG.repo}/` +
+        `${GITHUB_CONFIG.branch}/` +
+        `${path
+            .split("/")
+            .map(
+                encodeURIComponent
+            )
+            .join("/")}`;
+
+
+    const response =
+        await fetch(url);
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            `CSV loading failed: ${path}`
+        );
+
+    }
+
+
+    const text =
+        await response.text();
+
+
+    return parseCSV(text);
+
+}
+
+
+/* =========================================================
+   CSV PARSER
+========================================================= */
+
+function parseCSV(text) {
+
+    const rows = [];
+
+    let row = [];
+
+    let value = "";
+
+    let insideQuote = false;
+
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char =
+            text[i];
+
+
+        const next =
+            text[i + 1];
+
+
+        if (
+            char === '"'
+        ) {
+
+            if (
+                insideQuote &&
+                next === '"'
+            ) {
+
+                value += '"';
+
+                i++;
+
+            } else {
+
+                insideQuote =
+                    !insideQuote;
+
+            }
+
+            continue;
+
+        }
+
+
+        if (
+            char === "," &&
+            !insideQuote
+        ) {
+
+            row.push(value);
+
+            value = "";
+
+            continue;
+
+        }
+
+
+        if (
+            (
+                char === "\n" ||
+                char === "\r"
+            ) &&
+            !insideQuote
+        ) {
+
+            if (
+                char === "\r" &&
+                next === "\n"
+            ) {
+
+                i++;
+
+            }
+
+
+            row.push(value);
+
+            value = "";
+
+
+            if (
+                row.length > 0
+            ) {
+
+                rows.push(row);
+
+            }
+
+
+            row = [];
+
+            continue;
+
+        }
+
+
+        value += char;
+
+    }
+
+
+    if (
+        value.length > 0 ||
+        row.length > 0
+    ) {
+
+        row.push(value);
+
+        rows.push(row);
+
+    }
+
+
+    if (
+        rows.length < 2
+    ) {
+
+        return [];
+
+    }
+
+
+    const headers =
+        rows[0].map(
+            header =>
+                header
+                    .trim()
+                    .replace(
+                        /^\uFEFF/,
+                        ""
+                    )
+        );
+
+
+    return rows
+        .slice(1)
+        .filter(
+            row =>
+                row.some(
+                    value =>
+                        value.trim() !== ""
+                )
+        )
+        .map(
+            row => {
+
+                const object = {};
+
+
+                headers.forEach(
+                    (
+                        header,
+                        index
+                    ) => {
+
+                        object[header] =
+                            row[index] ??
+                            "";
+
+                    }
+                );
+
+
+                return normalizeReview(
+                    object
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   NORMALIZE REVIEW
+========================================================= */
+
+function normalizeReview(row) {
+
+    const sentiment =
+        String(
+            row.sentiment ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    return {
+
+        appId:
+            row.app_id ||
+            "",
+
+        game:
+            row.app_name ||
+            "",
+
+        sentiment,
+
+        text:
+            row.review_original ||
+            "",
+
+        tokens:
+            row.review_tokenized ||
+            "",
+
+        timestamp:
+            row.timestamp ||
+            "",
+
+        date:
+            parseDate(
+                row.timestamp
+            ),
+
+        score:
+            sentiment ===
+            "positive"
+                ? 1
+                : 0
+
+    };
+
+}
+
+
+/* =========================================================
+   REMOVE DUPLICATES
+========================================================= */
+
+function removeDuplicateReviews(
+    reviews
+) {
+
+    const map =
+        new Map();
+
+
+    reviews.forEach(
+        review => {
+
+            const key =
+                [
+                    review.appId,
+                    review.timestamp,
+                    review.text
+                ].join("|");
+
+
+            if (
+                !map.has(key)
+            ) {
+
+                map.set(
+                    key,
+                    review
+                );
+
+            }
+
+        }
+    );
+
+
+    return Array.from(
+        map.values()
+    );
+
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+function parseDate(timestamp) {
+
+    if (!timestamp) {
+        return null;
+    }
+
+
+    const date =
+        new Date(
+            timestamp
+        );
+
+
+    return isNaN(
+        date.getTime()
+    )
+        ? null
+        : date;
+
+}
+
+
+/* =========================================================
+   UPDATE DASHBOARD
+========================================================= */
+
+function updateDashboard() {
+
+    if (!currentGame) return;
+
+
+    updateGameTitle();
+
+    updateStatistics();
+
+    applyReviewFilters();
+
+    renderIssues();
+
+    updateCharts();
+
+    updateCompare();
+
+    generateInsight();
+
+    document
+        .getElementById(
+            "dataStatus"
+        )
+        .textContent =
+        `${allReviews.length.toLocaleString()} reviews loaded`;
+
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+function updateGameTitle() {
+
+    document
+        .getElementById(
+            "gameTitle"
+        )
+        .textContent =
+        currentGame.gameName;
+
+
+    document
+        .getElementById(
+            "gameDescription"
+        )
+        .textContent =
+        `Steam Review Analysis · App ID ${currentGame.appId}`;
+
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+function calculateStatistics(
+    reviews = allReviews
+) {
+
+    const total =
+        reviews.length;
+
+
+    const positive =
+        reviews.filter(
+            review =>
+                review.sentiment ===
+                "positive"
+        ).length;
+
+
+    const negative =
+        reviews.filter(
+            review =>
+                review.sentiment ===
+                "negative"
+        ).length;
+
+
+    return {
+
+        total,
+
+        positive,
+
+        negative,
+
+        positiveRate:
+            total
+                ? Math.round(
+                    positive /
+                    total *
+                    100
+                )
+                : 0,
+
+        negativeRate:
+            total
+                ? Math.round(
+                    negative /
+                    total *
+                    100
+                )
+                : 0
+
+    };
+
+}
+
+
+/* =========================================================
+   UPDATE STATISTICS
+========================================================= */
+
+function updateStatistics() {
+
+    const stats =
+        calculateStatistics();
+
+
+    document
+        .getElementById(
+            "totalReviews"
+        )
+        .textContent =
+        stats.total.toLocaleString();
+
+
+    document
+        .getElementById(
+            "positiveRate"
+        )
+        .textContent =
+        `${stats.positiveRate}%`;
+
+
+    document
+        .getElementById(
+            "negativeRate"
+        )
+        .textContent =
+        `${stats.negativeRate}%`;
+
+
+    document
+        .getElementById(
+            "negativeRate"
+        )
+        .title =
+        `${stats.negative} negative reviews`;
+
+}
+
+
+/* =========================================================
+   REVIEW FILTER
+========================================================= */
+
+function applyReviewFilters() {
+
+    if (
+        !currentGame
+    ) {
+
+        filteredReviews = [];
+
+        renderReviews();
+
+        return;
+
+    }
+
+
+    const search =
+        (
+            document
+                .getElementById(
+                    "reviewSearch"
+                )
+                .value
+
+            ||
+
+            document
+                .getElementById(
+                    "reviewFilter"
+                )
+                .value
+
+            ||
+
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    const sentiment =
+        document
+            .getElementById(
+                "sentimentSelect"
+            )
+            .value;
+
+
+    filteredReviews =
+        allReviews.filter(
+            review => {
+
+                const text =
+                    (
+                        review.text +
+                        " " +
+                        review.tokens
+                    )
+                    .toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    text.includes(
+                        search
+                    );
+
+
+                const matchesSentiment =
+                    sentiment ===
+                    "all"
+                    ||
+                    review.sentiment ===
+                    sentiment;
+
+
+                return (
+                    matchesSearch &&
+                    matchesSentiment
+                );
+
+            }
+        );
+
+
+    const sort =
+        document
+            .getElementById(
+                "sortSelect"
+            )
+            .value;
+
+
+    sortReviewArray(
+        filteredReviews,
+        sort
+    );
+
+
+    currentPage = 1;
+
+
+    renderReviews();
+
+}
+
+
+/* =========================================================
+   SORT
+========================================================= */
+
+function sortReviewArray(
+    reviews,
+    type
+) {
+
+    reviews.sort(
+        (a,b) => {
+
+            switch(type) {
+
+                case "recent":
+
+                    return (
+                        (
+                            b.date?.getTime()
+                            || 0
+                        )
+                        -
+                        (
+                            a.date?.getTime()
+                            || 0
+                        )
+                    );
+
+
+                case "oldest":
+
+                    return (
+                        (
+                            a.date?.getTime()
+                            || 0
+                        )
+                        -
+                        (
+                            b.date?.getTime()
+                            || 0
+                        )
+                    );
+
+
+                case "positive":
+
+                    return (
+                        b.score -
+                        a.score
+                    );
+
+
+                case "negative":
+
+                    return (
+                        a.score -
+                        b.score
+                    );
+
+
+                default:
+
+                    return 0;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER REVIEWS
+========================================================= */
+
+function renderReviews() {
+
+    const container =
+        document.getElementById(
+            "reviewsList"
+        );
+
+
+    document
+        .getElementById(
+            "reviewCount"
+        )
+        .textContent =
+        filteredReviews.length.toLocaleString();
+
+
+    const start =
+        (
+            currentPage - 1
+        ) *
+        REVIEWS_PER_PAGE;
+
+
+    const pageReviews =
+        filteredReviews.slice(
+            start,
+            start +
+            REVIEWS_PER_PAGE
+        );
+
+
+    if (
+        pageReviews.length === 0
+    ) {
+
+        container.innerHTML =
+            `
+            <div class="review-card">
+                <div class="no-games">
+                    No reviews found.
+                </div>
+            </div>
+            `;
+
+        updatePagination();
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        pageReviews
+            .map(
+                review => `
+
+                <div class="review-card">
+
+                    <div class="review-header">
+
+                        <span
+                            class="
+                                sentiment
+                                ${review.sentiment}
+                            "
+                        >
+
+                            ${
+                                review.sentiment ===
+                                "positive"
+                                    ? "Positive"
+                                    : "Negative"
+                            }
+
+                        </span>
+
+
+                        <span class="review-date">
+
+                            ${formatDate(
+                                review.date
+                            )}
+
+                        </span>
+
+                    </div>
+
+
+                    <p class="review-text">
+
+                        ${escapeHtml(
+                            review.text
+                        )}
+
+                    </p>
+
+
+                    <div class="review-footer">
+
+                        <span class="review-tag">
+
+                            App ${escapeHtml(
+                                review.appId
+                            )}
+
+                        </span>
+
+
+                        ${
+                            review.tokens
+                                ? `
+                                <span
+                                    class="review-tag"
+                                >
+                                    NLP data
+                                </span>
+                                `
+                                : ""
+                        }
+
+                    </div>
+
+                </div>
+
+                `
+            )
+            .join("");
+
+
+    updatePagination();
+
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+function updatePagination() {
+
+    const totalPages =
+        Math.max(
+            1,
+            Math.ceil(
+                filteredReviews.length /
+                REVIEWS_PER_PAGE
+            )
+        );
+
+
+    document
+        .getElementById(
+            "currentPage"
+        )
+        .textContent =
+        currentPage;
+
+
+    document
+        .getElementById(
+            "totalPages"
+        )
+        .textContent =
+        totalPages;
+
+
+    document
+        .getElementById(
+            "previousPage"
+        )
+        .disabled =
+        currentPage <= 1;
+
+
+    document
+        .getElementById(
+            "nextPage"
+        )
+        .disabled =
+        currentPage >= totalPages;
+
+}
+
+
+function nextPage() {
+
+    const totalPages =
+        Math.ceil(
+            filteredReviews.length /
+            REVIEWS_PER_PAGE
+        );
+
+
+    if (
+        currentPage <
+        totalPages
+    ) {
+
+        currentPage++;
+
+        renderReviews();
+
+    }
+
+}
+
+
+function previousPage() {
+
+    if (
+        currentPage > 1
+    ) {
+
+        currentPage--;
+
+        renderReviews();
+
+    }
+
+}
+
+
+/* =========================================================
+   ISSUE ANALYSIS
+========================================================= */
+
+function calculateIssues() {
+
+    const issues = [];
+
+
+    for (
+        const [
+            name,
+            keywords
+        ]
+        of Object.entries(
+            ISSUE_KEYWORDS
+        )
+    ) {
+
+        let mentions = 0;
+
+        let negative = 0;
+
+
+        allReviews.forEach(
+            review => {
+
+                const text =
+                    (
+                        review.text +
+                        " " +
+                        review.tokens
+                    )
+                    .toLowerCase();
+
+
+                const matched =
+                    keywords.some(
+                        keyword =>
+                            text.includes(
+                                keyword
+                                    .toLowerCase()
+                            )
+                    );
+
+
+                if (
+                    matched
+                ) {
+
+                    mentions++;
+
+
+                    if (
+                        review.sentiment ===
+                        "negative"
+                    ) {
+
+                        negative++;
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        if (
+            mentions > 0
+        ) {
+
+            const negativeRate =
+                Math.round(
+                    negative /
+                    mentions *
+                    100
+                );
+
+
+            let priority =
+                "low";
+
+
+            if (
+                mentions >= 20 &&
+                negativeRate >= 60
+            ) {
+
+                priority =
+                    "high";
+
+            } else if (
+                mentions >= 10 &&
+                negativeRate >= 40
+            ) {
+
+                priority =
+                    "medium";
+
+            }
+
+
+            issues.push({
+
+                name,
+
+                mentions,
+
+                negative,
+
+                negativeRate,
+
+                priority
+
+            });
+
+        }
+
+    }
+
+
+    return issues.sort(
+        (a,b) =>
+            b.mentions -
+            a.mentions
+    );
+
+}
+
+
+/* =========================================================
+   RENDER ISSUES
+========================================================= */
+
+function renderIssues() {
+
+    const tbody =
+        document.getElementById(
+            "issuesTableBody"
+        );
+
+
+    if (
+        !currentGame
+    ) {
+
+        tbody.innerHTML = "";
+
+        return;
+
+    }
+
+
+    const keyword =
+        document
+            .getElementById(
+                "issueSearch"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    const issues =
+        calculateIssues()
+            .filter(
+                issue =>
+                    !keyword ||
+                    issue.name
+                        .toLowerCase()
+                        .includes(
+                            keyword
+                        )
+            );
+
+
+    document
+        .getElementById(
+            "issueCount"
+        )
+        .textContent =
+        issues.length;
+
+
+    if (
+        issues.length === 0
+    ) {
+
+        tbody.innerHTML =
+            `
+            <tr>
+                <td colspan="5">
+                    No issues detected.
+                </td>
+            </tr>
+            `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        issues
+            .map(
+                issue => `
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            ${escapeHtml(
+                                issue.name
+                            )}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+                        ${issue.mentions}
+                    </td>
+
+
+                    <td>
+                        ${issue.negative}
+                    </td>
+
+
+                    <td>
+                        ${issue.negativeRate}%
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="
+                                priority
+                                ${issue.priority}
+                            "
+                        >
+
+                            ${
+                                issue.priority
+                                    .toUpperCase()
+                            }
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                `
+            )
+            .join("");
+
+}
+
+
+/* =========================================================
+   CHART DATA
+========================================================= */
+
+function calculateMonthlyData() {
+
+    const map = {};
+
+
+    allReviews.forEach(
+        review => {
+
+            if (
+                !review.date
+            ) return;
+
+
+            const year =
+                review.date
+                    .getFullYear();
+
+
+            const month =
+                String(
+                    review.date
+                        .getMonth() +
+                    1
+                )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+
+            const key =
+                `${year}-${month}`;
+
+
+            if (
+                !map[key]
+            ) {
+
+                map[key] = {
+
+                    positive: 0,
+
+                    negative: 0
+
+                };
+
+            }
+
+
+            if (
+                review.sentiment ===
+                "positive"
+            ) {
+
+                map[key].positive++;
+
+            } else if (
+                review.sentiment ===
+                "negative"
+            ) {
+
+                map[key].negative++;
+
+            }
+
+        }
+    );
+
+
+    return Object
+        .entries(map)
+        .sort(
+            ([a],[b]) =>
+                a.localeCompare(b)
+        );
+
+}
+
+
+/* =========================================================
+   UPDATE CHARTS
+========================================================= */
+
+function updateCharts() {
+
+    const monthly =
+        calculateMonthlyData();
+
+
+    const labels =
+        monthly.map(
+            item => item[0]
+        );
+
+
+    const positive =
+        monthly.map(
+            item =>
+                item[1].positive
+        );
+
+
+    const negative =
+        monthly.map(
+            item =>
+                item[1].negative
+        );
+
+
+    const issues =
+        calculateIssues();
+
+
+    /* -----------------------------------------
+       Sentiment chart
+    ----------------------------------------- */
+
+    const sentimentCanvas =
+        document.getElementById(
+            "sentimentChart"
+        );
+
+
+    if (
+        sentimentChart
+    ) {
+
+        sentimentChart.destroy();
+
+    }
+
+
+    sentimentChart =
+        new Chart(
+            sentimentCanvas,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels,
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Positive",
+
+                            data:
+                                positive,
+
+                            tension:
+                                0.3
+
+                        },
+
+                        {
+
+                            label:
+                                "Negative",
+
+                            data:
+                                negative,
+
+                            tension:
+                                0.3
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio:
+                        false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom"
+
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero:
+                                true
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+
+    /* -----------------------------------------
+       Issue chart
+    ----------------------------------------- */
+
+    const issueCanvas =
+        document.getElementById(
+            "issueChart"
+        );
+
+
+    if (
+        issueChart
+    ) {
+
+        issueChart.destroy();
+
+    }
+
+
+    issueChart =
+        new Chart(
+            issueCanvas,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels:
+                        issues.map(
+                            issue =>
+                                issue.name
+                        ),
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Mentions",
+
+                            data:
+                                issues.map(
+                                    issue =>
+                                        issue.mentions
+                                )
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio:
+                        false,
+
+                    plugins: {
+
+                        legend: {
+
+                            display:
+                                false
+
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero:
+                                true
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   AI INSIGHT
+========================================================= */
+
+function generateInsight() {
+
+    if (
+        !currentGame ||
+        allReviews.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const stats =
+        calculateStatistics();
+
+
+    const issues =
+        calculateIssues();
+
+
+    const topIssue =
+        issues[0];
+
+
+    document
+        .getElementById(
+            "insightTitle"
+        )
+        .textContent =
+        `${currentGame.gameName} Developer Insight`;
+
+
+    let text =
+        `현재 ${currentGame.gameName}의 ` +
+        `Steam 리뷰 ${stats.total.toLocaleString()}개를 분석했습니다. `;
+
+
+    text +=
+        `긍정 리뷰 비율은 ${stats.positiveRate}%이고 ` +
+        `부정 리뷰 비율은 ${stats.negativeRate}%입니다. `;
+
+
+    if (
+        topIssue
+    ) {
+
+        text +=
+            `가장 많이 언급된 이슈는 ` +
+            `${topIssue.name}으로 ` +
+            `${topIssue.mentions}개의 리뷰에서 ` +
+            `언급되었습니다. `;
+
+
+        text +=
+            `해당 이슈 관련 리뷰의 ` +
+            `부정 비율은 ${topIssue.negativeRate}%입니다. `;
+
+    }
+
+
+    text +=
+        `개발자 관점에서는 리뷰 빈도뿐 아니라 ` +
+        `부정 비율이 높은 이슈를 우선적으로 ` +
+        `검토하는 것이 중요합니다.`;
+
+
+    document
+        .getElementById(
+            "insightText"
+        )
+        .textContent =
+        text;
+
+}
+
+
+/* =========================================================
+   COPY INSIGHT
+========================================================= */
+
+async function copyInsight() {
+
+    const text =
+        document
+            .getElementById(
+                "insightText"
+            )
+            .textContent;
+
+
+    if (
+        !text
+    ) return;
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+
+        alert(
+            "Insight가 복사되었습니다."
+        );
+
+
+    } catch {
+
+        alert(
+            "복사에 실패했습니다."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   GLOBAL SEARCH
+========================================================= */
+
+function runGlobalSearch() {
+
+    const keyword =
+        document
+            .getElementById(
+                "globalSearch"
+            )
+            .value
+            .trim();
+
+
+    if (!keyword) return;
+
+
+    document
+        .getElementById(
+            "reviewSearch"
+        )
+        .value =
+        keyword;
+
+
+    document
+        .getElementById(
+            "reviewFilter"
+        )
+        .value =
+        keyword;
+
+
+    applyReviewFilters();
+
+
+    document
+        .getElementById(
+            "reviews"
+        )
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetFilters() {
+
+    document
+        .getElementById(
+            "reviewSearch"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "reviewFilter"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "sentimentSelect"
+        )
+        .value =
+        "all";
+
+
+    document
+        .getElementById(
+            "sentimentFilter"
+        )
+        .value =
+        "all";
+
+
+    document
+        .getElementById(
+            "sortSelect"
+        )
+        .value =
+        "recent";
+
+
+    document
+        .getElementById(
+            "reviewSort"
+        )
+        .value =
+        "recent";
+
+
+    document
+        .getElementById(
+            "issueSearch"
+        )
+        .value = "";
+
+
+    applyReviewFilters();
+
+    renderIssues();
+
+}
+
+
+/* =========================================================
+   COMPARE
+========================================================= */
+
+async function selectComparisonGame(
+    appId
+) {
+
+    const game =
+        games.find(
+            item =>
+                item.appId ===
+                appId
+        );
+
+
+    if (!game) return;
+
+
+    const reviews = [];
+
+
+    if (
+        game.positiveFile
+    ) {
+
+        reviews.push(
+            ...await loadCSV(
+                game.positiveFile
+            )
+        );
+
+    }
+
+
+    if (
+        game.negativeFile
+    ) {
+
+        reviews.push(
+            ...await loadCSV(
+                game.negativeFile
+            )
+        );
+
+    }
+
+
+    comparisonGame = {
+
+        game,
+
+        reviews
+
+    };
+
+
+    updateCompare();
+
+}
+
+
+function updateCompare() {
+
+    if (
+        !currentGame
+    ) return;
+
+
+    const current =
+        calculateStatistics(
+            allReviews
+        );
+
+
+    document
+        .getElementById(
+            "compareGameA"
+        )
+        .textContent =
+        currentGame.gameName;
+
+
+    document
+        .getElementById(
+            "compareReviewsA"
+        )
+        .textContent =
+        current.total.toLocaleString();
+
+
+    document
+        .getElementById(
+            "comparePositiveA"
+        )
+        .textContent =
+        `${current.positiveRate}%`;
+
+
+    document
+        .getElementById(
+            "compareNegativeA"
+        )
+        .textContent =
+        `${current.negativeRate}%`;
+
+
+    if (
+        !comparisonGame
+    ) {
+
+        document
+            .getElementById(
+                "compareGameB"
+            )
+            .textContent =
+            "Select another game";
+
+        return;
+
+    }
+
+
+    const comparison =
+        calculateStatistics(
+            comparisonGame.reviews
+        );
+
+
+    document
+        .getElementById(
+            "compareGameB"
+        )
+        .textContent =
+        comparisonGame.game.gameName;
+
+
+    document
+        .getElementById(
+            "compareReviewsB"
+        )
+        .textContent =
+        comparison.total.toLocaleString();
+
+
+    document
+        .getElementById(
+            "comparePositiveB"
+        )
+        .textContent =
+        `${comparison.positiveRate}%`;
+
+
+    document
+        .getElementById(
+            "compareNegativeB"
+        )
+        .textContent =
+        `${comparison.negativeRate}%`;
+
+}
+
+
+/* =========================================================
+   EXPORT CSV
+========================================================= */
+
+function exportCurrentCSV() {
+
+    if (
+        !allReviews.length
+    ) {
+
+        alert(
+            "먼저 게임을 선택하세요."
+        );
+
+        return;
+
+    }
+
+
+    const header =
+        [
+            "app_id",
+            "app_name",
+            "sentiment",
+            "review_original",
+            "review_tokenized",
+            "timestamp"
+        ];
+
+
+    const rows =
+        allReviews.map(
+            review => [
+
+                review.appId,
+
+                review.game,
+
+                review.sentiment,
+
+                review.text,
+
+                review.tokens,
+
+                review.timestamp
+
+            ]
+        );
+
+
+    const csv =
+        [
+            header,
+            ...rows
+        ]
+        .map(
+            row =>
+                row
+                    .map(
+                        escapeCSV
+                    )
+                    .join(",")
+        )
+        .join("\n");
+
+
+    const blob =
+        new Blob(
+            [
+                "\uFEFF" +
+                csv
+            ],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        `${
+            currentGame
+                ? currentGame.gameName
+                : "reviews"
+        }_analysis.csv`;
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+function sendChat() {
+
+    const input =
+        document.getElementById(
+            "chatInput"
+        );
+
+
+    const question =
+        input.value.trim();
+
+
+    if (
+        !question
+    ) return;
+
+
+    addChatMessage(
+        question,
+        "user"
+    );
+
+
+    input.value = "";
+
+
+    setTimeout(
+        () => {
+
+            const answer =
+                generateChatAnswer(
+                    question
+                );
+
+
+            addChatMessage(
+                answer,
+                "ai"
+            );
+
+        },
+        300
+    );
+
+}
+
+
+/* =========================================================
+   CHAT ANSWER
+========================================================= */
+
+function generateChatAnswer(
+    question
+) {
+
+    if (
+        !currentGame
+    ) {
+
+        return "먼저 분석할 게임을 선택해주세요.";
+
+    }
+
+
+    const q =
+        question
+            .toLowerCase();
+
+
+    const stats =
+        calculateStatistics();
+
+
+    const issues =
+        calculateIssues();
+
+
+    const topIssue =
+        issues[0];
+
+
+    if (
+        q.includes("부정") ||
+        q.includes("negative")
+    ) {
+
+        return (
+            `${currentGame.gameName}의 ` +
+            `부정 리뷰 비율은 ` +
+            `${stats.negativeRate}%이며 ` +
+            `${stats.negative}개의 부정 리뷰가 ` +
+            `확인됩니다.`
+        );
+
+    }
+
+
+    if (
+        q.includes("긍정") ||
+        q.includes("positive")
+    ) {
+
+        return (
+            `${currentGame.gameName}의 ` +
+            `긍정 리뷰 비율은 ` +
+            `${stats.positiveRate}%이며 ` +
+            `${stats.positive}개의 긍정 리뷰가 ` +
+            `확인됩니다.`
+        );
+
+    }
+
+
+    if (
+        q.includes("문제") ||
+        q.includes("이슈") ||
+        q.includes("issue")
+    ) {
+
+        if (
+            topIssue
+        ) {
+
+            return (
+                `현재 데이터에서 가장 많이 ` +
+                `언급된 이슈는 ` +
+                `${topIssue.name}입니다. ` +
+                `${topIssue.mentions}개 리뷰에서 ` +
+                `언급되었으며 부정 비율은 ` +
+                `${topIssue.negativeRate}%입니다.`
+            );
+
+        }
+
+        return "현재 확인된 주요 이슈가 없습니다.";
+
+    }
+
+
+    if (
+        q.includes("리뷰") ||
+        q.includes("review")
+    ) {
+
+        return (
+            `${currentGame.gameName}에는 ` +
+            `총 ${stats.total.toLocaleString()}개의 ` +
+            `리뷰가 로드되어 있습니다.`
+        );
+
+    }
+
+
+    return (
+        `${currentGame.gameName}의 현재 데이터는 ` +
+        `${stats.total.toLocaleString()}개의 리뷰를 ` +
+        `기반으로 분석되었습니다. ` +
+        (
+            topIssue
+                ? `가장 많이 언급된 이슈는 ` +
+                  `${topIssue.name}입니다.`
+                : `현재 주요 이슈가 없습니다.`
+        )
+    );
+
+}
+
+
+/* =========================================================
+   CHAT MESSAGE
+========================================================= */
+
+function addChatMessage(
+    text,
+    type
+) {
+
+    const container =
+        document.getElementById(
+            "chatMessages"
+        );
+
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+
+    message.className =
+        `message ${type}`;
+
+
+    message.textContent =
+        text;
+
+
+    container.appendChild(
+        message
+    );
+
+
+    container.scrollTop =
+        container.scrollHeight;
+
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollToSection(
+    id
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (
+        element
+    ) {
+
+        element.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function formatDate(
+    date
+) {
+
+    if (!date) {
+
+        return "-";
+
+    }
+
+
+    return date.toLocaleDateString(
+        "ko-KR"
+    );
+
+}
+
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function escapeAttribute(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /'/g,
+            "\\'"
+        );
+
+}
+
+
+function escapeCSV(
+    value
+) {
+
+    const text =
+        String(
+            value ?? ""
+        );
+
+
+    return (
+        '"' +
+        text.replace(
+            /"/g,
+            '""'
+        ) +
+        '"'
+    );
+
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+function showLoading(
+    message
+) {
+
+    const overlay =
+        document.getElementById(
+            "loadingOverlay"
+        );
+
+
+    document
+        .getElementById(
+            "loadingMessage"
+        )
+        .textContent =
+        message;
+
+
+    overlay.style.display =
+        "flex";
+
+}
+
+
+function hideLoading() {
+
+    document
+        .getElementById(
+            "loadingOverlay"
+        )
+        .style.display =
+        "none";
+
+}
+
+</script>
+
+</body>
+</html>
