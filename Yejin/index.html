@@ -1827,86 +1827,68 @@ document.addEventListener(
 
 async function loadGithubFiles() {
 
-    showError("");
-
-    const gameList =
-        document.getElementById(
-            "gameList"
-        );
-
-    gameList.innerHTML =
-        `
-        <div class="loading">
-            GitHub에서 CSV 파일을 찾는 중...
-        </div>
-        `;
-
-
     try {
 
         const apiUrl =
             `https://api.github.com/repos/` +
             `${GITHUB_OWNER}/` +
-            `${GITHUB_REPO}/` +
-            `git/trees/` +
-            `${GITHUB_BRANCH}?recursive=1`;
+            `${GITHUB_REPO}/contents/` +
+            `${encodeURIComponent(DATA_FOLDER)}` +
+            `?ref=${encodeURIComponent(GITHUB_BRANCH)}`;
 
+        console.log("GitHub API URL:", apiUrl);
 
         const response =
             await fetch(apiUrl);
 
-
         if (!response.ok) {
 
+            const errorText =
+                await response.text();
+
+            console.error(
+                "GitHub API error:",
+                errorText
+            );
+
             throw new Error(
-                `GitHub 파일 목록을 불러오지 못했습니다. (${response.status})`
+                `GitHub 파일 목록을 불러오지 못했습니다. ` +
+                `(HTTP ${response.status})`
             );
 
         }
 
-
         const data =
             await response.json();
 
-
         githubFiles =
-            (data.tree || [])
-                .filter(
-                    file =>
-                        file.type === "blob" &&
-                        file.path
-                            .toLowerCase()
-                            .endsWith(".csv") &&
-                        file.path
-                            .startsWith(
-                                DATA_FOLDER + "/"
-                            )
-                );
+            data.filter(
+                file =>
+                    file.type === "file" &&
+                    file.name
+                        .toLowerCase()
+                        .endsWith(".csv")
+            );
 
-
-        /*
-         * 게임 목록 생성
-         */
-        createGameList();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showError(
-            "GitHub CSV 파일을 불러오지 못했습니다. " +
-            "GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH와 " +
-            "data 폴더 위치를 확인해주세요."
+        console.log(
+            "Yejin 폴더에서 찾은 CSV:",
+            githubFiles
         );
 
+        createGameList();
 
-        gameList.innerHTML =
-            `
-            <div class="empty">
-                CSV 파일을 찾을 수 없습니다.
-            </div>
-            `;
+    }
+    catch (error) {
+
+        console.error(
+            "GitHub 파일 로딩 오류:",
+            error
+        );
+
+        alert(
+            "GitHub CSV 파일을 불러오지 못했습니다.\n\n" +
+            error.message
+        );
 
     }
 
