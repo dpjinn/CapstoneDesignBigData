@@ -2121,140 +2121,68 @@ function createGameList() {
 
 
 /* =========================================================
-   RENDER GAME LIST
+   GAME SEARCH
+   - 게임 이름 일부 검색 가능
+   - 1~2단어 검색 시 여러 게임 표시
+   - 자동 선택하지 않음
+   - 사용자가 게임을 클릭하면 CSV 로딩
 ========================================================= */
 
-function renderGameList(keyword = "") {
 
-    const container =
-        document.getElementById(
-            "gameList"
-        );
+/* =========================================================
+   SEARCH GAME
+   검색 버튼을 눌렀을 때
+========================================================= */
 
+function searchGame() {
 
-    const normalizedKeyword =
-        keyword
-            .trim()
-            .toLowerCase();
+    const searchInput =
+        document.getElementById("searchInput");
 
+    const keyword =
+        searchInput
+            ? searchInput.value.trim()
+            : "";
 
-    const filtered =
-        games.filter(
-            game =>
-                game.gameName
-                    .toLowerCase()
-                    .includes(
-                        normalizedKeyword
-                    )
-        );
-
-
-    if (
-        filtered.length === 0
-    ) {
-
-        container.innerHTML =
-            `
-            <div class="empty">
-                검색된 게임이 없습니다.
-            </div>
-            `;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        filtered
-            .map(
-                game => {
-
-                    const selected =
-                        currentGame &&
-                        currentGame.gameName ===
-                        game.gameName
-                            ? "selected"
-                            : "";
-
-
-                    return `
-                        <button
-                            class="game-item ${selected}"
-                            onclick="selectGame(${JSON.stringify(game.gameName)})"
-                        >
-                            ${escapeHtml(
-                                game.gameName
-                            )}
-                        </button>
-                    `;
-
-                }
-            )
-            .join("");
+    renderGameList(keyword);
 
 }
 
 
 /* =========================================================
    FILTER GAME LIST
+   검색창에 입력할 때마다 실행
 ========================================================= */
 
 function filterGameList() {
 
+    const searchInput =
+        document.getElementById("searchInput");
+
     const keyword =
-        document
-            .getElementById(
-                "gameSearch"
-            )
-            .value;
+        searchInput
+            ? searchInput.value.trim()
+            : "";
 
-
-    renderGameList(
-        keyword
-    );
+    renderGameList(keyword);
 
 }
 
 
 /* =========================================================
-   SEARCH GAME
+   RENDER GAME LIST
+   게임 목록 출력
 ========================================================= */
 
-function searchGame() {
+function renderGameList(keyword = "") {
 
-    const keyword =
-        document
-            .getElementById(
-                "globalSearch"
-            )
-            .value
-            .trim()
-            .toLowerCase();
+    const list =
+        document.getElementById("gameList");
 
+    if (!list) {
 
-    if (!keyword) {
-
-        return;
-
-    }
-
-
-    const game =
-        games.find(
-            item =>
-                item.gameName
-                    .toLowerCase()
-                    .includes(
-                        keyword
-                    )
-        );
-
-
-    if (!game) {
-
-        showError(
-            "해당 게임을 찾을 수 없습니다."
+        console.error(
+            "gameList 요소를 찾을 수 없습니다."
         );
 
         return;
@@ -2262,92 +2190,549 @@ function searchGame() {
     }
 
 
-    selectGame(
-        game.gameName
-    );
+    // 기존 목록 삭제
+    list.innerHTML = "";
+
+
+    // 검색어 정리
+    const normalizedKeyword =
+        keyword.toLowerCase().trim();
+
+
+    /* -----------------------------------------------------
+       게임 검색
+       -----------------------------------------------------
+       예:
+       "star"
+       → Starfield
+       → Stardew Valley
+       → Star Wars
+       → Starbound
+
+       "cyber"
+       → Cyberpunk 2077
+       → ...
+    ----------------------------------------------------- */
+
+    const filteredGames =
+        games.filter(game => {
+
+            if (!game || !game.gameName) {
+                return false;
+            }
+
+            const gameName =
+                game.gameName
+                    .toLowerCase();
+
+            return gameName.includes(
+                normalizedKeyword
+            );
+
+        });
+
+
+    /* =====================================================
+       검색 결과 없음
+    ===================================================== */
+
+    if (
+        filteredGames.length === 0
+    ) {
+
+        list.innerHTML = `
+            <div class="game-empty">
+                <div style="font-size:24px; margin-bottom:8px;">
+                    🔍
+                </div>
+
+                <div>
+                    검색 결과가 없습니다.
+                </div>
+            </div>
+        `;
+
+
+        const count =
+            document.getElementById(
+                "gameCount"
+            );
+
+        if (count) {
+
+            count.textContent =
+                "0 games";
+
+        }
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       검색 결과 게임 출력
+    ===================================================== */
+
+    filteredGames.forEach(game => {
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "game-item";
+
+
+        /* -------------------------------------------------
+           게임 이름
+        ------------------------------------------------- */
+
+        const name =
+            document.createElement("div");
+
+        name.className =
+            "game-name";
+
+
+        /* -------------------------------------------------
+           검색어가 있으면 일치 부분 강조
+        ------------------------------------------------- */
+
+        if (normalizedKeyword) {
+
+            const gameName =
+                game.gameName;
+
+            const lowerName =
+                gameName.toLowerCase();
+
+            const index =
+                lowerName.indexOf(
+                    normalizedKeyword
+                );
+
+
+            if (index !== -1) {
+
+                const before =
+                    gameName.substring(
+                        0,
+                        index
+                    );
+
+                const matched =
+                    gameName.substring(
+                        index,
+                        index +
+                        normalizedKeyword.length
+                    );
+
+                const after =
+                    gameName.substring(
+                        index +
+                        normalizedKeyword.length
+                    );
+
+
+                name.innerHTML =
+                    escapeHtml(before) +
+                    `<strong>${escapeHtml(matched)}</strong>` +
+                    escapeHtml(after);
+
+            }
+            else {
+
+                name.textContent =
+                    gameName;
+
+            }
+
+        }
+        else {
+
+            name.textContent =
+                game.gameName;
+
+        }
+
+
+        item.appendChild(name);
+
+
+        /* -------------------------------------------------
+           Positive / Negative 파일 상태
+        ------------------------------------------------- */
+
+        const status =
+            document.createElement("div");
+
+        status.className =
+            "game-status";
+
+
+        if (
+            game.positiveFile
+        ) {
+
+            status.innerHTML +=
+                `<span class="positive-status">
+                    Positive
+                </span>`;
+
+        }
+
+
+        if (
+            game.negativeFile
+        ) {
+
+            status.innerHTML +=
+                `<span class="negative-status">
+                    Negative
+                </span>`;
+
+        }
+
+
+        item.appendChild(status);
+
+
+        /* -------------------------------------------------
+           게임 클릭
+           
+           자동 선택하지 않고
+           사용자가 클릭했을 때만 선택
+        ------------------------------------------------- */
+
+        item.addEventListener(
+            "click",
+            () => {
+
+                selectGame(
+                    game.gameName
+                );
+
+            }
+        );
+
+
+        list.appendChild(item);
+
+    });
+
+
+    /* =====================================================
+       게임 개수 표시
+    ===================================================== */
+
+    const count =
+        document.getElementById(
+            "gameCount"
+        );
+
+    if (count) {
+
+        count.textContent =
+            `${filteredGames.length.toLocaleString()} games`;
+
+    }
 
 }
 
 
 /* =========================================================
    SELECT GAME
+   사용자가 게임 목록을 클릭했을 때
 ========================================================= */
 
 async function selectGame(gameName) {
 
+    console.log(
+        "게임 선택:",
+        gameName
+    );
+
+
+    /* -----------------------------------------------------
+       games에서 선택된 게임 찾기
+    ----------------------------------------------------- */
+
     const game =
         games.find(
-            item =>
-                item.gameName ===
+            game =>
+                game.gameName ===
                 gameName
         );
 
 
-    if (!game) return;
+    if (!game) {
 
+        console.error(
+            "게임을 찾을 수 없습니다:",
+            gameName
+        );
+
+        return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       현재 게임 저장
+    ----------------------------------------------------- */
 
     currentGame =
         game;
 
 
-    renderGameList(
-        document
-            .getElementById(
-                "gameSearch"
-            )
-            .value
-    );
+    /* -----------------------------------------------------
+       현재 리뷰 초기화
+    ----------------------------------------------------- */
 
+    currentReviews = [];
+
+    filteredReviews = [];
+
+
+    /* -----------------------------------------------------
+       선택된 게임 이름 표시
+    ----------------------------------------------------- */
+
+    const selectedGameElement =
+        document.getElementById(
+            "selectedGame"
+        );
+
+
+    if (selectedGameElement) {
+
+        selectedGameElement.textContent =
+            game.gameName;
+
+    }
+
+
+    /* -----------------------------------------------------
+       다른 게임의 선택 상태 제거
+    ----------------------------------------------------- */
 
     document
-        .getElementById(
-            "insightTitle"
+        .querySelectorAll(
+            ".game-item"
         )
-        .textContent =
-        `${game.gameName} 분석 중...`;
+        .forEach(
+            item =>
+                item.classList.remove(
+                    "selected"
+                )
+        );
 
 
-    document
-        .getElementById(
-            "insightText"
-        )
-        .textContent =
-        "CSV 데이터를 불러오는 중입니다.";
+    /* -----------------------------------------------------
+       클릭한 게임 선택 상태 표시
+    ----------------------------------------------------- */
 
+    const items =
+        document.querySelectorAll(
+            ".game-item"
+        );
+
+
+    items.forEach(item => {
+
+        const nameElement =
+            item.querySelector(
+                ".game-name"
+            );
+
+        if (
+            nameElement &&
+            nameElement.textContent ===
+            gameName
+        ) {
+
+            item.classList.add(
+                "selected"
+            );
+
+        }
+
+    });
+
+
+    /* -----------------------------------------------------
+       리뷰 CSV 로딩
+    ----------------------------------------------------- */
+
+    await loadGameReviews(game);
+
+}
+
+
+/* =========================================================
+   LOAD GAME REVIEWS
+   선택한 게임의 positive / negative CSV 로딩
+========================================================= */
+
+async function loadGameReviews(game) {
 
     try {
 
-        currentReviews =
-            await loadGameReviews(
-                game
+        console.log(
+            "리뷰 로딩 시작:",
+            game.gameName
+        );
+
+
+        const reviews = [];
+
+
+        /* =================================================
+           Positive CSV
+        ================================================= */
+
+        if (
+            game.positiveFile
+        ) {
+
+            console.log(
+                "Positive CSV:",
+                game.positiveFile
             );
 
 
-        filteredReviews =
-            [...currentReviews];
+            const positiveReviews =
+                await loadCSV(
+                    game.positiveFile
+                );
 
+
+            positiveReviews.forEach(
+                review => {
+
+                    review.sentiment =
+                        "positive";
+
+                    reviews.push(
+                        review
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =================================================
+           Negative CSV
+        ================================================= */
+
+        if (
+            game.negativeFile
+        ) {
+
+            console.log(
+                "Negative CSV:",
+                game.negativeFile
+            );
+
+
+            const negativeReviews =
+                await loadCSV(
+                    game.negativeFile
+                );
+
+
+            negativeReviews.forEach(
+                review => {
+
+                    review.sentiment =
+                        "negative";
+
+                    reviews.push(
+                        review
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =================================================
+           리뷰 저장
+        ================================================= */
+
+        currentReviews =
+            reviews;
+
+
+        filteredReviews =
+            [...reviews];
+
+
+        console.log(
+            `${game.gameName}: ` +
+            `${reviews.length} reviews`
+        );
+
+
+        /* =================================================
+           대시보드 업데이트
+        ================================================= */
 
         updateDashboard();
 
 
-        /*
-         * 비교 A에 현재 게임 설정
-         */
+    }
+    catch (error) {
 
-        updateComparisonA(
-            game
+        console.error(
+            "리뷰 로딩 실패:",
+            error
         );
 
 
-    } catch (error) {
-
-        console.error(error);
-
-        showError(
-            `${game.gameName}의 CSV 데이터를 불러오지 못했습니다.`
+        alert(
+            `"${game.gameName}"의 리뷰 데이터를 ` +
+            `불러오지 못했습니다.\n\n` +
+            error.message
         );
 
     }
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+   게임 이름에 특수문자가 있어도 안전하게 표시
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
