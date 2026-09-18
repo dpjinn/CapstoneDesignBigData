@@ -2822,18 +2822,10 @@ async function loadCSV(filePath) {
     /*
      * GitHub Raw URL
      */
+    const filename = `${gameName}_${sentiment}.csv`;
 
     const url =
-    `https://github.com/` +
-    `dpjinn/CapstoneDesignBigData/tree` +
-    `main/Yejin/data` +
-    filePath
-        .split("/")
-        .map(
-            part =>
-                encodeURIComponent(part)
-        )
-        .join("/");
+    `https://github.com/dpjinn/CapstoneDesignBigData/blob/tree/main/Yejin/data` + encodeURIComponent(filename);
 
 
     const response =
