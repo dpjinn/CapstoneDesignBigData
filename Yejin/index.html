@@ -2584,8 +2584,7 @@ async function loadGitHubFileList() {
 
 function createGameList() {
 
-    const gameMap =
-        new Map();
+    const gameMap = new Map();
 
 
     githubFiles.forEach(
@@ -2606,21 +2605,19 @@ function createGameList() {
             if (!parsed) return;
 
 
-            if (
-                !gameMap.has(
-                    parsed.appId
-                )
-            ) {
+            // 게임 이름을 기준으로 찾기
+            const gameName =
+                parsed.gameName;
+
+
+            if (!gameMap.has(gameName)) {
 
                 gameMap.set(
-                    parsed.appId,
+                    gameName,
                     {
 
-                        appId:
-                            parsed.appId,
-
                         gameName:
-                            parsed.gameName,
+                            gameName,
 
                         positiveFile:
                             null,
@@ -2636,7 +2633,7 @@ function createGameList() {
 
             const game =
                 gameMap.get(
-                    parsed.appId
+                    gameName
                 );
 
 
@@ -2672,7 +2669,7 @@ function createGameList() {
 
 
     games.sort(
-        (a,b) =>
+        (a, b) =>
             a.gameName.localeCompare(
                 b.gameName
             )
@@ -2688,69 +2685,40 @@ function createGameList() {
     renderGameList("");
 
 }
-
-
 /* =========================================================
    PARSE FILENAME
 ========================================================= */
 
 function parseFilename(filename) {
 
-    /*
-        70_Half-Life_negative.csv
+    const positiveMatch =
+        filename.match(/^(.+)_positive\.csv$/i);
 
-        app_id:
-        70
+    if (positiveMatch) {
 
-        game:
-        Half-Life
-
-        sentiment:
-        negative
-    */
-
-
-    const name =
-        filename
-            .replace(
-                /\.csv$/i,
-                ""
-            );
-
-
-    const match =
-        name.match(
-            /^(\d+)_(.+)_(positive|negative)$/i
-        );
-
-
-    if (!match) {
-
-        console.warn(
-            "Invalid filename:",
-            filename
-        );
-
-        return null;
+        return {
+            gameName: positiveMatch[1],
+            sentiment: "positive"
+        };
 
     }
 
 
-    return {
+    const negativeMatch =
+        filename.match(/^(.+)_negative\.csv$/i);
 
-        appId:
-            match[1],
+    if (negativeMatch) {
 
-        gameName:
-            match[2],
+        return {
+            gameName: negativeMatch[1],
+            sentiment: "negative"
+        };
 
-        sentiment:
-            match[3].toLowerCase()
+    }
 
-    };
 
+    return null;
 }
-
 
 /* =========================================================
    RENDER GAME LIST
