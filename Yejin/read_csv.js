@@ -122,9 +122,6 @@ function parseCSVFilename(filename) {
 
         ↓
 
-        app_id
-        70
-
         game_name
         Half-Life
 
@@ -138,7 +135,7 @@ function parseCSVFilename(filename) {
         .replace(".CSV", "");
 
     const match = name.match(
-        /^(\d+)_(.+)_(positive|negative)$/i
+        /(.+)_(positive|negative)$/i
     );
 
     if (!match) {
