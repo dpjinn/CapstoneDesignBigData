@@ -1,1 +1,3288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DevInsight AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #f9fafb;
+
+    --border: #e5e7eb;
+
+    --text: #17191c;
+    --muted: #6b7280;
+    --light: #9ca3af;
+
+    --primary: #635bff;
+    --primary-light: #eeedff;
+
+    --green: #10b981;
+    --green-light: #dcfce7;
+
+    --red: #ef4444;
+    --red-light: #fee2e2;
+
+    --yellow: #f59e0b;
+    --yellow-light: #fef3c7;
+
+    --blue: #3b82f6;
+    --blue-light: #dbeafe;
+
+    --shadow:
+        0 2px 8px rgba(0,0,0,0.04);
+
+    --radius: 12px;
+}
+
+body {
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans KR",
+        sans-serif;
+
+    background: var(--bg);
+    color: var(--text);
+
+    min-height: 100vh;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+    height: 68px;
+
+    background: var(--surface);
+
+    border-bottom: 1px solid var(--border);
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 24px;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 100;
+}
+
+.logo {
+    width: 190px;
+
+    font-size: 19px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.search-area {
+    flex: 1;
+
+    max-width: 760px;
+
+    position: relative;
+}
+
+.search-area input {
+    width: 100%;
+    height: 42px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 9px;
+
+    padding:
+        0 80px 0 40px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    background: var(--surface-2);
+}
+
+.search-area input:focus {
+    background: white;
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px var(--primary-light);
+}
+
+.search-icon {
+    position: absolute;
+
+    left: 14px;
+    top: 11px;
+
+    color: var(--muted);
+}
+
+.search-button {
+    position: absolute;
+
+    right: 5px;
+    top: 5px;
+
+    height: 32px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    padding: 0 13px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.header-actions {
+    margin-left: auto;
+
+    display: flex;
+
+    gap: 7px;
+}
+
+.header-btn {
+    height: 36px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: white;
+
+    padding: 0 11px;
+
+    font-size: 12px;
+
+    color: #555;
+}
+
+.header-btn:hover {
+    background: var(--surface-2);
+}
+
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.app {
+    display: flex;
+}
+
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 215px;
+
+    position: fixed;
+
+    top: 68px;
+    bottom: 0;
+
+    background: white;
+
+    border-right: 1px solid var(--border);
+
+    padding: 20px 12px;
+}
+
+.sidebar-title {
+    padding:
+        0 10px 9px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    color: var(--light);
+
+    text-transform: uppercase;
+}
+
+.nav-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    width: 100%;
+
+    height: 38px;
+
+    padding: 0 11px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #555;
+
+    text-align: left;
+
+    font-size: 13px;
+}
+
+.nav-item:hover {
+    background: var(--surface-2);
+}
+
+.nav-item.active {
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    font-weight: 700;
+}
+
+.sidebar-divider {
+    height: 1px;
+
+    background: var(--border);
+
+    margin: 18px 0;
+}
+
+
+/* MAIN */
+
+main {
+    margin-left: 215px;
+
+    width: calc(100% - 215px);
+
+    max-width: 1450px;
+
+    padding:
+        30px 32px 180px;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 25px;
+
+    font-weight: 800;
+}
+
+.page-description {
+    margin-top: 6px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+.page-actions {
+    display: flex;
+
+    gap: 8px;
+}
+
+.action-btn {
+    height: 36px;
+
+    border: 1px solid var(--border);
+
+    background: white;
+
+    border-radius: 8px;
+
+    padding: 0 12px;
+
+    font-size: 12px;
+}
+
+.action-btn.primary {
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    color: white;
+}
+
+
+/* =========================================================
+   FILTER BAR
+========================================================= */
+
+.filter-bar {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    margin-bottom: 22px;
+
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-size: 12px;
+
+    color: var(--muted);
+
+    margin-right: 4px;
+}
+
+.filter-bar select,
+.filter-bar input {
+    height: 34px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 7px;
+
+    padding: 0 9px;
+
+    background: white;
+
+    font-size: 12px;
+
+    outline: none;
+}
+
+.filter-bar select:focus,
+.filter-bar input:focus {
+    border-color: var(--primary);
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.section {
+    margin-bottom: 24px;
+}
+
+.section-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 12px;
+}
+
+.section-title {
+    font-size: 16px;
+
+    font-weight: 750;
+}
+
+.section-description {
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   INSIGHT
+========================================================= */
+
+.insight-card {
+    background: white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 22px;
+
+    box-shadow: var(--shadow);
+}
+
+.ai-label {
+    display: inline-flex;
+
+    padding:
+        4px 8px;
+
+    border-radius: 5px;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    margin-bottom: 13px;
+}
+
+.insight-main {
+    font-size: 18px;
+
+    font-weight: 750;
+
+    line-height: 1.5;
+
+    margin-bottom: 20px;
+}
+
+.insight-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 10px;
+}
+
+.insight-item {
+    background: var(--surface-2);
+
+    padding: 14px;
+
+    border-radius: 9px;
+}
+
+.insight-label {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    margin-bottom: 6px;
+}
+
+.insight-value {
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 12px;
+}
+
+.stat {
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 11px;
+
+    padding: 17px;
+}
+
+.stat-label {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    margin-bottom: 9px;
+}
+
+.stat-value {
+    font-size: 24px;
+
+    font-weight: 800;
+}
+
+.stat-sub {
+    margin-top: 6px;
+
+    font-size: 11px;
+
+    color: var(--muted);
+}
+
+.stat-sub.negative {
+    color: var(--red);
+}
+
+.stat-sub.positive {
+    color: var(--green);
+}
+
+
+/* =========================================================
+   CHARTS
+========================================================= */
+
+.chart-grid {
+    display: grid;
+
+    grid-template-columns:
+        1.5fr 1fr;
+
+    gap: 14px;
+}
+
+.chart-card {
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 20px;
+}
+
+.chart-header {
+    margin-bottom: 16px;
+}
+
+.chart-title {
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+.chart-description {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    margin-top: 4px;
+}
+
+.chart-box {
+    height: 280px;
+}
+
+
+/* =========================================================
+   ISSUE TABLE
+========================================================= */
+
+.table-card {
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    overflow: hidden;
+}
+
+.table-toolbar {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 13px 16px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.table-search {
+    height: 34px;
+
+    width: 230px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 7px;
+
+    padding: 0 10px;
+
+    outline: none;
+
+    font-size: 12px;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+th {
+    background: #fafafa;
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    text-align: left;
+
+    padding: 11px 15px;
+
+    border-bottom: 1px solid var(--border);
+
+    cursor: pointer;
+}
+
+th:hover {
+    color: var(--primary);
+}
+
+td {
+    padding: 14px 15px;
+
+    border-bottom: 1px solid var(--border);
+
+    font-size: 12px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.issue-name {
+    font-weight: 700;
+}
+
+.issue-count {
+    color: #555;
+}
+
+.percent {
+    font-weight: 650;
+}
+
+.badge {
+    display: inline-block;
+
+    padding:
+        4px 7px;
+
+    border-radius: 5px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+.badge.high {
+    background: var(--red-light);
+
+    color: #dc2626;
+}
+
+.badge.medium {
+    background: var(--yellow-light);
+
+    color: #d97706;
+}
+
+.badge.low {
+    background: var(--green-light);
+
+    color: #059669;
+}
+
+
+/* =========================================================
+   COMPARISON
+========================================================= */
+
+.compare-panel {
+    display: none;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 20px;
+
+    margin-bottom: 24px;
+}
+
+.compare-panel.show {
+    display: block;
+}
+
+.compare-games {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.game-box {
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    padding: 15px;
+
+    background: var(--surface-2);
+}
+
+.game-name {
+    font-size: 15px;
+
+    font-weight: 750;
+
+    margin-bottom: 12px;
+}
+
+.compare-stat {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 8px 0;
+
+    border-bottom: 1px solid var(--border);
+
+    font-size: 12px;
+}
+
+.compare-stat:last-child {
+    border-bottom: none;
+}
+
+.compare-table td,
+.compare-table th {
+    text-align: center;
+}
+
+.compare-table td:first-child,
+.compare-table th:first-child {
+    text-align: left;
+}
+
+.diff-positive {
+    color: var(--green);
+
+    font-weight: 700;
+}
+
+.diff-negative {
+    color: var(--red);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   REVIEWS
+========================================================= */
+
+.review-controls {
+    display: flex;
+
+    gap: 8px;
+
+    align-items: center;
+}
+
+.review-controls select {
+    height: 33px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 7px;
+
+    padding: 0 8px;
+
+    font-size: 11px;
+
+    background: white;
+}
+
+.reviews {
+    display: grid;
+
+    gap: 10px;
+}
+
+.review {
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 11px;
+
+    padding: 16px;
+}
+
+.review-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 9px;
+}
+
+.review-id {
+    font-size: 11px;
+
+    color: var(--muted);
+}
+
+.sentiment {
+    padding:
+        4px 7px;
+
+    border-radius: 5px;
+
+    font-size: 9px;
+
+    font-weight: 750;
+}
+
+.sentiment.positive {
+    color: #059669;
+
+    background: var(--green-light);
+}
+
+.sentiment.negative {
+    color: #dc2626;
+
+    background: var(--red-light);
+}
+
+.sentiment.neutral {
+    color: #6b7280;
+
+    background: #f3f4f6;
+}
+
+.review-text {
+    font-size: 13px;
+
+    line-height: 1.65;
+
+    margin-bottom: 10px;
+}
+
+.review-meta {
+    display: flex;
+
+    gap: 6px;
+
+    flex-wrap: wrap;
+}
+
+.review-tag {
+    padding:
+        4px 7px;
+
+    background: #f3f4f6;
+
+    border-radius: 5px;
+
+    font-size: 10px;
+
+    color: #666;
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.pagination {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    margin-top: 15px;
+}
+
+.page-btn {
+    width: 30px;
+
+    height: 30px;
+
+    border: 1px solid var(--border);
+
+    background: white;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+}
+
+.page-btn.active {
+    background: var(--primary);
+
+    border-color: var(--primary);
+
+    color: white;
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+.chat-container {
+    position: fixed;
+
+    left: 215px;
+    right: 0;
+    bottom: 0;
+
+    background:
+        rgba(255,255,255,0.97);
+
+    backdrop-filter: blur(12px);
+
+    border-top: 1px solid var(--border);
+
+    padding:
+        11px 20px;
+
+    z-index: 90;
+}
+
+.chat-inner {
+    max-width: 950px;
+
+    margin: auto;
+}
+
+.chat-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 6px;
+}
+
+.chat-title {
+    font-size: 11px;
+
+    font-weight: 750;
+
+    color: var(--primary);
+}
+
+.context-label {
+    font-size: 10px;
+
+    color: var(--muted);
+}
+
+.chat-messages {
+    max-height: 105px;
+
+    overflow-y: auto;
+
+    margin-bottom: 8px;
+}
+
+.message {
+    display: flex;
+
+    margin-bottom: 6px;
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.bubble {
+    max-width: 72%;
+
+    padding:
+        7px 11px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+.message.ai .bubble {
+    background: #f1f2f5;
+}
+
+.message.user .bubble {
+    background: var(--primary);
+
+    color: white;
+}
+
+.chat-input {
+    display: flex;
+
+    gap: 7px;
+}
+
+.chat-input input {
+    flex: 1;
+
+    height: 40px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    padding: 0 13px;
+
+    outline: none;
+
+    font-size: 12px;
+}
+
+.chat-input input:focus {
+    border-color: var(--primary);
+}
+
+.chat-send {
+    width: 40px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: var(--primary);
+
+    color: white;
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast {
+    position: fixed;
+
+    right: 25px;
+    bottom: 150px;
+
+    background: #202124;
+
+    color: white;
+
+    padding:
+        10px 15px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: 0.25s;
+
+    z-index: 200;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width: 1100px) {
+
+    .stats {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+    .insight-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .sidebar {
+        width: 180px;
+    }
+
+    main {
+        margin-left: 180px;
+
+        width: calc(100% - 180px);
+    }
+
+    .chat-container {
+        left: 180px;
+    }
+}
+
+
+@media(max-width: 800px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    main {
+        margin-left: 0;
+
+        width: 100%;
+
+        padding:
+            20px 15px 170px;
+    }
+
+    .chat-container {
+        left: 0;
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .header-actions {
+        display: none;
+    }
+
+    .logo {
+        width: auto;
+
+        margin-right: 12px;
+    }
+
+    .compare-games {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media(max-width: 550px) {
+
+    .logo {
+        display: none;
+    }
+
+    header {
+        padding: 0 12px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .insight-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+    .table-card {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 700px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <div class="logo">
+        Dev<span>Insight</span> AI
+    </div>
+
+    <div class="search-area">
+
+        <span class="search-icon">
+            🔍
+        </span>
+
+        <input
+            id="globalSearch"
+            value="FPS 게임 플레이어 불만사항"
+            placeholder="게임, 기능, 문제점 또는 리뷰를 검색하세요..."
+            onkeydown="globalSearchKey(event)"
+        >
+
+        <button
+            class="search-button"
+            onclick="runSearch()">
+            분석
+        </button>
+
+    </div>
+
+    <div class="header-actions">
+
+        <button class="header-btn"
+                onclick="showToast('분석 결과가 새로고침되었습니다.')">
+            ↻ 새로고침
+        </button>
+
+        <button class="header-btn"
+                onclick="exportCSV()">
+            ↓ Export
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<div class="app">
+
+<aside class="sidebar">
+
+    <div class="sidebar-title">
+        ANALYSIS
+    </div>
+
+    <button class="nav-item active"
+            onclick="scrollToSection('overview')">
+        📊 Overview
+    </button>
+
+    <button class="nav-item"
+            onclick="scrollToSection('issues')">
+        ⚠️ Issues
+    </button>
+
+    <button class="nav-item"
+            onclick="scrollToSection('reviews')">
+        💬 Reviews
+    </button>
+
+    <button class="nav-item"
+            onclick="scrollToSection('comparison')">
+        ⚖️ Compare
+    </button>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-title">
+        TOOLS
+    </div>
+
+    <button class="nav-item"
+            onclick="copyInsight()">
+        📋 Copy Insight
+    </button>
+
+    <button class="nav-item"
+            onclick="exportCSV()">
+        📥 Export Data
+    </button>
+
+</aside>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main>
+
+
+<!-- =========================================================
+     PAGE HEADER
+========================================================= -->
+
+<div class="page-header">
+
+    <div>
+
+        <div class="page-title">
+            FPS 게임 플레이어 불만사항
+        </div>
+
+        <div class="page-description"
+             id="pageDescription">
+            Steam 리뷰 12,450건을 AI가 분석한 결과입니다.
+        </div>
+
+    </div>
+
+
+    <div class="page-actions">
+
+        <button
+            class="action-btn"
+            onclick="openComparison()">
+            ⚖ 비교하기
+        </button>
+
+        <button
+            class="action-btn primary"
+            onclick="copyInsight()">
+            📋 Insight 복사
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     FILTER BAR
+========================================================= -->
+
+<div class="filter-bar">
+
+    <span class="filter-label">
+        분석 조건
+    </span>
+
+    <select id="gameFilter"
+            onchange="updateDashboard()">
+
+        <option value="fps">FPS Game</option>
+        <option value="rpg">RPG Game</option>
+        <option value="survival">Survival Game</option>
+
+    </select>
+
+
+    <select id="periodFilter"
+            onchange="updateDashboard()">
+
+        <option value="6">최근 6개월</option>
+        <option value="3">최근 3개월</option>
+        <option value="12">최근 1년</option>
+
+    </select>
+
+
+    <select id="sentimentFilter"
+            onchange="filterReviews()">
+
+        <option value="all">
+            모든 감정
+        </option>
+
+        <option value="positive">
+            긍정
+        </option>
+
+        <option value="negative">
+            부정
+        </option>
+
+        <option value="neutral">
+            중립
+        </option>
+
+    </select>
+
+
+    <select id="priorityFilter"
+            onchange="filterIssues()">
+
+        <option value="all">
+            모든 우선순위
+        </option>
+
+        <option value="high">
+            High
+        </option>
+
+        <option value="medium">
+            Medium
+        </option>
+
+        <option value="low">
+            Low
+        </option>
+
+    </select>
+
+
+    <button
+        class="action-btn"
+        onclick="resetFilters()">
+
+        초기화
+
+    </button>
+
+</div>
+
+
+
+<!-- =========================================================
+     COMPARISON PANEL
+========================================================= -->
+
+<section
+    id="comparison"
+    class="compare-panel">
+
+    <div class="section-header">
+
+        <div>
+
+            <div class="section-title">
+                ⚖ 게임 비교
+            </div>
+
+            <div class="section-description">
+                두 게임의 사용자 반응과 주요 문제를 비교합니다.
+            </div>
+
+        </div>
+
+        <button
+            class="action-btn"
+            onclick="closeComparison()">
+            닫기
+        </button>
+
+    </div>
+
+
+    <div class="compare-games">
+
+        <div class="game-box">
+
+            <div class="game-name">
+                Game A
+            </div>
+
+            <div class="compare-stat">
+                <span>긍정 비율</span>
+                <strong>62%</strong>
+            </div>
+
+            <div class="compare-stat">
+                <span>부정 비율</span>
+                <strong>38%</strong>
+            </div>
+
+            <div class="compare-stat">
+                <span>리뷰 수</span>
+                <strong>12,450</strong>
+            </div>
+
+            <div class="compare-stat">
+                <span>주요 이슈</span>
+                <strong>Matchmaking</strong>
+            </div>
+
+        </div>
+
+
+        <div class="game-box">
+
+            <div class="game-name">
+                Game B
+            </div>
+
+            <div class="compare-stat">
+                <span>긍정 비율</span>
+                <strong>71%</strong>
+            </div>
+
+            <div class="compare-stat">
+                <span>부정 비율</span>
+                <strong>29%</strong>
+            </div>
+
+            <div class="compare-stat">
+                <span>리뷰 수</span>
+                <strong>9,820</strong>
+            </div>
+
+            <div class="compare-stat">
+                <span>주요 이슈</span>
+                <strong>Balance</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <table class="compare-table">
+
+        <thead>
+
+            <tr>
+                <th>Metric</th>
+                <th>Game A</th>
+                <th>Game B</th>
+                <th>Difference</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>Positive</td>
+                <td>62%</td>
+                <td>71%</td>
+                <td class="diff-positive">
+                    +9% B
+                </td>
+            </tr>
+
+            <tr>
+                <td>Negative</td>
+                <td>38%</td>
+                <td>29%</td>
+                <td class="diff-positive">
+                    -9% B
+                </td>
+            </tr>
+
+            <tr>
+                <td>Review Count</td>
+                <td>12,450</td>
+                <td>9,820</td>
+                <td>
+                    2,630
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+
+<!-- =========================================================
+     OVERVIEW
+========================================================= -->
+
+<section
+    id="overview"
+    class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <div class="section-title">
+                🎯 AI 핵심 인사이트
+            </div>
+
+            <div class="section-description">
+                현재 검색 결과에서 개발자가 확인해야 할 핵심 내용
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="insight-card">
+
+        <div class="ai-label">
+            AI GENERATED INSIGHT
+        </div>
+
+        <div
+            class="insight-main"
+            id="insightMain">
+
+            Matchmaking과 서버 안정성이 현재 가장 중요한
+            플레이어 불만 요소로 분석되었습니다.
+
+        </div>
+
+
+        <div class="insight-grid">
+
+            <div class="insight-item">
+
+                <div class="insight-label">
+                    가장 많이 언급된 문제
+                </div>
+
+                <div class="insight-value">
+                    Matchmaking
+                </div>
+
+            </div>
+
+
+            <div class="insight-item">
+
+                <div class="insight-label">
+                    부정 감정이 높은 문제
+                </div>
+
+                <div class="insight-value">
+                    Server Stability
+                </div>
+
+            </div>
+
+
+            <div class="insight-item">
+
+                <div class="insight-label">
+                    최근 증가한 문제
+                </div>
+
+                <div class="insight-value">
+                    Tutorial
+                </div>
+
+            </div>
+
+
+            <div class="insight-item">
+
+                <div class="insight-label">
+                    긍정적으로 평가되는 기능
+                </div>
+
+                <div class="insight-value">
+                    Gunplay
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     STATISTICS
+========================================================= -->
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div class="section-title">
+            📊 데이터 요약
+        </div>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                분석 리뷰
+            </div>
+
+            <div class="stat-value">
+                12,450
+            </div>
+
+            <div class="stat-sub positive">
+                ▲ 18.2% compared to previous period
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                긍정 리뷰
+            </div>
+
+            <div class="stat-value">
+                62%
+            </div>
+
+            <div class="stat-sub">
+                7,719 reviews
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                부정 리뷰
+            </div>
+
+            <div class="stat-value">
+                38%
+            </div>
+
+            <div class="stat-sub negative">
+                ▲ 3.4%
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                주요 이슈
+            </div>
+
+            <div class="stat-value">
+                24
+            </div>
+
+            <div class="stat-sub">
+                AI Topic Classification
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                분석 신뢰도
+            </div>
+
+            <div class="stat-value">
+                91%
+            </div>
+
+            <div class="stat-sub">
+                Model confidence
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     CHARTS
+========================================================= -->
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <div class="section-title">
+                📈 데이터 시각화
+            </div>
+
+            <div class="section-description">
+                기간별 사용자 반응과 이슈 분포
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="chart-grid">
+
+
+        <div class="chart-card">
+
+            <div class="chart-header">
+
+                <div class="chart-title">
+                    Sentiment Trend
+                </div>
+
+                <div class="chart-description">
+                    월별 긍정 / 부정 리뷰 비율
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="sentimentChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-card">
+
+            <div class="chart-header">
+
+                <div class="chart-title">
+                    Issue Distribution
+                </div>
+
+                <div class="chart-description">
+                    주요 문제별 언급량
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="issueChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ISSUE TABLE
+========================================================= -->
+
+<section
+    id="issues"
+    class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <div class="section-title">
+                ⚠️ 문제점 분석
+            </div>
+
+            <div class="section-description">
+                헤더를 클릭하면 해당 항목을 기준으로 정렬할 수 있습니다.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-card">
+
+        <div class="table-toolbar">
+
+            <input
+                id="issueSearch"
+                class="table-search"
+                placeholder="문제 검색..."
+                oninput="filterIssues()"
+            >
+
+            <span
+                class="section-description"
+                id="issueCount">
+                5개 이슈
+            </span>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th onclick="sortIssues('name')">
+                        Issue ↕
+                    </th>
+
+                    <th onclick="sortIssues('count')">
+                        Mentions ↕
+                    </th>
+
+                    <th onclick="sortIssues('negative')">
+                        Negative Rate ↕
+                    </th>
+
+                    <th onclick="sortIssues('growth')">
+                        Growth ↕
+                    </th>
+
+                    <th onclick="sortIssues('priority')">
+                        Priority ↕
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="issueTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     REVIEWS
+========================================================= -->
+
+<section
+    id="reviews"
+    class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <div class="section-title">
+                💬 대표 리뷰
+            </div>
+
+            <div class="section-description">
+                AI가 분석에 유용한 대표 리뷰를 선별했습니다.
+            </div>
+
+        </div>
+
+
+        <div class="review-controls">
+
+            <select
+                id="reviewSort"
+                onchange="renderReviews()">
+
+                <option value="relevance">
+                    관련도순
+                </option>
+
+                <option value="recent">
+                    최신순
+                </option>
+
+                <option value="positive">
+                    긍정순
+                </option>
+
+                <option value="negative">
+                    부정순
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-toolbar"
+         style="background:white;
+                border:1px solid var(--border);
+                border-radius:9px;
+                margin-bottom:10px;">
+
+        <input
+            id="reviewSearch"
+            class="table-search"
+            placeholder="리뷰 내용 검색..."
+            oninput="renderReviews()"
+        >
+
+        <span
+            class="section-description"
+            id="reviewCount">
+            4개 리뷰
+        </span>
+
+    </div>
+
+
+    <div
+        id="reviewList"
+        class="reviews">
+    </div>
+
+
+    <div class="pagination">
+
+        <button class="page-btn active">
+            1
+        </button>
+
+        <button class="page-btn">
+            2
+        </button>
+
+        <button class="page-btn">
+            3
+        </button>
+
+        <button class="page-btn">
+            →
+        </button>
+
+    </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+
+<!-- =========================================================
+     AI CHAT
+========================================================= -->
+
+<div class="chat-container">
+
+    <div class="chat-inner">
+
+        <div class="chat-header">
+
+            <div class="chat-title">
+                🤖 AI Developer Assistant
+            </div>
+
+            <div class="context-label">
+                Context: Current search + review analysis
+            </div>
+
+        </div>
+
+
+        <div
+            id="chatMessages"
+            class="chat-messages">
+
+            <div class="message ai">
+
+                <div class="bubble">
+
+                    현재 분석된 리뷰와 이슈 데이터를 기반으로
+                    개발 관련 질문에 답변할 수 있습니다.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="chat-input">
+
+            <input
+                id="chatInput"
+                placeholder="예: 어떤 문제를 먼저 개선해야 할까?"
+                onkeydown="chatKey(event)"
+            >
+
+            <button
+                class="chat-send"
+                onclick="sendChat()">
+                ➤
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- TOAST -->
+
+<div
+    id="toast"
+    class="toast">
+</div>
+
+
+
+<script>
+
+/* =========================================================
+   SAMPLE DATA
+========================================================= */
+
+let issues = [
+
+    {
+        name: "Matchmaking",
+        count: 2841,
+        negative: 78,
+        growth: 24,
+        priority: "high"
+    },
+
+    {
+        name: "Server Stability",
+        count: 2124,
+        negative: 82,
+        growth: 19,
+        priority: "high"
+    },
+
+    {
+        name: "Weapon Balance",
+        count: 1524,
+        negative: 61,
+        growth: 8,
+        priority: "medium"
+    },
+
+    {
+        name: "Tutorial",
+        count: 982,
+        negative: 57,
+        growth: 31,
+        priority: "medium"
+    },
+
+    {
+        name: "UI / UX",
+        count: 631,
+        negative: 42,
+        growth: 4,
+        priority: "low"
+    }
+
+];
+
+
+let reviews = [
+
+    {
+        id: "#18392",
+        sentiment: "negative",
+        score: 92,
+        date: "2026-09-14",
+        text:
+            "Matchmaking takes too long and sometimes the game cannot find a match at all.",
+        tags: [
+            "Matchmaking",
+            "Multiplayer",
+            "High Severity"
+        ]
+    },
+
+    {
+        id: "#19421",
+        sentiment: "positive",
+        score: 88,
+        date: "2026-09-12",
+        text:
+            "The gunplay feels really satisfying and the weapon variety is great.",
+        tags: [
+            "Gunplay",
+            "Weapon",
+            "Positive Feature"
+        ]
+    },
+
+    {
+        id: "#20123",
+        sentiment: "negative",
+        score: 84,
+        date: "2026-09-10",
+        text:
+            "The server disconnects frequently during matches, especially at peak hours.",
+        tags: [
+            "Server",
+            "Connection",
+            "High Severity"
+        ]
+    },
+
+    {
+        id: "#21142",
+        sentiment: "neutral",
+        score: 71,
+        date: "2026-09-07",
+        text:
+            "The tutorial explains the controls, but it does not explain the matchmaking system very well.",
+        tags: [
+            "Tutorial",
+            "Onboarding"
+        ]
+    }
+
+];
+
+
+let issueSortField = "count";
+
+let issueSortDirection = -1;
+
+let sentimentChart;
+
+let issueChart;
+
+
+/* =========================================================
+   RENDER ISSUES
+========================================================= */
+
+function renderIssues() {
+
+    const tbody =
+        document.getElementById("issueTable");
+
+    const search =
+        document.getElementById("issueSearch")
+            .value
+            .toLowerCase();
+
+    const priority =
+        document.getElementById("priorityFilter")
+            .value;
+
+
+    let data = [...issues];
+
+
+    if (search) {
+
+        data = data.filter(issue =>
+            issue.name
+                .toLowerCase()
+                .includes(search)
+        );
+
+    }
+
+
+    if (priority !== "all") {
+
+        data = data.filter(issue =>
+            issue.priority === priority
+        );
+
+    }
+
+
+    data.sort((a,b) => {
+
+        let x = a[issueSortField];
+
+        let y = b[issueSortField];
+
+        if (typeof x === "string") {
+
+            return issueSortDirection *
+                x.localeCompare(y);
+
+        }
+
+        return issueSortDirection *
+            (x - y);
+
+    });
+
+
+    tbody.innerHTML = "";
+
+
+    data.forEach(issue => {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                <span class="issue-name">
+                    ${issue.name}
+                </span>
+            </td>
+
+            <td>
+                <span class="issue-count">
+                    ${issue.count.toLocaleString()}
+                </span>
+            </td>
+
+            <td>
+                <span class="percent">
+                    ${issue.negative}%
+                </span>
+            </td>
+
+            <td>
+                <span
+                    class="${issue.growth >= 20
+                        ? 'diff-negative'
+                        : ''}">
+                    +${issue.growth}%
+                </span>
+            </td>
+
+            <td>
+                <span class="badge ${issue.priority}">
+                    ${issue.priority.toUpperCase()}
+                </span>
+            </td>
+
+        `;
+
+
+        tbody.appendChild(row);
+
+    });
+
+
+    document.getElementById("issueCount")
+        .innerText =
+        `${data.length}개 이슈`;
+
+}
+
+
+/* =========================================================
+   ISSUE SORT
+========================================================= */
+
+function sortIssues(field) {
+
+    if (issueSortField === field) {
+
+        issueSortDirection *= -1;
+
+    } else {
+
+        issueSortField = field;
+
+        issueSortDirection = -1;
+
+    }
+
+    renderIssues();
+
+}
+
+
+/* =========================================================
+   ISSUE FILTER
+========================================================= */
+
+function filterIssues() {
+
+    renderIssues();
+
+}
+
+
+/* =========================================================
+   RENDER REVIEWS
+========================================================= */
+
+function renderReviews() {
+
+    const container =
+        document.getElementById("reviewList");
+
+    const search =
+        document.getElementById("reviewSearch")
+            .value
+            .toLowerCase();
+
+    const sentiment =
+        document.getElementById("sentimentFilter")
+            .value;
+
+    const sort =
+        document.getElementById("reviewSort")
+            .value;
+
+
+    let data = [...reviews];
+
+
+    if (search) {
+
+        data = data.filter(review =>
+            review.text
+                .toLowerCase()
+                .includes(search)
+            ||
+            review.tags.join(" ")
+                .toLowerCase()
+                .includes(search)
+        );
+
+    }
+
+
+    if (sentiment !== "all") {
+
+        data = data.filter(review =>
+            review.sentiment === sentiment
+        );
+
+    }
+
+
+    if (sort === "recent") {
+
+        data.sort((a,b) =>
+            new Date(b.date) -
+            new Date(a.date)
+        );
+
+    }
+
+
+    if (sort === "positive") {
+
+        data.sort((a,b) =>
+            b.score - a.score
+        );
+
+    }
+
+
+    if (sort === "negative") {
+
+        data.sort((a,b) =>
+            a.score - b.score
+        );
+
+    }
+
+
+    if (sort === "relevance") {
+
+        data.sort((a,b) =>
+            b.score - a.score
+        );
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    data.forEach(review => {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "review";
+
+
+        const sentimentName = {
+
+            positive: "POSITIVE",
+
+            negative: "NEGATIVE",
+
+            neutral: "NEUTRAL"
+
+        };
+
+
+        item.innerHTML = `
+
+            <div class="review-header">
+
+                <span class="review-id">
+                    ${review.id}
+                    · ${review.date}
+                </span>
+
+                <span
+                    class="sentiment ${review.sentiment}">
+                    ${sentimentName[review.sentiment]}
+                </span>
+
+            </div>
+
+
+            <div class="review-text">
+                ${escapeHtml(review.text)}
+            </div>
+
+
+            <div class="review-meta">
+
+                ${review.tags.map(tag =>
+                    `<span class="review-tag">
+                        ${escapeHtml(tag)}
+                    </span>`
+                ).join("")}
+
+            </div>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+
+    document.getElementById("reviewCount")
+        .innerText =
+        `${data.length}개 리뷰`;
+
+}
+
+
+/* =========================================================
+   CHARTS
+========================================================= */
+
+function createCharts() {
+
+    const sentimentContext =
+        document
+            .getElementById("sentimentChart")
+            .getContext("2d");
+
+
+    sentimentChart =
+        new Chart(
+            sentimentContext,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: [
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep"
+                    ],
+
+                    datasets: [
+
+                        {
+                            label: "Positive",
+
+                            data: [
+                                70,
+                                68,
+                                66,
+                                65,
+                                63,
+                                62
+                            ],
+
+                            tension: 0.35,
+
+                            borderWidth: 2
+                        },
+
+                        {
+                            label: "Negative",
+
+                            data: [
+                                30,
+                                32,
+                                34,
+                                35,
+                                37,
+                                38
+                            ],
+
+                            tension: 0.35,
+
+                            borderWidth: 2
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            position: "bottom"
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            max: 100,
+
+                            ticks: {
+                                callback:
+                                    value => value + "%"
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+
+    const issueContext =
+        document
+            .getElementById("issueChart")
+            .getContext("2d");
+
+
+    issueChart =
+        new Chart(
+            issueContext,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: issues.map(
+                        issue => issue.name
+                    ),
+
+                    datasets: [
+
+                        {
+                            label: "Mentions",
+
+                            data: issues.map(
+                                issue => issue.count
+                            ),
+
+                            borderWidth: 1
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+                            beginAtZero: true
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   GLOBAL SEARCH
+========================================================= */
+
+function runSearch() {
+
+    const query =
+        document
+            .getElementById("globalSearch")
+            .value
+            .trim();
+
+
+    if (!query) {
+
+        showToast("검색어를 입력해주세요.");
+
+        return;
+
+    }
+
+
+    document.querySelector(".page-title")
+        .innerText = query;
+
+
+    document.getElementById("pageDescription")
+        .innerText =
+        "AI가 검색 결과와 리뷰 데이터를 분석하고 있습니다.";
+
+
+    document.getElementById("insightMain")
+        .innerText =
+        `"${query}"에 대한 주요 사용자 의견과 문제점을 분석했습니다.`;
+
+
+    showToast(
+        `"${query}" 분석을 시작했습니다.`
+    );
+
+}
+
+
+function globalSearchKey(event) {
+
+    if (event.key === "Enter") {
+
+        runSearch();
+
+    }
+
+}
+
+
+/* =========================================================
+   GAME FILTER
+========================================================= */
+
+function updateDashboard() {
+
+    const game =
+        document.getElementById("gameFilter")
+            .value;
+
+
+    const names = {
+
+        fps:
+            "FPS 게임 플레이어 불만사항",
+
+        rpg:
+            "RPG 게임 플레이어 불만사항",
+
+        survival:
+            "Survival 게임 플레이어 불만사항"
+
+    };
+
+
+    document.querySelector(".page-title")
+        .innerText =
+        names[game];
+
+
+    document.getElementById("pageDescription")
+        .innerText =
+        "선택한 장르의 리뷰 데이터를 AI가 분석한 결과입니다.";
+
+
+    showToast(
+        `${game.toUpperCase()} 데이터로 변경했습니다.`
+    );
+
+}
+
+
+/* =========================================================
+   COMPARISON
+========================================================= */
+
+function openComparison() {
+
+    document
+        .getElementById("comparison")
+        .classList.add("show");
+
+    document
+        .getElementById("comparison")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+function closeComparison() {
+
+    document
+        .getElementById("comparison")
+        .classList.remove("show");
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetFilters() {
+
+    document.getElementById("gameFilter")
+        .value = "fps";
+
+    document.getElementById("periodFilter")
+        .value = "6";
+
+    document.getElementById("sentimentFilter")
+        .value = "all";
+
+    document.getElementById("priorityFilter")
+        .value = "all";
+
+    document.getElementById("issueSearch")
+        .value = "";
+
+    document.getElementById("reviewSearch")
+        .value = "";
+
+
+    renderIssues();
+
+    renderReviews();
+
+    showToast("필터를 초기화했습니다.");
+
+}
+
+
+/* =========================================================
+   COPY INSIGHT
+========================================================= */
+
+function copyInsight() {
+
+    const text =
+        document.getElementById("insightMain")
+            .innerText;
+
+
+    navigator.clipboard
+        .writeText(text)
+        .then(() => {
+
+            showToast(
+                "AI Insight를 클립보드에 복사했습니다."
+            );
+
+        });
+
+}
+
+
+/* =========================================================
+   CSV EXPORT
+========================================================= */
+
+function exportCSV() {
+
+    let csv =
+        "Issue,Mentions,Negative Rate,Growth,Priority\n";
+
+
+    issues.forEach(issue => {
+
+        csv +=
+            `"${issue.name}",` +
+            `${issue.count},` +
+            `${issue.negative}%,` +
+            `${issue.growth}%,` +
+            `${issue.priority}\n`;
+
+    });
+
+
+    const blob =
+        new Blob(
+            ["\uFEFF" + csv],
+            {
+                type: "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+    link.download =
+        "devinsight-analysis.csv";
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(url);
+
+
+    showToast(
+        "분석 데이터를 CSV로 저장했습니다."
+    );
+
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+function chatKey(event) {
+
+    if (event.key === "Enter") {
+
+        sendChat();
+
+    }
+
+}
+
+
+function sendChat() {
+
+    const input =
+        document.getElementById("chatInput");
+
+    const text =
+        input.value.trim();
+
+
+    if (!text) return;
+
+
+    const messages =
+        document.getElementById("chatMessages");
+
+
+    const user =
+        document.createElement("div");
+
+
+    user.className =
+        "message user";
+
+
+    user.innerHTML =
+        `<div class="bubble">
+            ${escapeHtml(text)}
+        </div>`;
+
+
+    messages.appendChild(user);
+
+
+    input.value = "";
+
+
+    setTimeout(() => {
+
+        const ai =
+            document.createElement("div");
+
+
+        ai.className =
+            "message ai";
+
+
+        let answer =
+            getDemoAIAnswer(text);
+
+
+        ai.innerHTML =
+            `<div class="bubble">
+                ${answer}
+            </div>`;
+
+
+        messages.appendChild(ai);
+
+
+        messages.scrollTop =
+            messages.scrollHeight;
+
+    }, 450);
+
+}
+
+
+/* =========================================================
+   DEMO AI RESPONSE
+========================================================= */
+
+function getDemoAIAnswer(question) {
+
+    const q =
+        question.toLowerCase();
+
+
+    if (
+        q.includes("우선") ||
+        q.includes("먼저") ||
+        q.includes("개선")
+    ) {
+
+        return `
+            현재 데이터에서는
+            <strong>Matchmaking</strong>과
+            <strong>Server Stability</strong>가
+            우선적으로 확인할 필요가 있는 이슈로 나타납니다.
+            <br><br>
+            언급량, 부정률, 최근 증가율을 함께 확인하면
+            개선 대상의 근거를 더 구체적으로 파악할 수 있습니다.
+        `;
+
+    }
+
+
+    if (
+        q.includes("긍정") ||
+        q.includes("장점")
+    ) {
+
+        return `
+            현재 분석에서는
+            <strong>Gunplay</strong>와
+            <strong>Weapon Variety</strong>가
+            긍정적인 사용자 반응과 관련된 주요 항목으로
+            나타나 있습니다.
+        `;
+
+    }
+
+
+    if (
+        q.includes("서버") ||
+        q.includes("server")
+    ) {
+
+        return `
+            Server Stability 관련 리뷰에서는
+            연결 끊김과 매치 중 서버 불안정에 대한
+            의견이 반복적으로 발견되고 있습니다.
+        `;
+
+    }
+
+
+    return `
+        현재 검색 결과에는
+        ${issues.length}개의 주요 이슈와
+        ${reviews.length}개의 대표 리뷰가 포함되어 있습니다.
+        <br><br>
+        특정 이슈, 리뷰, 감정 변화 또는 개선 방향에 대해
+        질문하면 해당 데이터를 기준으로 분석할 수 있습니다.
+    `;
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function scrollToSection(id) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (!element) return;
+
+
+    element.scrollIntoView({
+        behavior: "smooth"
+    });
+
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(item =>
+            item.classList.remove("active")
+        );
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+
+    toast.innerText =
+        message;
+
+
+    toast.classList.add("show");
+
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 2200);
+
+}
+
+
+/* =========================================================
+   SECURITY
+========================================================= */
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text;
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+renderIssues();
+
+renderReviews();
+
+createCharts();
+
+</script>
+
+</body>
+</html>
 
