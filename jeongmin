@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Review AI | Developer Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,"Noto Sans KR",sans-serif;
+  background:#fff;color:#202124;
+  font-size:14px;
+}
+.topbar{
+  height:64px;border-bottom:1px solid #f1f3f4;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+}
+.logo{font-size:20px;font-weight:600;letter-spacing:-.5px}
+.logo span:nth-child(1){color:#4285f4}.logo span:nth-child(2){color:#ea4335}
+.logo span:nth-child(3){color:#fbbc05}.logo span:nth-child(4){color:#34a853}
+.nav{display:flex;gap:24px;color:#5f6368;font-size:13px}
+.nav .active{color:#1a73e8;font-weight:600}
+.profile{width:34px;height:34px;border-radius:50%;background:#e8f0fe;display:grid;place-items:center;color:#1967d2;font-weight:bold}
+
+.hero{max-width:1100px;margin:0 auto;padding:42px 24px 28px}
+.hero-title{font-size:28px;font-weight:500;letter-spacing:-1px;margin-bottom:8px}
+.hero-desc{color:#5f6368;margin-bottom:24px}
+.search-row{display:flex;gap:10px;max-width:720px}
+.search-box{
+  flex:1;height:46px;border:1px solid #dadce0;border-radius:24px;
+  display:flex;align-items:center;padding:0 17px;
+  box-shadow:0 1px 3px rgba(60,64,67,.15);
+}
+.search-box:focus-within{box-shadow:0 1px 6px rgba(32,33,36,.22);border-color:transparent}
+.search-icon{font-size:17px;color:#9aa0a6;margin-right:10px}
+select{
+  border:0;outline:0;background:transparent;width:100%;
+  color:#202124;font-size:14px;
+}
+.analyze{
+  height:46px;padding:0 22px;border:0;border-radius:4px;
+  background:#1a73e8;color:white;font-weight:600;cursor:pointer;
+}
+.analyze:hover{background:#1769d1}
+
+.container{max-width:1100px;margin:0 auto;padding:0 24px 50px}
+.tabs{border-bottom:1px solid #dadce0;display:flex;gap:28px;margin-bottom:26px}
+.tab{padding:12px 3px 11px;color:#5f6368;cursor:pointer}
+.tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;font-weight:600}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:28px}
+.kpi{
+  border:1px solid #dadce0;border-radius:8px;padding:20px;
+  min-height:120px;background:#fff;
+}
+.kpi-title{color:#5f6368;font-size:13px;margin-bottom:14px}
+.kpi-value{font-size:28px;font-weight:500}
+.kpi-value.red{color:#d93025}
+.kpi-value.blue{color:#1a73e8}
+.kpi-sub{font-size:11px;color:#80868b;margin-top:8px}
+
+.section-title{font-size:18px;font-weight:500;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1.45fr .85fr;gap:18px;margin-bottom:28px}
+.panel{border:1px solid #dadce0;border-radius:8px;padding:20px;background:#fff}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.panel-head h2{font-size:16px;font-weight:500}
+.panel-head span{font-size:11px;color:#80868b}
+
+.chart{height:230px;position:relative;padding:10px 10px 25px 38px}
+.gridline{position:absolute;left:38px;right:10px;border-top:1px solid #f1f3f4}
+.g1{top:35px}.g2{top:90px}.g3{top:145px}.g4{top:200px}
+.chart svg{width:100%;height:100%;position:relative;z-index:2}
+.legend{display:flex;gap:18px;justify-content:center;color:#5f6368;font-size:11px;margin-top:4px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.neg{background:#d93025}.pos{background:#1a73e8}
+
+.keyword-list{list-style:none}
+.keyword-list li{display:flex;justify-content:space-between;padding:15px 2px;border-bottom:1px solid #f1f3f4}
+.keyword-list li:last-child{border-bottom:0}
+.rank{color:#5f6368;margin-right:7px}
+.keyword{font-weight:600}
+.num{color:#5f6368}
+.recommend{
+  margin-top:18px;border-left:4px solid #fbbc04;
+  background:#fef7e0;padding:13px 14px;color:#5f6368;font-size:12px;line-height:1.5
+}
+.recommend b{color:#9a6700}
+
+.faq{margin-bottom:28px}
+.faq-card{padding:17px 18px;border-top:1px solid #dadce0}
+.faq-card:first-of-type{border-top:0}
+.question{font-weight:600;margin-bottom:7px}
+.answer{color:#5f6368;font-size:13px;line-height:1.55}
+.ai-label{display:inline-block;color:#1a73e8;font-size:10px;border:1px solid #aecbfa;border-radius:3px;padding:2px 5px;margin-right:7px}
+
+.table-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.filters button{
+  border:1px solid #dadce0;background:#fff;color:#5f6368;
+  padding:7px 13px;border-radius:4px;margin-left:5px;cursor:pointer;font-size:12px
+}
+.filters button.active{background:#e8f0fe;border-color:#aecbfa;color:#1967d2;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;background:#f8f9fa;color:#5f6368;font-size:12px;font-weight:600;padding:12px}
+td{padding:14px 12px;border-top:1px solid #f1f3f4;font-size:12px}
+.badge{font-size:10px;padding:3px 7px;border-radius:10px}
+.badge.neg{background:#fce8e6;color:#c5221f}
+.badge.pos{background:#e8f0fe;color:#1967d2}
+.footer{text-align:center;color:#9aa0a6;font-size:11px;margin-top:28px}
+
+@media(max-width:760px){
+ .topbar{padding:0 16px}.nav{display:none}
+ .hero{padding:28px 16px 22px}.container{padding:0 16px 35px}
+ .search-row{flex-direction:column}.analyze{width:100%}
+ .kpi-grid,.grid{grid-template-columns:1fr}
+ .tabs{gap:17px;overflow:auto}
+ .table-head{align-items:flex-start;gap:12px;flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo"><span>G</span><span>a</span><span>m</span><span>e</span> Review AI</div>
+  <nav class="nav">
+    <div class="active">분석 대시보드</div>
+    <div>리뷰 데이터</div>
+    <div>FAQ</div>
+  </nav>
+  <div class="profile">D</div>
+</header>
+
+<section class="hero">
+  <div class="hero-title">게임 리뷰 AI 분석</div>
+  <div class="hero-desc">게임 리뷰를 분석하여 개발자가 확인해야 할 주요 이슈와 사용자 의견을 제공합니다.</div>
+  <div class="search-row">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <select id="gameSelect">
+        <option value="elden">엘든링</option>
+        <option value="cyber">사이버펑크 2077</option>
+      </select>
+    </div>
+    <button class="analyze" onclick="runAnalysis()">분석하기</button>
+  </div>
+</section>
+
+<main class="container">
+  <div class="tabs">
+    <div class="tab active">요약</div>
+    <div class="tab">감성 분석</div>
+    <div class="tab">이슈 분석</div>
+    <div class="tab">FAQ</div>
+  </div>
+
+  <section class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-title">전체 수집된 리뷰</div>
+      <div class="kpi-value" id="total">12,450건</div>
+      <div class="kpi-sub">분석 대상 리뷰</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-title">부정 리뷰 비율</div>
+      <div class="kpi-value red" id="negative">68.4%</div>
+      <div class="kpi-sub">전체 리뷰 대비 부정 리뷰</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-title">최근 주요 이슈</div>
+      <div class="kpi-value blue" id="issues">14건</div>
+      <div class="kpi-sub">최근 분석 기간 기준</div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>긍정·부정 리뷰 추이</h2>
+        <span>최근 7일</span>
+      </div>
+      <div class="chart">
+        <i class="gridline g1"></i><i class="gridline g2"></i><i class="gridline g3"></i><i class="gridline g4"></i>
+        <svg viewBox="0 0 700 220" preserveAspectRatio="none">
+          <polyline points="0,150 100,142 200,145 300,118 400,126 500,86 600,73 700,50" fill="none" stroke="#d93025" stroke-width="3"/>
+          <polyline points="0,86 100,92 200,82 300,96 400,89 500,105 600,112 700,125" fill="none" stroke="#1a73e8" stroke-width="3"/>
+        </svg>
+      </div>
+      <div class="legend">
+        <span><i class="dot neg"></i>부정</span>
+        <span><i class="dot pos"></i>긍정</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2>부정 키워드 TOP 3</h2><span>AI 분석</span></div>
+      <ul class="keyword-list">
+        <li><span><span class="rank">1</span><span class="keyword">#프레임드랍</span></span><span class="num">142건</span></li>
+        <li><span><span class="rank">2</span><span class="keyword">#로딩튕김</span></span><span class="num">89건</span></li>
+        <li><span><span class="rank">3</span><span class="keyword">#무기밸런스</span></span><span class="num">45건</span></li>
+      </ul>
+      <div class="recommend"><b>AI 분석 결과</b><br>성능 및 멀티플레이 관련 이슈를 우선적으로 검토할 필요가 있습니다.</div>
+    </section>
+  </div>
+
+  <section class="panel faq">
+    <div class="panel-head">
+      <h2>LLM 기반 자동 생성 FAQ</h2>
+      <span>핵심 사용자 의견 요약</span>
+    </div>
+    <div class="faq-card">
+      <div class="question"><span class="ai-label">AI</span>최근 패치 이후 유저들이 가장 크게 호소하는 문제는?</div>
+      <div class="answer">특정 맵 진입 시 프레임 드랍과 성능 저하에 대한 부정 의견이 집중적으로 나타났습니다.</div>
+    </div>
+    <div class="faq-card">
+      <div class="question"><span class="ai-label">AI</span>멀티플레이 관련 주요 버그 제보는?</div>
+      <div class="answer">보스전 멀티 진입 과정에서 로딩이 중단되거나 게임이 종료된다는 의견이 확인되었습니다.</div>
+    </div>
+    <div class="faq-card">
+      <div class="question"><span class="ai-label">AI</span>개발자가 우선적으로 확인할 이슈는?</div>
+      <div class="answer">리뷰 빈도가 높은 성능 및 멀티플레이 관련 키워드를 우선적으로 검토할 수 있습니다.</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="table-head">
+      <h2>원본 리뷰 검증</h2>
+      <div class="filters">
+        <button class="active" data-filter="all">전체</button>
+        <button data-filter="negative">부정만</button>
+        <button data-filter="positive">긍정만</button>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>게임명</th><th>작성시간</th><th>감성</th><th>원문 리뷰 내용</th></tr></thead>
+      <tbody id="reviews">
+        <tr data-type="negative"><td><b>엘든링</b></td><td>2026-09-18</td><td><span class="badge neg">부정</span></td><td>패치하고 나서 로데일 마을 들어갈 때마다 프레임 반토막 남...</td></tr>
+        <tr data-type="negative"><td><b>엘든링</b></td><td>2026-09-17</td><td><span class="badge neg">부정</span></td><td>보스전 멀티로 들어갈 때 로딩바 90%에서 자꾸 튕깁니다.</td></tr>
+        <tr data-type="positive"><td><b>엘든링</b></td><td>2026-09-16</td><td><span class="badge pos">긍정</span></td><td>전투 시스템이 정말 재미있고 탐험하는 맛이 좋습니다.</td></tr>
+        <tr data-type="negative"><td><b>엘든링</b></td><td>2026-09-15</td><td><span class="badge neg">부정</span></td><td>특정 무기 밸런스가 너무 이상해서 플레이가 불편합니다.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="footer">Game Review AI Analysis Dashboard · Sample data for demonstration</div>
+</main>
+
+<script>
+const data={
+  elden:{total:"12,450건",negative:"68.4%",issues:"14건"},
+  cyber:{total:"9,820건",negative:"54.7%",issues:"11건"}
+};
+document.getElementById("gameSelect").addEventListener("change",function(){
+  const d=data[this.value];
+  document.getElementById("total").textContent=d.total;
+  document.getElementById("negative").textContent=d.negative;
+  document.getElementById("issues").textContent=d.issues;
+});
+function runAnalysis(){
+  const btn=document.querySelector(".analyze");
+  btn.textContent="분석 중...";
+  setTimeout(()=>{btn.textContent="분석 완료";setTimeout(()=>btn.textContent="분석하기",900)},600);
+}
+document.querySelectorAll(".filters button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const f=btn.dataset.filter;
+    document.querySelectorAll("#reviews tr").forEach(row=>{
+      row.style.display=(f==="all"||row.dataset.type===f)?"":"none";
+    });
+  });
+});
+</script>
+</body>
+</html>
