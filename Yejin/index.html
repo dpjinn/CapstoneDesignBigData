@@ -3506,17 +3506,140 @@ function setupReviewEvents() {
         );
 
 
-    const reviewSearch =
-        document.getElementById(
-            "reviewSearch"
-        );
+   /* =========================================================
+   UI EVENTS
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        /* 게임 검색 */
+
+        const gameSearch =
+            document.getElementById(
+                "gameSearch"
+            );
 
 
-    const reviewSort =
-        document.getElementById(
-            "reviewSort"
-        );
+        if (
+            gameSearch
+        ) {
 
+            gameSearch.addEventListener(
+                "input",
+                filterGameList
+            );
+
+        }
+
+
+        /* 리뷰 검색 */
+
+        const reviewSearch =
+            document.getElementById(
+                "reviewSearch"
+            );
+
+
+        if (
+            reviewSearch
+        ) {
+
+            reviewSearch.addEventListener(
+                "input",
+                renderReviews
+            );
+
+        }
+
+
+        /* 리뷰 정렬 */
+
+        const reviewSort =
+            document.getElementById(
+                "reviewSort"
+            );
+
+
+        if (
+            reviewSort
+        ) {
+
+            reviewSort.addEventListener(
+                "change",
+                renderReviews
+            );
+
+        }
+
+
+        /* 감정 필터 */
+
+        const sentimentFilter =
+            document.getElementById(
+                "sentimentFilter"
+            );
+
+
+        if (
+            sentimentFilter
+        ) {
+
+            sentimentFilter.addEventListener(
+                "change",
+                updateDashboard
+            );
+
+        }
+
+
+        /* 기간 필터 */
+
+        const periodFilter =
+            document.getElementById(
+                "periodFilter"
+            );
+
+
+        if (
+            periodFilter
+        ) {
+
+            periodFilter.addEventListener(
+                "change",
+                updateDashboard
+            );
+
+        }
+
+
+        /* 우선순위 */
+
+        const priorityFilter =
+            document.getElementById(
+                "priorityFilter"
+            );
+
+
+        if (
+            priorityFilter
+        ) {
+
+            priorityFilter.addEventListener(
+                "change",
+                updateDashboard
+            );
+
+        }
+
+
+        /* GitHub 게임 목록 */
+
+        loadGithubFiles();
+
+    }
+);
 
     /* -----------------------------------------
        Positive / Negative
