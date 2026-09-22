@@ -3775,18 +3775,15 @@ function sortIssues(key) {
     ) {
 
         issueSortDirection =
-            issueSortDirection ===
-            "asc"
+            issueSortDirection === "asc"
                 ? "desc"
                 : "asc";
 
     } else {
 
-        issueSortKey =
-            key;
+        issueSortKey = key;
 
-        issueSortDirection =
-            "desc";
+        issueSortDirection = "desc";
 
     }
 
@@ -3795,6 +3792,53 @@ function sortIssues(key) {
         analyzeIssues(
             getFilteredReviews()
         );
+
+
+    const priorityOrder = {
+        low: 1,
+        medium: 2,
+        high: 3
+    };
+
+
+    issues.sort(
+        (a, b) => {
+
+            let result = 0;
+
+
+            if (
+                issueSortKey === "issue"
+            ) {
+
+                result =
+                    a.issue.localeCompare(
+                        b.issue
+                    );
+
+            } else if (
+                issueSortKey === "priority"
+            ) {
+
+                result =
+                    priorityOrder[a.priority] -
+                    priorityOrder[b.priority];
+
+            } else {
+
+                result =
+                    (a[issueSortKey] ?? 0) -
+                    (b[issueSortKey] ?? 0);
+
+            }
+
+
+            return issueSortDirection === "asc"
+                ? result
+                : -result;
+
+        }
+    );
 
 
     renderIssues(
