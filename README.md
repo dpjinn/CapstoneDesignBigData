@@ -8,7 +8,7 @@ https://dpjinn.github.io/CapstoneDesignBigData/
 
 app.py 다운로드
 pleaseCopy.html 다운로드
-6015열 쯤 http://127.00. 이런식으로 되어있는 것을 각자의 로컬 주소로 변경 후 사용
+6051열 쯤 http://127.00. 이런식으로 되어있는 것을 각자의 로컬 주소로 변경 후 사용
 반드시 로컬 주소 뒤에 /chat 붙어있어야함
 
 로컬 파일 구성
