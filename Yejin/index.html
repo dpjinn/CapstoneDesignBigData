@@ -4927,6 +4927,83 @@ function resetFilters() {
    FILTER EVENTS
 ========================================================= */
 
+    /* =========================================================
+   FILTER EVENTS
+========================================================= */
+
+function applyReviewFilters() {
+
+    const reviews =
+        getFilteredReviews();
+
+
+    /* 리뷰 */
+
+    renderReviews();
+
+
+    /* 이슈 */
+
+    const issues =
+        analyzeIssues(
+            reviews
+        );
+
+    renderIssues(
+        issues
+    );
+
+
+    /* 차트 */
+
+    updateCharts(
+        reviews
+    );
+
+
+    /* AI Insight */
+
+    generateInsight(
+        reviews,
+        issues
+    );
+
+}
+
+
+/* Sentiment */
+
+const sentimentFilter =
+    document.getElementById(
+        "sentimentFilter"
+    );
+
+if (sentimentFilter) {
+
+    sentimentFilter.addEventListener(
+        "change",
+        applyReviewFilters
+    );
+
+}
+
+
+/* Period */
+
+const periodFilter =
+    document.getElementById(
+        "periodFilter"
+    );
+
+if (periodFilter) {
+
+    periodFilter.addEventListener(
+        "change",
+        applyReviewFilters
+    );
+
+}
+
 document
     .getElementById(
         "genreFilter"
