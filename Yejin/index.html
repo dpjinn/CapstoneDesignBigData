@@ -3990,6 +3990,24 @@ function renderReviews() {
 
 }
 
+    const reviewSearch =
+    document.getElementById(
+        "reviewSearch"
+    );
+
+if (reviewSearch) {
+
+    reviewSearch.addEventListener(
+        "input",
+        () => {
+
+            renderReviews();
+
+        }
+    );
+
+}
+
 
 /* =========================================================
    GET REVIEW TEXT
