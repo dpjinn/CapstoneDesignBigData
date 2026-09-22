@@ -6129,6 +6129,206 @@ function addChatMessage(
 
 }
 
+    /* =========================================================
+   CHAT WINDOW CONTROL
+========================================================= */
+
+
+/* =========================================================
+   MINIMIZE
+========================================================= */
+
+function minimizeChat() {
+
+    const chatBox =
+        document.getElementById(
+            "chatBox"
+        );
+
+
+    if (
+        !chatBox
+    ) {
+
+        return;
+
+    }
+
+
+    chatBox.classList.add(
+        "minimized"
+    );
+
+
+    const button =
+        chatBox.querySelector(
+            ".chat-control-btn"
+        );
+
+
+    if (
+        button
+    ) {
+
+        button.textContent =
+            "+";
+
+        button.title =
+            "채팅창 펼치기";
+
+        button.onclick =
+            maximizeChat;
+
+    }
+
+}
+
+
+/* =========================================================
+   MAXIMIZE
+========================================================= */
+
+function maximizeChat() {
+
+    const chatBox =
+        document.getElementById(
+            "chatBox"
+        );
+
+
+    if (
+        !chatBox
+    ) {
+
+        return;
+
+    }
+
+
+    chatBox.classList.remove(
+        "minimized"
+    );
+
+
+    const button =
+        chatBox.querySelector(
+            ".chat-control-btn"
+        );
+
+
+    if (
+        button
+    ) {
+
+        button.textContent =
+            "−";
+
+        button.title =
+            "최소화";
+
+        button.onclick =
+            minimizeChat;
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+function closeChat() {
+
+    const chatBox =
+        document.getElementById(
+            "chatBox"
+        );
+
+
+    const openButton =
+        document.getElementById(
+            "chatOpenBtn"
+        );
+
+
+    if (
+        chatBox
+    ) {
+
+        chatBox.style.display =
+            "none";
+
+    }
+
+
+    if (
+        openButton
+    ) {
+
+        openButton.classList.add(
+            "visible"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   OPEN
+========================================================= */
+
+function openChat() {
+
+    const chatBox =
+        document.getElementById(
+            "chatBox"
+        );
+
+
+    const openButton =
+        document.getElementById(
+            "chatOpenBtn"
+        );
+
+
+    if (
+        chatBox
+    ) {
+
+        chatBox.style.display =
+            "flex";
+
+    }
+
+
+    if (
+        openButton
+    ) {
+
+        openButton.classList.remove(
+            "visible"
+        );
+
+    }
+
+
+    /* 최소화 상태였다면 펼치기 */
+
+    if (
+        chatBox &&
+        chatBox.classList.contains(
+            "minimized"
+        )
+    ) {
+
+        maximizeChat();
+
+    }
+
+}
+
 
 /* =========================================================
    COPY INSIGHT
