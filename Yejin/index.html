@@ -2285,22 +2285,20 @@ function createGameList() {
 
 
 /* =========================================================
-   SEARCH GAME
+   GAME SEARCH
 ========================================================= */
 
 function searchGame() {
 
     const searchInput =
         document.getElementById(
-            "searchInput"
+            "globalSearch"
         );
-
 
     const keyword =
         searchInput
             ? searchInput.value.trim()
             : "";
-
 
     renderGameList(
         keyword
@@ -2308,6 +2306,28 @@ function searchGame() {
 
 }
 
+
+/* =========================================================
+   GAME LIST FILTER
+========================================================= */
+
+function filterGameList() {
+
+    const searchInput =
+        document.getElementById(
+            "gameSearch"
+        );
+
+    const keyword =
+        searchInput
+            ? searchInput.value.trim()
+            : "";
+
+    renderGameList(
+        keyword
+    );
+
+}
 
 /* =========================================================
    LIVE GAME SEARCH
@@ -2347,11 +2367,10 @@ function renderGameList(
             "gameList"
         );
 
-
     if (!list) {
 
         console.error(
-            "gameList 요소를 찾을 수 없습니다."
+            "gameList를 찾을 수 없습니다."
         );
 
         return;
@@ -2363,85 +2382,40 @@ function renderGameList(
 
 
     const normalizedKeyword =
-        keyword
-            .toLowerCase()
-            .trim();
+        String(keyword)
+            .trim()
+            .toLowerCase();
 
-
-    /* -----------------------------------------
-       검색
-    ----------------------------------------- */
 
     const filteredGames =
-        games.filter(game => {
-
-            if (
-                !game ||
-                !game.gameName
-            ) {
-
-                return false;
-
-            }
+        games.filter(
+            game =>
+                game.gameName
+                    .toLowerCase()
+                    .includes(
+                        normalizedKeyword
+                    )
+        );
 
 
-            return game.gameName
-                .toLowerCase()
-                .includes(
-                    normalizedKeyword
-                );
-
-        });
-
-
-    /* -----------------------------------------
-       결과 없음
-    ----------------------------------------- */
+    /* 검색 결과 없음 */
 
     if (
         filteredGames.length === 0
     ) {
 
         list.innerHTML = `
-            <div class="game-empty">
-                <div
-                    style="
-                        font-size:24px;
-                        margin-bottom:8px;
-                    "
-                >
-                    🔍
-                </div>
-
-                <div>
-                    검색 결과가 없습니다.
-                </div>
+            <div class="empty">
+                검색 결과가 없습니다.
             </div>
         `;
-
-
-        const count =
-            document.getElementById(
-                "gameCount"
-            );
-
-
-        if (count) {
-
-            count.textContent =
-                "0 games";
-
-        }
-
 
         return;
 
     }
 
 
-    /* -----------------------------------------
-       게임 출력
-    ----------------------------------------- */
+    /* 게임 목록 */
 
     filteredGames.forEach(
         game => {
@@ -2456,9 +2430,7 @@ function renderGameList(
                 "game-item";
 
 
-            /* ---------------------------------
-               게임 이름
-            --------------------------------- */
+            /* 게임 이름 */
 
             const name =
                 document.createElement(
@@ -2470,69 +2442,8 @@ function renderGameList(
                 "game-name";
 
 
-            if (
-                normalizedKeyword
-            ) {
-
-                const gameName =
-                    game.gameName;
-
-                const lowerName =
-                    gameName.toLowerCase();
-
-
-                const index =
-                    lowerName.indexOf(
-                        normalizedKeyword
-                    );
-
-
-                if (
-                    index !== -1
-                ) {
-
-                    const before =
-                        gameName.substring(
-                            0,
-                            index
-                        );
-
-
-                    const matched =
-                        gameName.substring(
-                            index,
-                            index +
-                            normalizedKeyword.length
-                        );
-
-
-                    const after =
-                        gameName.substring(
-                            index +
-                            normalizedKeyword.length
-                        );
-
-
-                    name.innerHTML =
-                        escapeHtml(before) +
-                        `<strong>${escapeHtml(matched)}</strong>` +
-                        escapeHtml(after);
-
-                }
-                else {
-
-                    name.textContent =
-                        gameName;
-
-                }
-
-            }
-            else {
-
-                name.textContent =
-                    game.gameName;
-
-            }
+            name.textContent =
+                game.gameName;
 
 
             item.appendChild(
@@ -2540,9 +2451,7 @@ function renderGameList(
             );
 
 
-            /* ---------------------------------
-               Positive / Negative 상태
-            --------------------------------- */
+            /* Positive / Negative */
 
             const status =
                 document.createElement(
@@ -2585,11 +2494,7 @@ function renderGameList(
             );
 
 
-            /* ---------------------------------
-               게임 클릭
-               ★ 중요
-               gameName이 아니라 game 객체 전달
-            --------------------------------- */
+            /* 클릭 */
 
             item.addEventListener(
                 "click",
@@ -2611,9 +2516,7 @@ function renderGameList(
     );
 
 
-    /* -----------------------------------------
-       검색 결과 개수
-    ----------------------------------------- */
+    /* 게임 개수 */
 
     const count =
         document.getElementById(
@@ -2624,12 +2527,11 @@ function renderGameList(
     if (count) {
 
         count.textContent =
-            `${filteredGames.length.toLocaleString()} games`;
+            `${filteredGames.length} games`;
 
     }
 
 }
-
 
 /* =========================================================
    SELECT GAME
