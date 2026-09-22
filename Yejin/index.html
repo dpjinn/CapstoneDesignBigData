@@ -1830,17 +1830,15 @@ async function loadGithubFiles() {
     try {
 
         const apiUrl =
-            `https://github.com/dpjinn/CapstoneDesignBigData/blob/main/Yejin/data/`;
+            "https://api.github.com/repos/dpjinn/CapstoneDesignBigData/contents/Yejin/data";
 
         console.log("GitHub API URL:", apiUrl);
 
-        const response =
-            await fetch(apiUrl);
+        const response = await fetch(apiUrl);
 
         if (!response.ok) {
 
-            const errorText =
-                await response.text();
+            const errorText = await response.text();
 
             console.error(
                 "GitHub API error:",
@@ -1851,23 +1849,19 @@ async function loadGithubFiles() {
                 `GitHub 파일 목록을 불러오지 못했습니다. ` +
                 `(HTTP ${response.status})`
             );
-
         }
 
-        const data =
-            await response.json();
+        const data = await response.json();
 
-        githubFiles =
-            data.filter(
-                file =>
-                    file.type === "file" &&
-                    file.name
-                        .toLowerCase()
-                        .endsWith(".csv")
-            );
+        // CSV 파일만 저장
+        githubFiles = data.filter(
+            file =>
+                file.type === "file" &&
+                file.name.toLowerCase().endsWith(".csv")
+        );
 
         console.log(
-            "Yejin 폴더에서 찾은 CSV:",
+            "Yejin/data 폴더에서 찾은 CSV:",
             githubFiles
         );
 
@@ -1885,92 +1879,7 @@ async function loadGithubFiles() {
             "GitHub CSV 파일을 불러오지 못했습니다.\n\n" +
             error.message
         );
-
     }
-
-}
-
-
-/* =========================================================
-   PARSE CSV FILENAME
-========================================================= */
-
-/*
- * 파일명 형식
- *
- * 게임명_positive.csv
- * 게임명_negative.csv
- *
- * 예:
- *
- * Stardew Valley_positive.csv
- * Stardew Valley_negative.csv
- *
- * PUBG_positive.csv
- * PUBG_negative.csv
- *
- * Call_of_Duty_positive.csv
- * Call_of_Duty_negative.csv
- */
-
-function parseFilename(filename) {
-
-    /*
-     * positive
-     */
-
-    const positiveMatch =
-        filename.match(
-            /^(.+)_positive\.csv$/i
-        );
-
-
-    if (positiveMatch) {
-
-        return {
-
-            gameName:
-                positiveMatch[1],
-
-            sentiment:
-                "positive"
-
-        };
-
-    }
-
-
-    /*
-     * negative
-     */
-
-    const negativeMatch =
-        filename.match(
-            /^(.+)_negative\.csv$/i
-        );
-
-
-    if (negativeMatch) {
-
-        return {
-
-            gameName:
-                negativeMatch[1],
-
-            sentiment:
-                "negative"
-
-        };
-
-    }
-
-
-    /*
-     * 형식에 맞지 않는 CSV
-     */
-
-    return null;
-
 }
 
 
@@ -1980,56 +1889,43 @@ function parseFilename(filename) {
 
 function createGameList() {
 
-    const gameMap =
-        new Map();
+    const gameMap = new Map();
 
 
-    githubFiles.forEach(
-        file => {
+    githubFiles.forEach(file => {
 
-            const filename =
-                file.path
-                    .split("/")
-                    .pop();
+        // CSV 파일 이름
+        const filename = file.name;
+
+        // 확장자 제거
+        const lowerFilename =
+            filename.toLowerCase();
 
 
-            const parsed =
-                parseFilename(
-                    filename
+        /*
+         * positive 파일
+         * 예:
+         * Stardew_positive.csv
+         * 20XX_positive.csv
+         */
+
+        if (lowerFilename.endsWith("_positive.csv")) {
+
+            const gameName =
+                filename.substring(
+                    0,
+                    filename.length - "_positive.csv".length
                 );
 
 
-            if (!parsed) return;
-
-
-            /*
-             * APP ID를 사용하지 않고
-             * 게임 이름으로 묶는다.
-             */
-
-            const gameName =
-                parsed.gameName;
-
-
-            if (
-                !gameMap.has(
-                    gameName
-                )
-            ) {
+            if (!gameMap.has(gameName)) {
 
                 gameMap.set(
                     gameName,
                     {
-
-                        gameName:
-                            gameName,
-
-                        positiveFile:
-                            null,
-
-                        negativeFile:
-                            null
-
+                        gameName: gameName,
+                        positiveFile: null,
+                        negativeFile: null
                     }
                 );
 
@@ -2037,42 +1933,57 @@ function createGameList() {
 
 
             const game =
-                gameMap.get(
-                    gameName
+                gameMap.get(gameName);
+
+
+            game.positiveFile =
+                file.path;
+
+        }
+
+
+        /*
+         * negative 파일
+         * 예:
+         * Stardew_negative.csv
+         * 20XX_negative.csv
+         */
+
+        else if (
+            lowerFilename.endsWith("_negative.csv")
+        ) {
+
+            const gameName =
+                filename.substring(
+                    0,
+                    filename.length - "_negative.csv".length
                 );
 
 
-            /*
-             * positive CSV
-             */
+            if (!gameMap.has(gameName)) {
 
-            if (
-                parsed.sentiment ===
-                "positive"
-            ) {
-
-                game.positiveFile =
-                    file.path;
-
-            }
-
-
-            /*
-             * negative CSV
-             */
-
-            if (
-                parsed.sentiment ===
-                "negative"
-            ) {
-
-                game.negativeFile =
-                    file.path;
+                gameMap.set(
+                    gameName,
+                    {
+                        gameName: gameName,
+                        positiveFile: null,
+                        negativeFile: null
+                    }
+                );
 
             }
+
+
+            const game =
+                gameMap.get(gameName);
+
+
+            game.negativeFile =
+                file.path;
 
         }
-    );
+
+    });
 
 
     /*
@@ -2101,10 +2012,16 @@ function createGameList() {
      * 게임 개수 표시
      */
 
-    document
-        .getElementById("gameCount")
-        .textContent =
-        `${games.length.toLocaleString()} games`;
+    const gameCountElement =
+        document.getElementById("gameCount");
+
+
+    if (gameCountElement) {
+
+        gameCountElement.textContent =
+            `${games.length.toLocaleString()} games`;
+
+    }
 
 
     /*
