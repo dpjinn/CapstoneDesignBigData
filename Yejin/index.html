@@ -4105,13 +4105,22 @@ function findScore(review) {
 
 function updateDashboard() {
 
+    if (
+        !currentGame
+    ) {
+
+        return;
+
+    }
+
+
     const reviews =
         getFilteredReviews();
 
 
-    filteredReviews =
-        reviews;
-
+    /* =====================================================
+       통계
+    ===================================================== */
 
     const total =
         reviews.length;
@@ -4136,7 +4145,9 @@ function updateDashboard() {
     const positiveRate =
         total > 0
             ? Math.round(
-                positive / total * 100
+                positive /
+                total *
+                100
             )
             : 0;
 
@@ -4144,38 +4155,64 @@ function updateDashboard() {
     const negativeRate =
         total > 0
             ? Math.round(
-                negative / total * 100
+                negative /
+                total *
+                100
             )
             : 0;
 
 
-    document
-        .getElementById(
+    const totalElement =
+        document.getElementById(
             "totalReviews"
-        )
-        .textContent =
-        total.toLocaleString();
+        );
 
 
-    document
-        .getElementById(
+    const positiveElement =
+        document.getElementById(
             "positiveRate"
-        )
-        .textContent =
-        `${positiveRate}%`;
+        );
 
 
-    document
-        .getElementById(
+    const negativeElement =
+        document.getElementById(
             "negativeRate"
-        )
-        .textContent =
-        `${negativeRate}%`;
+        );
 
 
-    /*
-     * 간단한 이슈 추출
-     */
+    if (
+        totalElement
+    ) {
+
+        totalElement.textContent =
+            total.toLocaleString();
+
+    }
+
+
+    if (
+        positiveElement
+    ) {
+
+        positiveElement.textContent =
+            `${positiveRate}%`;
+
+    }
+
+
+    if (
+        negativeElement
+    ) {
+
+        negativeElement.textContent =
+            `${negativeRate}%`;
+
+    }
+
+
+    /* =====================================================
+       이슈
+    ===================================================== */
 
     const issues =
         analyzeIssues(
@@ -4183,12 +4220,20 @@ function updateDashboard() {
         );
 
 
-    document
-        .getElementById(
+    const issueCount =
+        document.getElementById(
             "issueCount"
-        )
-        .textContent =
-        issues.length;
+        );
+
+
+    if (
+        issueCount
+    ) {
+
+        issueCount.textContent =
+            issues.length;
+
+    }
 
 
     renderIssues(
@@ -4196,12 +4241,25 @@ function updateDashboard() {
     );
 
 
+    /* =====================================================
+       리뷰
+    ===================================================== */
+
     renderReviews();
+
+
+    /* =====================================================
+       차트
+    ===================================================== */
 
     updateCharts(
         reviews
     );
 
+
+    /* =====================================================
+       AI Insight
+    ===================================================== */
 
     generateInsight(
         reviews,
