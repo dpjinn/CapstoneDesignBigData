@@ -2737,35 +2737,73 @@ async function loadGameReviews(game) {
    LOAD CSV
 ========================================================= */
 
+/* =========================================================
+   LOAD CSV
+========================================================= */
+
 async function loadCSV(filePath) {
 
-    /*
-     * GitHub Raw URL
-     */
-    const filename = `${gameName}_${sentiment}.csv`;
+    try {
 
-    const url =
-    `https://github.com/dpjinn/CapstoneDesignBigData/blob/tree/main/Yejin/data` + encodeURIComponent(filename);
+        /*
+         * GitHub Contents API에서 받은
+         * file.path를 Raw GitHub URL로 변환
+         *
+         * 예:
+         * Yejin/data/Stardew_positive.csv
+         *
+         * →
+         * https://raw.githubusercontent.com/
+         * dpjinn/CapstoneDesignBigData/main/
+         * Yejin/data/Stardew_positive.csv
+         */
+
+        const url =
+            `https://raw.githubusercontent.com/` +
+            `dpjinn/CapstoneDesignBigData/main/` +
+            filePath
+                .split("/")
+                .map(part => encodeURIComponent(part))
+                .join("/");
 
 
-    const response =
-        await fetch(url);
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            `CSV load failed: ${filePath}`
+        console.log(
+            "CSV 로딩 URL:",
+            url
         );
 
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `CSV load failed: HTTP ${response.status}\n` +
+                `파일: ${filePath}`
+            );
+
+        }
+
+
+        const text =
+            await response.text();
+
+
+        return parseCSV(text);
+
     }
+    catch (error) {
 
+        console.error(
+            "CSV 로딩 오류:",
+            error
+        );
 
-    const text =
-        await response.text();
+        throw error;
 
-
-    return parseCSV(text);
+    }
 
 }
 
