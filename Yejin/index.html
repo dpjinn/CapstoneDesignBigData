@@ -2364,31 +2364,18 @@ function renderGameList(keyword = "") {
    사용자가 게임 목록을 클릭했을 때
 ========================================================= */
 
-async function selectGame(gameName) {
+async function selectGame(game) {
 
     console.log(
         "게임 선택:",
-        gameName
+        game.gameName
     );
-
-
-    /* -----------------------------------------------------
-       games에서 선택된 게임 찾기
-    ----------------------------------------------------- */
-
-    const game =
-        games.find(
-            game =>
-                game.gameName ===
-                gameName
-        );
 
 
     if (!game) {
 
         console.error(
-            "게임을 찾을 수 없습니다:",
-            gameName
+            "게임 정보를 찾을 수 없습니다."
         );
 
         return;
@@ -2400,8 +2387,7 @@ async function selectGame(gameName) {
        현재 게임 저장
     ----------------------------------------------------- */
 
-    currentGame =
-        game;
+    currentGame = game;
 
 
     /* -----------------------------------------------------
@@ -2409,7 +2395,6 @@ async function selectGame(gameName) {
     ----------------------------------------------------- */
 
     currentReviews = [];
-
     filteredReviews = [];
 
 
@@ -2436,47 +2421,43 @@ async function selectGame(gameName) {
     ----------------------------------------------------- */
 
     document
-        .querySelectorAll(
-            ".game-item"
-        )
-        .forEach(
-            item =>
-                item.classList.remove(
-                    "selected"
-                )
-        );
+        .querySelectorAll(".game-item")
+        .forEach(item => {
+
+            item.classList.remove(
+                "selected"
+            );
+
+        });
 
 
     /* -----------------------------------------------------
        클릭한 게임 선택 상태 표시
     ----------------------------------------------------- */
 
-    const items =
-        document.querySelectorAll(
-            ".game-item"
-        );
+    document
+        .querySelectorAll(".game-item")
+        .forEach(item => {
+
+            const nameElement =
+                item.querySelector(
+                    ".game-name"
+                );
 
 
-    items.forEach(item => {
+            if (
+                nameElement &&
+                nameElement.textContent ===
+                game.gameName
+            ) {
 
-        const nameElement =
-            item.querySelector(
-                ".game-name"
-            );
+                item.classList.add(
+                    "selected"
+                );
 
-        if (
-            nameElement &&
-            nameElement.textContent ===
-            gameName
-        ) {
+            }
 
-            item.classList.add(
-                "selected"
-            );
-
-        }
-
-    });
+        });
 
 
     /* -----------------------------------------------------
@@ -2486,8 +2467,6 @@ async function selectGame(gameName) {
     await loadGameReviews(game);
 
 }
-
-
 /* =========================================================
    LOAD GAME REVIEWS
    선택한 게임의 positive / negative CSV 로딩
