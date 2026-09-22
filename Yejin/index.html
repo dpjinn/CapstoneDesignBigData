@@ -6022,18 +6022,18 @@ async function sendChat() {
     input.value = "";
 
     try {
-        const response = await fetch(
-            "http://127.0.0.1:5000",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: question
-                })
-            }
-        );
+    const response = await fetch(
+        "http://127.0.0.1:5000/chat",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: question
+            })
+        }
+    );
 
         if (!response.ok) {
             throw new Error("서버 오류");
