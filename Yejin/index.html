@@ -2535,24 +2535,11 @@ function renderGameList(
 
 /* =========================================================
    SELECT GAME
-   ---------------------------------------------------------
-   ★ gameName 문자열을 받지 않는다.
-   ★ game 객체를 직접 받는다.
 ========================================================= */
 
 async function selectGame(
     game
 ) {
-
-    console.log(
-        "게임 선택:",
-        game
-    );
-
-
-    /* -----------------------------------------
-       게임 객체 확인
-    ----------------------------------------- */
 
     if (
         !game ||
@@ -2560,7 +2547,7 @@ async function selectGame(
     ) {
 
         console.error(
-            "잘못된 게임 정보:",
+            "잘못된 게임:",
             game
         );
 
@@ -2569,24 +2556,25 @@ async function selectGame(
     }
 
 
-    /* -----------------------------------------
-       현재 게임
-    ----------------------------------------- */
+    console.log(
+        "게임 선택:",
+        game.gameName
+    );
+
+
+    /* 현재 게임 */
 
     currentGame =
         game;
 
 
+    /* 기존 리뷰 초기화 */
+
     currentReviews =
         [];
 
-    filteredReviews =
-        [];
 
-
-    /* -----------------------------------------
-       선택된 게임 이름
-    ----------------------------------------- */
+    /* 선택된 게임 표시 */
 
     const selectedGame =
         document.getElementById(
@@ -2594,7 +2582,9 @@ async function selectGame(
         );
 
 
-    if (selectedGame) {
+    if (
+        selectedGame
+    ) {
 
         selectedGame.textContent =
             game.gameName;
@@ -2602,9 +2592,7 @@ async function selectGame(
     }
 
 
-    /* -----------------------------------------
-       선택 표시 초기화
-    ----------------------------------------- */
+    /* 선택 상태 */
 
     document
         .querySelectorAll(
@@ -2617,31 +2605,16 @@ async function selectGame(
                     "selected"
                 );
 
-            }
-        );
 
-
-    /* -----------------------------------------
-       현재 게임 선택 표시
-    ----------------------------------------- */
-
-    document
-        .querySelectorAll(
-            ".game-item"
-        )
-        .forEach(
-            item => {
-
-                const nameElement =
+                const name =
                     item.querySelector(
                         ".game-name"
                     );
 
 
                 if (
-                    nameElement &&
-                    nameElement.textContent
-                        .trim() ===
+                    name &&
+                    name.textContent.trim() ===
                     game.gameName.trim()
                 ) {
 
@@ -2655,9 +2628,7 @@ async function selectGame(
         );
 
 
-    /* -----------------------------------------
-       로딩 표시
-    ----------------------------------------- */
+    /* 로딩 표시 */
 
     const reviewList =
         document.getElementById(
@@ -2665,11 +2636,15 @@ async function selectGame(
         );
 
 
-    if (reviewList) {
+    if (
+        reviewList
+    ) {
 
         reviewList.innerHTML = `
             <div class="empty">
-                ${escapeHtml(game.gameName)}
+                ${escapeHtml(
+                    game.gameName
+                )}
                 리뷰를 불러오는 중...
             </div>
         `;
@@ -2683,28 +2658,28 @@ async function selectGame(
             game
         );
 
-
-        console.log(
-            "게임 로딩 완료:",
-            game.gameName
-        );
-
     }
-    catch (error) {
+    catch (
+        error
+    ) {
 
         console.error(
-            "게임 선택 오류:",
+            "리뷰 로딩 실패:",
             error
         );
 
 
-        if (reviewList) {
+        if (
+            reviewList
+        ) {
 
             reviewList.innerHTML = `
                 <div class="empty">
-                    리뷰 데이터를 불러오지 못했습니다.
-                    <br><br>
-                    ${escapeHtml(error.message)}
+                    리뷰를 불러오지 못했습니다.
+                    <br>
+                    ${escapeHtml(
+                        error.message
+                    )}
                 </div>
             `;
 
@@ -2714,11 +2689,8 @@ async function selectGame(
 
 }
 
-
 /* =========================================================
    LOAD GAME REVIEWS
-   ---------------------------------------------------------
-   ★ 이 함수는 파일 전체에서 하나만 존재해야 한다.
 ========================================================= */
 
 async function loadGameReviews(
@@ -2729,25 +2701,28 @@ async function loadGameReviews(
         !game
     ) {
 
-        throw new Error(
+        console.error(
             "게임 정보가 없습니다."
         );
+
+        return;
 
     }
 
 
     console.log(
-        "리뷰 로딩 시작:",
+        "게임 리뷰 로딩:",
         game.gameName
     );
 
 
-    const reviews =
-        [];
+    let positiveReviews = [];
+
+    let negativeReviews = [];
 
 
     /* =====================================================
-       POSITIVE CSV
+       POSITIVE
     ===================================================== */
 
     if (
@@ -2755,47 +2730,35 @@ async function loadGameReviews(
     ) {
 
         console.log(
-            "Positive CSV:",
+            "Positive:",
             game.positiveFile
         );
 
 
-        try {
-
-            const positiveReviews =
-                await loadCSV(
-                    game.positiveFile
-                );
+        positiveReviews =
+            await loadCSV(
+                game.positiveFile
+            );
 
 
-            positiveReviews.forEach(
+        positiveReviews =
+            positiveReviews.map(
                 review => {
 
-                    review.sentiment =
-                        "positive";
-
-                    reviews.push(
-                        review
-                    );
+                    return {
+                        ...review,
+                        sentiment:
+                            "positive"
+                    };
 
                 }
             );
-
-        }
-        catch (error) {
-
-            console.error(
-                "Positive CSV 로딩 실패:",
-                error
-            );
-
-        }
 
     }
 
 
     /* =====================================================
-       NEGATIVE CSV
+       NEGATIVE
     ===================================================== */
 
     if (
@@ -2803,207 +2766,95 @@ async function loadGameReviews(
     ) {
 
         console.log(
-            "Negative CSV:",
+            "Negative:",
             game.negativeFile
         );
 
 
-        try {
-
-            const negativeReviews =
-                await loadCSV(
-                    game.negativeFile
-                );
+        negativeReviews =
+            await loadCSV(
+                game.negativeFile
+            );
 
 
-            negativeReviews.forEach(
+        negativeReviews =
+            negativeReviews.map(
                 review => {
 
-                    review.sentiment =
-                        "negative";
-
-                    reviews.push(
-                        review
-                    );
+                    return {
+                        ...review,
+                        sentiment:
+                            "negative"
+                    };
 
                 }
             );
-
-        }
-        catch (error) {
-
-            console.error(
-                "Negative CSV 로딩 실패:",
-                error
-            );
-
-        }
 
     }
 
 
     /* =====================================================
-       리뷰 전처리
+       합치기
     ===================================================== */
 
-    reviews.forEach(
-        review => {
+    currentReviews = [
 
-            /* ---------------------------------
-               리뷰 텍스트
-            --------------------------------- */
+        ...positiveReviews,
 
-            review._text =
-                getReviewText(
-                    review
-                );
+        ...negativeReviews
 
-
-            /* ---------------------------------
-               날짜
-            --------------------------------- */
-
-            const dateKeys = [
-                "timestamp_created",
-                "timestamp",
-                "date",
-                "Date",
-                "created_at",
-                "createdAt"
-            ];
-
-
-            let dateValue =
-                null;
-
-
-            for (
-                const key of dateKeys
-            ) {
-
-                if (
-                    review[key] !== undefined &&
-                    review[key] !== null &&
-                    review[key] !== ""
-                ) {
-
-                    dateValue =
-                        review[key];
-
-                    break;
-
-                }
-
-            }
-
-
-            review._date =
-                parseReviewDate(
-                    dateValue
-                );
-
-
-            /* ---------------------------------
-               Score
-            --------------------------------- */
-
-            const scoreKeys = [
-                "score",
-                "Score",
-                "sentiment_score",
-                "sentimentScore"
-            ];
-
-
-            review._score =
-                null;
-
-
-            for (
-                const key of scoreKeys
-            ) {
-
-                if (
-                    review[key] !== undefined &&
-                    review[key] !== null &&
-                    review[key] !== ""
-                ) {
-
-                    const value =
-                        Number(
-                            review[key]
-                        );
-
-
-                    if (
-                        !Number.isNaN(
-                            value
-                        )
-                    ) {
-
-                        review._score =
-                            value;
-
-                    }
-
-
-                    break;
-
-                }
-
-            }
-
-        }
-    );
+    ];
 
 
     /* =====================================================
-       현재 리뷰 저장
+       리뷰 데이터 가공
     ===================================================== */
 
     currentReviews =
-        reviews;
+        currentReviews.map(
+            review => {
+
+                const text =
+                    getReviewText(
+                        review
+                    );
 
 
-    filteredReviews =
-        [
-            ...reviews
-        ];
+                review._text =
+                    text;
+
+
+                review._date =
+                    findDate(
+                        review
+                    );
+
+
+                review._score =
+                    findScore(
+                        review
+                    );
+
+
+                return review;
+
+            }
+        );
 
 
     console.log(
-        `${game.gameName}: ${reviews.length} reviews`
+        "총 리뷰:",
+        currentReviews.length
     );
 
 
     /* =====================================================
-       화면 갱신
+       화면 업데이트
     ===================================================== */
 
-    refreshReviewDashboard();
-
-
-    /* =====================================================
-       비교 A
-    ===================================================== */
-
-    if (
-        typeof updateComparisonA ===
-        "function"
-    ) {
-
-        updateComparisonA(
-            game
-        );
-
-    }
-
-
-    return reviews;
+    updateDashboard();
 
 }
-
-
 /* =========================================================
    REFRESH REVIEW DASHBOARD
 ========================================================= */
@@ -3853,85 +3704,8 @@ function escapeHtml(value) {
 }
 
 
-/* =========================================================
-   LOAD GAME REVIEWS
-========================================================= */
-
-async function loadGameReviews(game) {
-
-    let reviews = [];
 
 
-    /*
-     * POSITIVE
-     */
-
-    if (
-        game.positiveFile
-    ) {
-
-        const positiveReviews =
-            await loadCSV(
-                game.positiveFile
-            );
-
-
-        positiveReviews.forEach(
-            review => {
-
-                review.sentiment =
-                    "positive";
-
-            }
-        );
-
-
-        reviews.push(
-            ...positiveReviews
-        );
-
-    }
-
-
-    /*
-     * NEGATIVE
-     */
-
-    if (
-        game.negativeFile
-    ) {
-
-        const negativeReviews =
-            await loadCSV(
-                game.negativeFile
-            );
-
-
-        negativeReviews.forEach(
-            review => {
-
-                review.sentiment =
-                    "negative";
-
-            }
-        );
-
-
-        reviews.push(
-            ...negativeReviews
-        );
-
-    }
-
-
-    return reviews;
-
-}
-
-
-/* =========================================================
-   LOAD CSV
-========================================================= */
 
 /* =========================================================
    LOAD CSV
