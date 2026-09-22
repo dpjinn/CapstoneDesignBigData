@@ -1830,11 +1830,7 @@ async function loadGithubFiles() {
     try {
 
         const apiUrl =
-            `https://api.github.com/repos/` +
-            `${GITHUB_OWNER}/` +
-            `${GITHUB_REPO}/contents/` +
-            `${encodeURIComponent(DATA_FOLDER)}` +
-            `?ref=${encodeURIComponent(GITHUB_BRANCH)}`;
+            `https://github.com/dpjinn/CapstoneDesignBigData/blob/main/Yejin/data/`;
 
         console.log("GitHub API URL:", apiUrl);
 
