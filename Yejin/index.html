@@ -6106,28 +6106,21 @@ async function sendChat() {
             await response.json();
 
 
-        addChatMessage(
-            data.answer,
-            "ai"
-        );
+            addChatMessage(
+        data.answer,
+        "ai"
+    );
 
+} catch (error) {
 
-    } catch (error) {
+    console.error("채팅 오류:", error);
 
-        console.error(
-            "채팅 오류:",
-            error
-        );
-
-
-        addChatMessage(
-            "AI 응답을 가져오는 중 오류가 발생했습니다.",
-            "ai"
-        );
-
-    }
-
+    addChatMessage(
+        "AI 응답을 가져오지 못했습니다.",
+        "ai"
+    );
 }
+        
 
 
 function addChatMessage(
