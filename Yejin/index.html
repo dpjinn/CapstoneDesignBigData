@@ -4684,27 +4684,43 @@ function sortIssues(key) {
 function renderReviews() {
 
     const list =
-        document
-            .getElementById(
-                "reviewList"
-            );
+        document.getElementById(
+            "reviewList"
+        );
+
+
+    if (
+        !list
+    ) {
+
+        return;
+
+    }
 
 
     let reviews =
         getFilteredReviews();
 
 
+    /* 리뷰 검색 */
+
+    const search =
+        document.getElementById(
+            "reviewSearch"
+        );
+
+
     const keyword =
-        document
-            .getElementById(
-                "reviewSearch"
-            )
-            .value
-            .trim()
-            .toLowerCase();
+        search
+            ? search.value
+                .trim()
+                .toLowerCase()
+            : "";
 
 
-    if (keyword) {
+    if (
+        keyword
+    ) {
 
         reviews =
             reviews.filter(
@@ -4721,12 +4737,18 @@ function renderReviews() {
     }
 
 
+    /* 정렬 */
+
+    const sortElement =
+        document.getElementById(
+            "reviewSort"
+        );
+
+
     const sort =
-        document
-            .getElementById(
-                "reviewSort"
-            )
-            .value;
+        sortElement
+            ? sortElement.value
+            : "latest";
 
 
     if (
@@ -4740,9 +4762,7 @@ function renderReviews() {
         );
 
     }
-
-
-    if (
+    else if (
         sort === "oldest"
     ) {
 
@@ -4753,9 +4773,7 @@ function renderReviews() {
         );
 
     }
-
-
-    if (
+    else if (
         sort === "score"
     ) {
 
@@ -4768,35 +4786,36 @@ function renderReviews() {
     }
 
 
-    /*
-     * 너무 많은 리뷰를 한 번에 출력하지 않음
-     */
+    /* 최대 50개 */
 
-    reviews =
+    const displayReviews =
         reviews.slice(
             0,
             50
         );
 
 
+    /* 데이터 없음 */
+
     if (
-        reviews.length === 0
+        displayReviews.length === 0
     ) {
 
-        list.innerHTML =
-            `
+        list.innerHTML = `
             <div class="empty">
                 표시할 리뷰가 없습니다.
             </div>
-            `;
+        `;
 
         return;
 
     }
 
 
+    /* 리뷰 출력 */
+
     list.innerHTML =
-        reviews
+        displayReviews
             .map(
                 review => {
 
@@ -4809,14 +4828,17 @@ function renderReviews() {
                     const date =
                         review._date
                             ? review._date
-                                .toLocaleDateString()
+                                .toLocaleDateString(
+                                    "ko-KR"
+                                )
                             : "";
 
 
-                    const score =
-                        review._score !== null
-                            ? ` · Score: ${review._score}`
-                            : "";
+                    const sentiment =
+                        review.sentiment ===
+                        "positive"
+                            ? "POSITIVE"
+                            : "NEGATIVE";
 
 
                     return `
@@ -4827,31 +4849,19 @@ function renderReviews() {
                                 <span
                                     class="sentiment ${review.sentiment}"
                                 >
-                                    ${
-                                        review.sentiment ===
-                                        "positive"
-                                            ? "POSITIVE"
-                                            : "NEGATIVE"
-                                    }
+                                    ${sentiment}
                                 </span>
 
                             </div>
 
-
                             <div class="review-text">
-
                                 ${escapeHtml(
                                     text
                                 )}
-
                             </div>
 
-
                             <div class="review-meta">
-
                                 ${date}
-                                ${score}
-
                             </div>
 
                         </div>
