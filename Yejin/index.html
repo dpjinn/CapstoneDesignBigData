@@ -1974,15 +1974,60 @@
 
 
 <!-- =========================================================
-     CHAT
+     AI CHAT
 ========================================================= -->
 
-<div class="chat-box">
+<div
+    id="chatBox"
+    class="chat-box"
+>
+
+    <!-- HEADER -->
 
     <div class="chat-header">
-        🤖 DevInsight AI
+
+        <div class="chat-title">
+
+            <span>
+                🤖
+            </span>
+
+            <span>
+                DevInsight AI
+            </span>
+
+        </div>
+
+
+        <div class="chat-controls">
+
+            <!-- 최소화 -->
+
+            <button
+                class="chat-control-btn"
+                onclick="minimizeChat()"
+                title="최소화"
+            >
+                −
+            </button>
+
+
+            <!-- 닫기 -->
+
+            <button
+                class="chat-control-btn chat-close-btn"
+                onclick="closeChat()"
+                title="닫기"
+            >
+                ×
+            </button>
+
+        </div>
+
     </div>
 
+
+    <!-- MESSAGES -->
 
     <div
         id="chatMessages"
@@ -1991,13 +2036,15 @@
 
         <div class="message ai">
 
-            안녕하세요.
+            안녕하세요.<br>
             게임 리뷰에 대해 질문해주세요.
 
         </div>
 
     </div>
 
+
+    <!-- INPUT -->
 
     <div class="chat-input">
 
@@ -2007,6 +2054,7 @@
             placeholder="게임 리뷰에 대해 질문..."
             onkeydown="handleChatKey(event)"
         >
+
 
         <button
             onclick="sendChat()"
@@ -2018,6 +2066,19 @@
 
 </div>
 
+
+<!-- =========================================================
+     CHAT OPEN BUTTON
+========================================================= -->
+
+<button
+    id="chatOpenBtn"
+    class="chat-open-btn"
+    onclick="openChat()"
+    title="AI 채팅 열기"
+>
+    💬
+</button>
 
 <script>
 
