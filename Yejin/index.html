@@ -6135,122 +6135,80 @@ function addChatMessage(
 
 function setupChatControls() {
 
-    const chatBox =
-        document.getElementById("chatBox");
+    const chatBox = document.getElementById("chatBox");
+    const minimizeBtn = document.getElementById("chatMinimizeBtn");
+    const closeBtn = document.getElementById("chatCloseBtn");
+    const openBtn = document.getElementById("chatOpenBtn");
 
-    const minimizeBtn =
-        document.getElementById(
-            "chatMinimizeBtn"
-        );
+    console.log("CHAT CONTROL:", {
+        chatBox,
+        minimizeBtn,
+        closeBtn,
+        openBtn
+    });
 
-    const closeBtn =
-        document.getElementById(
-            "chatCloseBtn"
-        );
-
-    const openBtn =
-        document.getElementById(
-            "chatOpenBtn"
-        );
-
-
-    if (!chatBox) {
-        console.error("chatBox를 찾을 수 없습니다.");
+    if (!chatBox || !minimizeBtn || !closeBtn || !openBtn) {
+        console.error("채팅창 버튼을 찾지 못했습니다.");
         return;
     }
 
+    /* 최소화 */
+    minimizeBtn.onclick = function (event) {
 
-    /* =====================================================
-       최소화 / 복원
-    ===================================================== */
+        event.preventDefault();
+        event.stopPropagation();
 
-    if (minimizeBtn) {
+        console.log("최소화 버튼 클릭");
 
-        minimizeBtn.addEventListener(
-            "click",
-            function () {
+        const isMinimized =
+            chatBox.classList.toggle("minimized");
 
-                const minimized =
-                    chatBox.classList.toggle(
-                        "minimized"
-                    );
+        if (isMinimized) {
 
+            minimizeBtn.textContent = "+";
+            minimizeBtn.title = "채팅창 펼치기";
 
-                if (minimized) {
+        } else {
 
-                    minimizeBtn.textContent =
-                        "+";
+            minimizeBtn.textContent = "−";
+            minimizeBtn.title = "최소화";
 
-                    minimizeBtn.title =
-                        "채팅창 펼치기";
-
-                }
-                else {
-
-                    minimizeBtn.textContent =
-                        "−";
-
-                    minimizeBtn.title =
-                        "최소화";
-
-                }
-
-            }
-        );
-
-    }
+        }
+    };
 
 
-    /* =====================================================
-       닫기
-    ===================================================== */
+    /* 닫기 */
+    closeBtn.onclick = function (event) {
 
-    if (closeBtn) {
+        event.preventDefault();
+        event.stopPropagation();
 
-        closeBtn.addEventListener(
-            "click",
-            function () {
+        console.log("닫기 버튼 클릭");
 
-                chatBox.style.display =
-                    "none";
+        chatBox.style.display = "none";
 
-
-                if (openBtn) {
-
-                    openBtn.classList.add(
-                        "visible"
-                    );
-
-                }
-
-            }
-        );
-
-    }
+        openBtn.style.display = "flex";
+    };
 
 
-    /* =====================================================
-       다시 열기
-    ===================================================== */
+    /* 다시 열기 */
+    openBtn.onclick = function (event) {
 
-    if (openBtn) {
+        event.preventDefault();
+        event.stopPropagation();
 
-        openBtn.addEventListener(
-            "click",
-            function () {
+        console.log("채팅창 다시 열기");
 
-                chatBox.style.display =
-                    "flex";
+        chatBox.style.display = "flex";
 
+        openBtn.style.display = "none";
 
-                openBtn.classList.remove(
-                    "visible"
-                );
+        /* 닫았을 때 최소화 상태였다면 복원 */
+        chatBox.classList.remove("minimized");
 
-            }
-        );
-
-    }
+        minimizeBtn.textContent = "−";
+        minimizeBtn.title = "최소화";
+    };
 
 }
 /* =========================================================
