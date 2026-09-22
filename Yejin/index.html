@@ -6127,207 +6127,130 @@ function addChatMessage(
 
 }
 
-    /* =========================================================
-   CHAT WINDOW CONTROL
-========================================================= */
-
-
 /* =========================================================
-   MINIMIZE
+   AI CHAT WINDOW CONTROL
 ========================================================= */
 
-function minimizeChat() {
+function setupChatControls() {
 
     const chatBox =
+        document.getElementById("chatBox");
+
+    const minimizeBtn =
         document.getElementById(
-            "chatBox"
+            "chatMinimizeBtn"
         );
 
-
-    if (
-        !chatBox
-    ) {
-
-        return;
-
-    }
-
-
-    chatBox.classList.add(
-        "minimized"
-    );
-
-
-    const button =
-        chatBox.querySelector(
-            ".chat-control-btn"
-        );
-
-
-    if (
-        button
-    ) {
-
-        button.textContent =
-            "+";
-
-        button.title =
-            "채팅창 펼치기";
-
-        button.onclick =
-            maximizeChat;
-
-    }
-
-}
-
-
-/* =========================================================
-   MAXIMIZE
-========================================================= */
-
-function maximizeChat() {
-
-    const chatBox =
+    const closeBtn =
         document.getElementById(
-            "chatBox"
+            "chatCloseBtn"
         );
 
-
-    if (
-        !chatBox
-    ) {
-
-        return;
-
-    }
-
-
-    chatBox.classList.remove(
-        "minimized"
-    );
-
-
-    const button =
-        chatBox.querySelector(
-            ".chat-control-btn"
-        );
-
-
-    if (
-        button
-    ) {
-
-        button.textContent =
-            "−";
-
-        button.title =
-            "최소화";
-
-        button.onclick =
-            minimizeChat;
-
-    }
-
-}
-
-
-/* =========================================================
-   CLOSE
-========================================================= */
-
-function closeChat() {
-
-    const chatBox =
-        document.getElementById(
-            "chatBox"
-        );
-
-
-    const openButton =
+    const openBtn =
         document.getElementById(
             "chatOpenBtn"
         );
 
 
-    if (
-        chatBox
-    ) {
+    if (!chatBox) {
+        console.error("chatBox를 찾을 수 없습니다.");
+        return;
+    }
 
-        chatBox.style.display =
-            "none";
+
+    /* =====================================================
+       최소화 / 복원
+    ===================================================== */
+
+    if (minimizeBtn) {
+
+        minimizeBtn.addEventListener(
+            "click",
+            function () {
+
+                const minimized =
+                    chatBox.classList.toggle(
+                        "minimized"
+                    );
+
+
+                if (minimized) {
+
+                    minimizeBtn.textContent =
+                        "+";
+
+                    minimizeBtn.title =
+                        "채팅창 펼치기";
+
+                }
+                else {
+
+                    minimizeBtn.textContent =
+                        "−";
+
+                    minimizeBtn.title =
+                        "최소화";
+
+                }
+
+            }
+        );
 
     }
 
 
-    if (
-        openButton
-    ) {
+    /* =====================================================
+       닫기
+    ===================================================== */
 
-        openButton.classList.add(
-            "visible"
+    if (closeBtn) {
+
+        closeBtn.addEventListener(
+            "click",
+            function () {
+
+                chatBox.style.display =
+                    "none";
+
+
+                if (openBtn) {
+
+                    openBtn.classList.add(
+                        "visible"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       다시 열기
+    ===================================================== */
+
+    if (openBtn) {
+
+        openBtn.addEventListener(
+            "click",
+            function () {
+
+                chatBox.style.display =
+                    "flex";
+
+
+                openBtn.classList.remove(
+                    "visible"
+                );
+
+            }
         );
 
     }
 
 }
-
-
-/* =========================================================
-   OPEN
-========================================================= */
-
-function openChat() {
-
-    const chatBox =
-        document.getElementById(
-            "chatBox"
-        );
-
-
-    const openButton =
-        document.getElementById(
-            "chatOpenBtn"
-        );
-
-
-    if (
-        chatBox
-    ) {
-
-        chatBox.style.display =
-            "flex";
-
-    }
-
-
-    if (
-        openButton
-    ) {
-
-        openButton.classList.remove(
-            "visible"
-        );
-
-    }
-
-
-    /* 최소화 상태였다면 펼치기 */
-
-    if (
-        chatBox &&
-        chatBox.classList.contains(
-            "minimized"
-        )
-    ) {
-
-        maximizeChat();
-
-    }
-
-}
-
-
 /* =========================================================
    COPY INSIGHT
 ========================================================= */
