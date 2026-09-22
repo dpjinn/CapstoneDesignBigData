@@ -1791,31 +1791,112 @@ let issueSortDirection = "desc";
 
 
 /* =========================================================
-   PAGE LOAD
+   INITIALIZE REVIEW SYSTEM
 ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        loadGithubFiles();
+        console.log(
+            "리뷰 분석 시스템 초기화"
+        );
 
-        document
-            .getElementById("globalSearch")
-            .addEventListener(
-                "keydown",
-                event => {
 
-                    if (
-                        event.key === "Enter"
-                    ) {
+        /* 필터 */
 
-                        searchGame();
+        const sentimentFilter =
+            document.getElementById(
+                "sentimentFilter"
+            );
 
-                    }
+        const periodFilter =
+            document.getElementById(
+                "periodFilter"
+            );
+
+        const priorityFilter =
+            document.getElementById(
+                "priorityFilter"
+            );
+
+        const reviewSearch =
+            document.getElementById(
+                "reviewSearch"
+            );
+
+        const reviewSort =
+            document.getElementById(
+                "reviewSort"
+            );
+
+
+        /* 이벤트 */
+
+        if (sentimentFilter) {
+
+            sentimentFilter.addEventListener(
+                "change",
+                applyReviewFilters
+            );
+
+        }
+
+
+        if (periodFilter) {
+
+            periodFilter.addEventListener(
+                "change",
+                applyReviewFilters
+            );
+
+        }
+
+
+        if (priorityFilter) {
+
+            priorityFilter.addEventListener(
+                "change",
+                () => {
+
+                    const issues =
+                        analyzeIssues(
+                            getFilteredReviews()
+                        );
+
+                    renderIssues(
+                        issues
+                    );
 
                 }
             );
+
+        }
+
+
+        if (reviewSearch) {
+
+            reviewSearch.addEventListener(
+                "input",
+                renderReviews
+            );
+
+        }
+
+
+        if (reviewSort) {
+
+            reviewSort.addEventListener(
+                "change",
+                renderReviews
+            );
+
+        }
+
+
+        console.log(
+            "리뷰 분석 시스템 초기화 완료"
+        );
 
     }
 );
