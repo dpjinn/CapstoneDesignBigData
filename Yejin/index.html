@@ -1836,34 +1836,40 @@ async function loadGithubFiles() {
 
         const response = await fetch(apiUrl);
 
+        console.log(
+            "GitHub response:",
+            response.status,
+            response.statusText
+        );
+
         if (!response.ok) {
 
-            const errorText = await response.text();
-
-            console.error(
-                "GitHub API error:",
-                errorText
-            );
-
             throw new Error(
-                `GitHub 파일 목록을 불러오지 못했습니다. ` +
-                `(HTTP ${response.status})`
+                `GitHub API 오류 (HTTP ${response.status})`
             );
+
         }
 
         const data = await response.json();
 
-        // CSV 파일만 저장
-        githubFiles = data.filter(
-            file =>
-                file.type === "file" &&
-                file.name.toLowerCase().endsWith(".csv")
+        console.log(
+            "GitHub 전체 파일:",
+            data
         );
 
+
+        // CSV만 선택
+        githubFiles = data.filter(file =>
+            file.type === "file" &&
+            file.name.toLowerCase().endsWith(".csv")
+        );
+
+
         console.log(
-            "Yejin/data 폴더에서 찾은 CSV:",
+            "찾은 CSV 파일:",
             githubFiles
         );
+
 
         createGameList();
 
@@ -1879,9 +1885,10 @@ async function loadGithubFiles() {
             "GitHub CSV 파일을 불러오지 못했습니다.\n\n" +
             error.message
         );
-    }
-}
 
+    }
+
+}
 
 /* =========================================================
    CREATE GAME LIST
