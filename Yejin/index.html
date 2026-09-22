@@ -6007,53 +6007,31 @@ function handleChatKey(event) {
 async function sendChat() {
 
     const input = document.getElementById("chatInput");
-
     const question = input.value.trim();
 
     if (!question) return;
 
-
-    // 사용자 질문 표시
-    addChatMessage(
-        question,
-        "user"
-    );
-
+    addChatMessage(question, "user");
     input.value = "";
-
 
     try {
 
-        // 현재 게임이 선택되어 있는지 확인
         if (!currentGame) {
-
             addChatMessage(
                 "먼저 게임을 선택해주세요.",
                 "ai"
             );
-
             return;
         }
 
-
-        // 현재 GitHub CSV에서 불러온 리뷰
         if (!currentReviews || currentReviews.length === 0) {
-
             addChatMessage(
                 "현재 선택된 게임의 리뷰 데이터가 없습니다.",
                 "ai"
             );
-
             return;
         }
 
-
-        /*
-         * OpenAI에 보낼 리뷰 데이터
-         *
-         * 너무 많은 리뷰를 한 번에 보내면
-         * 요청 크기가 커질 수 있으므로 우선 100개만 사용
-         */
         const reviewsForAI = currentReviews
             .slice(0, 100)
             .map(review => {
@@ -6069,7 +6047,6 @@ async function sendChat() {
 
             });
 
-
         const response = await fetch(
             "http://127.0.0.1:5000/chat",
             {
@@ -6080,45 +6057,38 @@ async function sendChat() {
                 },
 
                 body: JSON.stringify({
-
                     game: currentGame.gameName,
-
                     question: question,
-
                     reviews: reviewsForAI
-
                 })
-
             }
         );
 
-
         if (!response.ok) {
-
             throw new Error(
                 `서버 오류: ${response.status}`
             );
-
         }
 
+        const data = await response.json();
 
-        const data =
-            await response.json();
+        addChatMessage(
+            data.answer,
+            "ai"
+        );
 
+    } catch (error) {
 
-            addChatMessage(
-        data.answer,
-        "ai"
-    );
+        console.error(
+            "채팅 오류:",
+            error
+        );
 
-} catch (error) {
-
-    console.error("채팅 오류:", error);
-
-    addChatMessage(
-        "AI 응답을 가져오지 못했습니다.",
-        "ai"
-    );
+        addChatMessage(
+            "AI 응답을 가져오지 못했습니다.",
+            "ai"
+        );
+    }
 }
         
 
