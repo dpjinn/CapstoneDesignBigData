@@ -1,0 +1,6702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DevInsight AI</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        header {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 28px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: #111827;
+
+            min-width: 190px;
+        }
+
+        .logo span {
+            color: #6366f1;
+        }
+
+        .search-wrapper {
+            flex: 1;
+
+            display: flex;
+            justify-content: center;
+
+            gap: 8px;
+        }
+
+        .search-box {
+            width: min(650px, 100%);
+
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+
+            border-radius: 10px;
+
+            padding: 0 14px;
+        }
+
+        .search-box input {
+            flex: 1;
+
+            border: none;
+            outline: none;
+
+            background: transparent;
+
+            font-size: 14px;
+        }
+
+        .search-btn {
+            border: none;
+            background: #6366f1;
+            color: white;
+
+            padding: 10px 16px;
+
+            border-radius: 8px;
+
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 16px;
+        }
+
+        .header-btn {
+            border: 1px solid #e5e7eb;
+            background: white;
+
+            padding: 9px 12px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           LAYOUT
+        ========================================================= */
+
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            width: 230px;
+
+            background: #ffffff;
+
+            border-right: 1px solid #e5e7eb;
+
+            padding: 22px 14px;
+
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 700;
+
+            color: #9ca3af;
+
+            margin: 8px 12px 10px;
+
+            text-transform: uppercase;
+        }
+
+        .nav-item {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            border: none;
+            background: transparent;
+
+            padding: 11px 12px;
+
+            border-radius: 8px;
+
+            color: #4b5563;
+
+            font-size: 14px;
+
+            text-align: left;
+
+            margin-bottom: 3px;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+        }
+
+        .nav-item.active {
+            background: #eef2ff;
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        .game-count {
+            margin-top: 20px;
+
+            padding: 14px;
+
+            background: #f9fafb;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            color: #6b7280;
+        }
+
+        .game-count strong {
+            display: block;
+
+            color: #111827;
+
+            font-size: 20px;
+
+            margin-bottom: 3px;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        main {
+            flex: 1;
+
+            padding: 28px;
+
+            max-width: 1700px;
+
+            margin: 0 auto;
+
+            width: 100%;
+        }
+
+        .page-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            margin-bottom: 22px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+            margin-bottom: 7px;
+        }
+
+        .page-header p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .primary-btn {
+            background: #6366f1;
+            color: white;
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 10px 15px;
+
+            font-weight: 600;
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #374151;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 8px;
+
+            padding: 10px 15px;
+        }
+
+        /* =========================================================
+           GAME SEARCH
+        ========================================================= */
+
+        .game-selector {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .game-selector-title {
+            font-size: 13px;
+            font-weight: 700;
+
+            margin-bottom: 10px;
+        }
+
+        .game-selector-row {
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .game-selector-row input {
+            flex: 1;
+
+            height: 42px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            padding: 0 12px;
+
+            outline: none;
+        }
+
+        .game-selector-row input:focus {
+            border-color: #6366f1;
+        }
+
+        .game-list {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-top: 14px;
+
+            max-height: 170px;
+
+            overflow-y: auto;
+        }
+
+        .game-item {
+            border: 1px solid #e5e7eb;
+
+            background: #ffffff;
+
+            padding: 8px 12px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            color: #374151;
+        }
+
+        .game-item:hover {
+            border-color: #6366f1;
+            color: #4f46e5;
+        }
+
+        .game-item.selected {
+            background: #eef2ff;
+            border-color: #6366f1;
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           FILTERS
+        ========================================================= */
+
+        .filter-bar {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin-bottom: 18px;
+        }
+
+        .filter-bar select {
+            height: 38px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            padding: 0 10px;
+
+            background: white;
+
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           CARDS
+        ========================================================= */
+
+        .card {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-size: 16px;
+
+            font-weight: 700;
+
+            margin-bottom: 14px;
+        }
+
+        /* =========================================================
+           AI INSIGHT
+        ========================================================= */
+
+        .insight-card {
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef2ff,
+                    #ffffff
+                );
+
+            border: 1px solid #c7d2fe;
+
+            border-radius: 12px;
+
+            padding: 22px;
+
+            margin-bottom: 18px;
+        }
+
+        .insight-label {
+            font-size: 12px;
+
+            color: #6366f1;
+
+            font-weight: 800;
+
+            margin-bottom: 8px;
+        }
+
+        .insight-title {
+            font-size: 20px;
+
+            font-weight: 800;
+
+            margin-bottom: 8px;
+        }
+
+        .insight-text {
+            line-height: 1.7;
+
+            color: #4b5563;
+
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           STATS
+        ========================================================= */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 18px;
+        }
+
+        .stat-label {
+            color: #6b7280;
+
+            font-size: 12px;
+
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 25px;
+
+            font-weight: 800;
+
+            color: #111827;
+        }
+
+        .stat-sub {
+            margin-top: 5px;
+
+            color: #9ca3af;
+
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           CHARTS
+        ========================================================= */
+
+        .chart-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .chart-container {
+            height: 310px;
+
+            position: relative;
+        }
+
+        /* =========================================================
+           COMPARISON
+        ========================================================= */
+
+        .comparison-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 14px;
+        }
+
+        .compare-game {
+            border: 1px solid #e5e7eb;
+
+            border-radius: 10px;
+
+            padding: 16px;
+        }
+
+        .compare-game h3 {
+            margin-bottom: 12px;
+
+            font-size: 16px;
+        }
+
+        .compare-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 8px 0;
+
+            border-bottom: 1px solid #f3f4f6;
+
+            font-size: 13px;
+        }
+
+        .compare-row:last-child {
+            border-bottom: none;
+        }
+
+        /* =========================================================
+           ISSUE TABLE
+        ========================================================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+
+            background: #f9fafb;
+
+            color: #6b7280;
+
+            font-weight: 700;
+
+            padding: 12px;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            cursor: pointer;
+        }
+
+        td {
+            padding: 13px 12px;
+
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .priority {
+            display: inline-block;
+
+            padding: 4px 8px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .priority-high {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* =========================================================
+           REVIEWS
+        ========================================================= */
+
+        .review-controls {
+            display: flex;
+
+            gap: 8px;
+
+            margin-bottom: 14px;
+        }
+
+        .review-controls input,
+        .review-controls select {
+            height: 38px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            padding: 0 10px;
+        }
+
+        .review-controls input {
+            flex: 1;
+        }
+
+        .review-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+        .review-item {
+            border: 1px solid #e5e7eb;
+
+            border-radius: 10px;
+
+            padding: 15px;
+        }
+
+        .review-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+        }
+
+        .sentiment {
+            padding: 4px 8px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .positive {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .negative {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .review-text {
+            line-height: 1.6;
+
+            color: #4b5563;
+
+            font-size: 13px;
+        }
+
+        .review-meta {
+            margin-top: 8px;
+
+            color: #9ca3af;
+
+            font-size: 11px;
+        }
+
+        /* =========================================================
+           LOADING
+        ========================================================= */
+
+        .loading {
+            padding: 30px;
+
+            text-align: center;
+
+            color: #6b7280;
+        }
+
+        .error {
+            padding: 18px;
+
+            background: #fef2f2;
+
+            border: 1px solid #fecaca;
+
+            color: #991b1b;
+
+            border-radius: 10px;
+
+            margin-bottom: 18px;
+
+            display: none;
+        }
+
+        .empty {
+            padding: 30px;
+
+            text-align: center;
+
+            color: #9ca3af;
+        }
+
+       /* =========================================================
+   AI CHAT
+========================================================= */
+
+.chat-box {
+
+    position: fixed;
+
+    right: 24px;
+    bottom: 24px;
+
+    width: 350px;
+    height: 430px;
+
+    min-width: 280px;
+    min-height: 180px;
+
+    max-width: 700px;
+    max-height: 80vh;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0,0,0,0.12);
+
+    overflow: hidden;
+
+    z-index: 90;
+
+    display: flex;
+
+    flex-direction: column;
+
+    resize: both;
+
+}
+
+
+/* =========================================================
+   CHAT HEADER
+========================================================= */
+
+.chat-header {
+
+    height: 48px;
+
+    min-height: 48px;
+
+    padding: 0 12px 0 15px;
+
+    background: #111827;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    user-select: none;
+
+}
+
+
+/* 제목 */
+
+.chat-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+
+/* 버튼 영역 */
+
+.chat-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+}
+
+
+/* 최소화 / 닫기 버튼 */
+
+.chat-control-btn {
+
+    width: 28px;
+
+    height: 28px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 17px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.chat-control-btn:hover {
+
+    background:
+        rgba(255,255,255,0.15);
+
+}
+
+
+/* 닫기 버튼 */
+
+.chat-close-btn:hover {
+
+    background:
+        #ef4444;
+
+}
+
+
+/* =========================================================
+   CHAT MESSAGES
+========================================================= */
+
+.chat-messages {
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    padding: 14px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.message {
+
+    max-width: 85%;
+
+    padding: 9px 11px;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    word-break: break-word;
+
+}
+
+
+.message.ai {
+
+    background: #f3f4f6;
+
+    align-self: flex-start;
+
+}
+
+
+.message.user {
+
+    background: #6366f1;
+
+    color: white;
+
+    align-self: flex-end;
+
+}
+
+
+/* =========================================================
+   CHAT INPUT
+========================================================= */
+
+.chat-input {
+
+    border-top: 1px solid #e5e7eb;
+
+    padding: 10px;
+
+    display: flex;
+
+    gap: 7px;
+
+    flex-shrink: 0;
+
+}
+
+
+.chat-input input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    padding: 8px 10px;
+
+    outline: none;
+
+    font-size: 12px;
+
+}
+
+
+.chat-input input:focus {
+
+    border-color: #6366f1;
+
+}
+
+
+.chat-input button {
+
+    border: none;
+
+    background: #6366f1;
+
+    color: white;
+
+    border-radius: 8px;
+
+    padding: 0 12px;
+
+    cursor: pointer;
+
+}
+
+
+.chat-input button:hover {
+
+    background: #4f46e5;
+
+}
+
+
+/* =========================================================
+   MINIMIZED
+========================================================= */
+
+.chat-box.minimized {
+
+    height: 48px;
+
+    min-height: 48px;
+
+    resize: none;
+
+}
+
+
+.chat-box.minimized
+.chat-messages,
+
+.chat-box.minimized
+.chat-input {
+
+    display: none;
+
+}
+
+
+/* =========================================================
+   CLOSED CHAT BUTTON
+========================================================= */
+
+.chat-open-btn {
+
+    position: fixed;
+
+    right: 24px;
+
+    bottom: 24px;
+
+    width: 54px;
+
+    height: 54px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #111827;
+
+    color: white;
+
+    font-size: 23px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px
+        rgba(0,0,0,0.2);
+
+    z-index: 91;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.chat-open-btn:hover {
+
+    transform: scale(1.05);
+
+}
+
+
+/* 닫힌 상태 */
+
+.chat-open-btn.visible {
+
+    display: flex;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE CHAT
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .chat-box {
+
+        width:
+            calc(100vw - 30px);
+
+        height:
+            min(500px, 70vh);
+
+        right: 15px;
+
+        bottom: 15px;
+
+        min-width: 0;
+
+        max-width: none;
+
+        max-height: 80vh;
+
+    }
+
+
+    .chat-open-btn {
+
+        right: 15px;
+
+        bottom: 15px;
+
+    }
+
+}
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 190px;
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            header {
+                padding: 0 14px;
+            }
+
+            .logo {
+                min-width: auto;
+
+                margin-right: 10px;
+            }
+
+            .header-actions {
+                display: none;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            main {
+                padding: 18px;
+            }
+
+            .page-header {
+                flex-direction: column;
+
+                gap: 12px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-box {
+                width: calc(100% - 30px);
+
+                right: 15px;
+                bottom: 15px;
+            }
+
+        }
+
+        @media (max-width: 550px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-btn {
+                display: none;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <div class="logo">
+        Dev<span>Insight</span> AI
+    </div>
+
+
+    <div class="search-wrapper">
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="globalSearch"
+                placeholder="게임명을 검색하세요..."
+            >
+
+            <button
+                class="search-btn"
+                onclick="searchGame()"
+            >
+                검색
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <button
+            class="header-btn"
+            onclick="loadGithubFiles()"
+        >
+            ↻ 새로고침
+        </button>
+
+        <button
+            class="header-btn"
+            onclick="exportCSV()"
+        >
+            CSV
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     LAYOUT
+========================================================= -->
+
+<div class="layout">
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-title">
+            Dashboard
+        </div>
+
+
+        <button
+            class="nav-item active"
+            onclick="scrollToSection('overview')"
+        >
+            📊 Overview
+        </button>
+
+
+        <button
+            class="nav-item"
+            onclick="scrollToSection('issues')"
+        >
+            ⚠ Issues
+        </button>
+
+
+        <button
+            class="nav-item"
+            onclick="scrollToSection('reviews')"
+        >
+            💬 Reviews
+        </button>
+
+
+        <button
+            class="nav-item"
+            onclick="scrollToSection('compare')"
+        >
+            ⚖ Compare
+        </button>
+
+
+        <div class="sidebar-title">
+            Tools
+        </div>
+
+
+        <button
+            class="nav-item"
+            onclick="copyInsight()"
+        >
+            📋 Copy Insight
+        </button>
+
+
+        <button
+            class="nav-item"
+            onclick="exportCSV()"
+        >
+            📥 Export Data
+        </button>
+
+
+        <div class="game-count">
+
+            <strong id="gameCount">
+                0
+            </strong>
+
+            games
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main>
+
+
+        <!-- ERROR -->
+
+        <div
+            id="errorBox"
+            class="error"
+        ></div>
+
+
+        <!-- PAGE HEADER -->
+
+        <section
+            id="overview"
+            class="page-header"
+        >
+
+            <div>
+
+                <h1>
+                    Game Developer Insight
+                </h1>
+
+                <p>
+                    Steam 리뷰 데이터를 기반으로
+                    게임의 주요 이슈와 사용자 의견을 분석합니다.
+                </p>
+
+            </div>
+
+
+            <div class="page-actions">
+
+                <button
+                    class="secondary-btn"
+                    onclick="resetFilters()"
+                >
+                    필터 초기화
+                </button>
+
+                <button
+                    class="primary-btn"
+                    onclick="copyInsight()"
+                >
+                    AI Insight 복사
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- GAME SELECTOR -->
+
+        <section class="game-selector">
+
+            <div class="game-selector-title">
+                게임 선택
+            </div>
+
+
+            <div class="game-selector-row">
+
+                <input
+                    type="text"
+                    id="gameSearch"
+                    placeholder="게임 이름으로 검색..."
+                    oninput="filterGameList()"
+                >
+
+            </div>
+
+
+            <div
+                id="gameList"
+                class="game-list"
+            >
+
+                <div class="loading">
+                    GitHub에서 게임 목록을 불러오는 중...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FILTER -->
+
+        <section class="filter-bar">
+
+            <select id="genreFilter">
+                <option value="all">
+                    전체 장르
+                </option>
+
+                <option value="fps">
+                    FPS
+                </option>
+
+                <option value="rpg">
+                    RPG
+                </option>
+
+                <option value="survival">
+                    Survival
+                </option>
+            </select>
+
+
+            <select id="periodFilter">
+
+                <option value="all">
+                    전체 기간
+                </option>
+
+                <option value="7">
+                    최근 7일
+                </option>
+
+                <option value="30">
+                    최근 30일
+                </option>
+
+                <option value="90">
+                    최근 90일
+                </option>
+
+            </select>
+
+
+            <select id="sentimentFilter">
+
+                <option value="all">
+                    전체 감정
+                </option>
+
+                <option value="positive">
+                    긍정
+                </option>
+
+                <option value="negative">
+                    부정
+                </option>
+
+            </select>
+
+
+            <select id="priorityFilter">
+
+                <option value="all">
+                    전체 우선순위
+                </option>
+
+                <option value="high">
+                    높음
+                </option>
+
+                <option value="medium">
+                    중간
+                </option>
+
+                <option value="low">
+                    낮음
+                </option>
+
+            </select>
+
+        </section>
+
+
+        <!-- AI INSIGHT -->
+
+        <section class="insight-card">
+
+            <div class="insight-label">
+                AI CORE INSIGHT
+            </div>
+
+            <div
+                id="insightTitle"
+                class="insight-title"
+            >
+                게임을 선택해주세요.
+            </div>
+
+            <div
+                id="insightText"
+                class="insight-text"
+            >
+                GitHub의 CSV 데이터를 분석하면
+                주요 사용자 의견과 개선이 필요한 이슈를
+                이곳에 표시합니다.
+            </div>
+
+        </section>
+
+
+        <!-- STATS -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Reviews
+                </div>
+
+                <div
+                    id="totalReviews"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+                <div class="stat-sub">
+                    분석된 리뷰
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Positive
+                </div>
+
+                <div
+                    id="positiveRate"
+                    class="stat-value"
+                >
+                    0%
+                </div>
+
+                <div class="stat-sub">
+                    긍정 리뷰 비율
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Negative
+                </div>
+
+                <div
+                    id="negativeRate"
+                    class="stat-value"
+                >
+                    0%
+                </div>
+
+                <div class="stat-sub">
+                    부정 리뷰 비율
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Issues
+                </div>
+
+                <div
+                    id="issueCount"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+                <div class="stat-sub">
+                    주요 이슈
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CHARTS -->
+
+        <section class="chart-grid">
+
+            <div class="card">
+
+                <div class="card-title">
+                    Sentiment Distribution
+                </div>
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="sentimentChart"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Review Trend
+                </div>
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="reviewTrendChart"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- COMPARE -->
+
+        <section
+            id="compare"
+            class="card"
+        >
+
+            <div class="card-title">
+                Game Comparison
+            </div>
+
+
+            <div class="comparison-grid">
+
+                <div class="compare-game">
+
+                    <h3 id="compareGameA">
+                        선택된 게임
+                    </h3>
+
+
+                    <div class="compare-row">
+
+                        <span>
+                            Reviews
+                        </span>
+
+                        <strong id="compareReviewsA">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="compare-row">
+
+                        <span>
+                            Positive
+                        </span>
+
+                        <strong id="comparePositiveA">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="compare-row">
+
+                        <span>
+                            Negative
+                        </span>
+
+                        <strong id="compareNegativeA">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="compare-game">
+
+                    <h3 id="compareGameB">
+                        비교할 게임
+                    </h3>
+
+
+                    <div class="compare-row">
+
+                        <span>
+                            Reviews
+                        </span>
+
+                        <strong id="compareReviewsB">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="compare-row">
+
+                        <span>
+                            Positive
+                        </span>
+
+                        <strong id="comparePositiveB">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="compare-row">
+
+                        <span>
+                            Negative
+                        </span>
+
+                        <strong id="compareNegativeB">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ISSUES -->
+
+        <section
+            id="issues"
+            class="card"
+        >
+
+            <div class="card-title">
+                Developer Issues
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th onclick="sortIssues('issue')">
+                                Issue
+                            </th>
+
+                            <th onclick="sortIssues('mentions')">
+                                Mentions
+                            </th>
+
+                            <th onclick="sortIssues('negative')">
+                                Negative
+                            </th>
+
+                            <th onclick="sortIssues('priority')">
+                                Priority
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="issueTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- REVIEWS -->
+
+        <section
+            id="reviews"
+            class="card"
+        >
+
+            <div class="card-title">
+                User Reviews
+            </div>
+
+
+            <div class="review-controls">
+
+                <input
+                    id="reviewSearch"
+                    type="text"
+                    placeholder="리뷰 검색..."
+                    oninput="renderReviews()"
+                >
+
+
+                <select
+                    id="reviewSort"
+                    onchange="renderReviews()"
+                >
+
+                    <option value="latest">
+                        최신순
+                    </option>
+
+                    <option value="oldest">
+                        오래된순
+                    </option>
+
+                    <option value="score">
+                        점수순
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div
+                id="reviewList"
+                class="review-list"
+            >
+
+                <div class="empty">
+                    게임을 선택해주세요.
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     AI CHAT
+========================================================= -->
+
+<div
+    id="chatBox"
+    class="chat-box"
+>
+
+    <!-- HEADER -->
+
+    <div class="chat-header">
+
+        <div class="chat-title">
+
+            <span>
+                🤖
+            </span>
+
+            <span>
+                DevInsight AI
+            </span>
+
+        </div>
+
+
+        <div class="chat-controls">
+
+            <!-- 최소화 -->
+
+            <button
+    id="chatMinimizeBtn"
+    class="chat-control-btn"
+    type="button"
+    title="최소화"
+>
+    −
+</button>
+
+<button
+    id="chatCloseBtn"
+    class="chat-control-btn chat-close-btn"
+    type="button"
+    title="닫기"
+>
+    ×
+</button>
+
+        </div>
+
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    <div
+        id="chatMessages"
+        class="chat-messages"
+    >
+
+        <div class="message ai">
+
+            안녕하세요.<br>
+            게임 리뷰에 대해 질문해주세요.
+
+        </div>
+
+    </div>
+
+
+    <!-- INPUT -->
+
+    <div class="chat-input">
+
+        <input
+            id="chatInput"
+            type="text"
+            placeholder="게임 리뷰에 대해 질문..."
+            onkeydown="handleChatKey(event)"
+        >
+
+
+        <button
+            onclick="sendChat()"
+        >
+            전송
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     CHAT OPEN BUTTON
+========================================================= -->
+
+<button
+    id="chatOpenBtn"
+    class="chat-open-btn"
+    type="button"
+    title="AI 채팅 열기"
+>
+    💬
+</button>
+<script>
+
+/* =========================================================
+   GITHUB SETTINGS
+========================================================= */
+
+/*
+ * ★ 여기만 본인의 GitHub 정보로 변경
+ */
+
+const GITHUB_OWNER =
+    "dpjinn";
+
+const GITHUB_REPO =
+    "CapstoneDesignBigData";
+
+const GITHUB_BRANCH =
+    "main";
+
+
+/*
+ * CSV가 들어있는 폴더
+ *
+ * 예:
+ *
+ * repository/
+ * ├── index.html
+ * └── data/
+ *     ├── Stardew Valley_positive.csv
+ *     └── Stardew Valley_negative.csv
+ */
+
+const DATA_FOLDER =
+    "data";
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+let githubFiles = [];
+
+let games = [];
+
+let currentGame = null;
+
+let currentReviews = [];
+
+let filteredReviews = [];
+
+let sentimentChart = null;
+
+let reviewTrendChart = null;
+
+let issueSortKey = "mentions";
+
+let issueSortDirection = "desc";
+
+
+/* =========================================================
+   INITIALIZE REVIEW SYSTEM
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        console.log(
+            "리뷰 분석 시스템 초기화"
+        );
+
+
+        /* 필터 */
+
+        const sentimentFilter =
+            document.getElementById(
+                "sentimentFilter"
+            );
+
+        const periodFilter =
+            document.getElementById(
+                "periodFilter"
+            );
+
+        const priorityFilter =
+            document.getElementById(
+                "priorityFilter"
+            );
+
+        const reviewSearch =
+            document.getElementById(
+                "reviewSearch"
+            );
+
+        const reviewSort =
+            document.getElementById(
+                "reviewSort"
+            );
+
+
+        /* 이벤트 */
+
+        if (sentimentFilter) {
+
+            sentimentFilter.addEventListener(
+                "change",
+                applyReviewFilters
+            );
+
+        }
+
+
+        if (periodFilter) {
+
+            periodFilter.addEventListener(
+                "change",
+                applyReviewFilters
+            );
+
+        }
+
+
+        if (priorityFilter) {
+
+            priorityFilter.addEventListener(
+                "change",
+                () => {
+
+                    const issues =
+                        analyzeIssues(
+                            getFilteredReviews()
+                        );
+
+                    renderIssues(
+                        issues
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (reviewSearch) {
+
+            reviewSearch.addEventListener(
+                "input",
+                renderReviews
+            );
+
+        }
+
+
+        if (reviewSort) {
+
+            reviewSort.addEventListener(
+                "change",
+                renderReviews
+            );
+
+        }
+
+
+        console.log(
+            "리뷰 분석 시스템 초기화 완료"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   LOAD GITHUB FILES
+========================================================= */
+
+async function loadGithubFiles() {
+
+    try {
+
+        const apiUrl =
+            "https://api.github.com/repos/dpjinn/CapstoneDesignBigData/contents/Yejin/data";
+
+        console.log("GitHub API URL:", apiUrl);
+
+        const response = await fetch(apiUrl);
+
+        console.log(
+            "GitHub response:",
+            response.status,
+            response.statusText
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                `GitHub API 오류 (HTTP ${response.status})`
+            );
+
+        }
+
+        const data = await response.json();
+
+        console.log(
+            "GitHub 전체 파일:",
+            data
+        );
+
+
+        // CSV만 선택
+        githubFiles = data.filter(file =>
+            file.type === "file" &&
+            file.name.toLowerCase().endsWith(".csv")
+        );
+
+
+        console.log(
+            "찾은 CSV 파일:",
+            githubFiles
+        );
+
+
+        createGameList();
+
+    }
+    catch (error) {
+
+        console.error(
+            "GitHub 파일 로딩 오류:",
+            error
+        );
+
+        alert(
+            "GitHub CSV 파일을 불러오지 못했습니다.\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+/* =========================================================
+   GITHUB GAME REVIEW SYSTEM
+   ---------------------------------------------------------
+   파일 구조:
+
+   Yejin/data/
+   ├─ Stardew_positive.csv
+   ├─ Stardew_negative.csv
+   ├─ 20XX_positive.csv
+   ├─ 20XX_negative.csv
+   ├─ A Hat in Time_positive.csv
+   └─ A Hat in Time_negative.csv
+
+   게임 이름은 "_positive.csv" 또는 "_negative.csv"
+   앞부분을 사용한다.
+========================================================= */
+
+
+/* =========================================================
+   LOAD GITHUB FILE LIST
+========================================================= */
+
+async function loadGithubFiles() {
+
+    try {
+
+        const apiUrl =
+            "https://api.github.com/repos/" +
+            "dpjinn/CapstoneDesignBigData/" +
+            "contents/Yejin/data";
+
+        console.log(
+            "GitHub 파일 목록 요청:",
+            apiUrl
+        );
+
+
+        const response =
+            await fetch(apiUrl, {
+                headers: {
+                    "Accept":
+                        "application/vnd.github+json"
+                }
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `GitHub 파일 목록 로딩 실패: HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!Array.isArray(data)) {
+
+            throw new Error(
+                "GitHub API 응답이 파일 목록이 아닙니다."
+            );
+
+        }
+
+
+        githubFiles =
+            data.filter(file => {
+
+                return (
+                    file.type === "file" &&
+                    file.name
+                        .toLowerCase()
+                        .endsWith(".csv")
+                );
+
+            });
+
+
+        console.log(
+            "CSV 파일:",
+            githubFiles
+        );
+
+
+        createGameList();
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "GitHub 파일 목록 로딩 오류:",
+            error
+        );
+
+
+        const list =
+            document.getElementById(
+                "gameList"
+            );
+
+
+        if (list) {
+
+            list.innerHTML = `
+                <div class="game-empty">
+                    게임 데이터를 불러오지 못했습니다.<br>
+                    <small>
+                        ${escapeHtml(error.message)}
+                    </small>
+                </div>
+            `;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE GAME LIST
+   ---------------------------------------------------------
+   Stardew_positive.csv
+        ↓
+   gameName = Stardew
+
+   Stardew_negative.csv
+        ↓
+   gameName = Stardew
+
+   A Hat in Time_positive.csv
+        ↓
+   gameName = A Hat in Time
+========================================================= */
+
+function createGameList() {
+
+    const gameMap =
+        new Map();
+
+
+    githubFiles.forEach(file => {
+
+        const filename =
+            file.name;
+
+        const lowerFilename =
+            filename.toLowerCase();
+
+
+        /* -----------------------------------------
+           POSITIVE
+        ----------------------------------------- */
+
+        if (
+            lowerFilename.endsWith(
+                "_positive.csv"
+            )
+        ) {
+
+            const gameName =
+                filename.substring(
+                    0,
+                    filename.length -
+                    "_positive.csv".length
+                );
+
+
+            if (
+                !gameMap.has(gameName)
+            ) {
+
+                gameMap.set(
+                    gameName,
+                    {
+                        gameName:
+                            gameName,
+
+                        positiveFile:
+                            null,
+
+                        negativeFile:
+                            null
+                    }
+                );
+
+            }
+
+
+            const game =
+                gameMap.get(
+                    gameName
+                );
+
+
+            game.positiveFile =
+                file.path;
+
+        }
+
+
+        /* -----------------------------------------
+           NEGATIVE
+        ----------------------------------------- */
+
+        else if (
+            lowerFilename.endsWith(
+                "_negative.csv"
+            )
+        ) {
+
+            const gameName =
+                filename.substring(
+                    0,
+                    filename.length -
+                    "_negative.csv".length
+                );
+
+
+            if (
+                !gameMap.has(gameName)
+            ) {
+
+                gameMap.set(
+                    gameName,
+                    {
+                        gameName:
+                            gameName,
+
+                        positiveFile:
+                            null,
+
+                        negativeFile:
+                            null
+                    }
+                );
+
+            }
+
+
+            const game =
+                gameMap.get(
+                    gameName
+                );
+
+
+            game.negativeFile =
+                file.path;
+
+        }
+
+    });
+
+
+    /* -----------------------------------------
+       Map → Array
+    ----------------------------------------- */
+
+    games =
+        Array.from(
+            gameMap.values()
+        );
+
+
+    /* -----------------------------------------
+       이름순 정렬
+    ----------------------------------------- */
+
+    games.sort(
+        (a, b) =>
+            a.gameName.localeCompare(
+                b.gameName
+            )
+    );
+
+
+    console.log(
+        "게임 목록 생성 완료:",
+        games
+    );
+
+
+    /* -----------------------------------------
+       게임 개수
+    ----------------------------------------- */
+
+    const gameCount =
+        document.getElementById(
+            "gameCount"
+        );
+
+
+    if (gameCount) {
+
+        gameCount.textContent =
+            `${games.length.toLocaleString()} games`;
+
+    }
+
+
+    /* -----------------------------------------
+       게임 목록 표시
+    ----------------------------------------- */
+
+    renderGameList("");
+
+}
+
+
+/* =========================================================
+   GAME SEARCH
+========================================================= */
+
+function searchGame() {
+
+    const searchInput =
+        document.getElementById(
+            "globalSearch"
+        );
+
+    const keyword =
+        searchInput
+            ? searchInput.value.trim()
+            : "";
+
+    renderGameList(
+        keyword
+    );
+
+}
+
+
+/* =========================================================
+   GAME LIST FILTER
+========================================================= */
+
+function filterGameList() {
+
+    const searchInput =
+        document.getElementById(
+            "gameSearch"
+        );
+
+    const keyword =
+        searchInput
+            ? searchInput.value.trim()
+            : "";
+
+    renderGameList(
+        keyword
+    );
+
+}
+
+/* =========================================================
+   LIVE GAME SEARCH
+========================================================= */
+
+function filterGameList() {
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    const keyword =
+        searchInput
+            ? searchInput.value.trim()
+            : "";
+
+
+    renderGameList(
+        keyword
+    );
+
+}
+
+
+/* =========================================================
+   RENDER GAME LIST
+========================================================= */
+
+function renderGameList(
+    keyword = ""
+) {
+
+    const list =
+        document.getElementById(
+            "gameList"
+        );
+
+    if (!list) {
+
+        console.error(
+            "gameList를 찾을 수 없습니다."
+        );
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    const normalizedKeyword =
+        String(keyword)
+            .trim()
+            .toLowerCase();
+
+
+    const filteredGames =
+        games.filter(
+            game =>
+                game.gameName
+                    .toLowerCase()
+                    .includes(
+                        normalizedKeyword
+                    )
+        );
+
+
+    /* 검색 결과 없음 */
+
+    if (
+        filteredGames.length === 0
+    ) {
+
+        list.innerHTML = `
+            <div class="empty">
+                검색 결과가 없습니다.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* 게임 목록 */
+
+    filteredGames.forEach(
+        game => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "game-item";
+
+
+            /* 게임 이름 */
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "game-name";
+
+
+            name.textContent =
+                game.gameName;
+
+
+            item.appendChild(
+                name
+            );
+
+
+            /* Positive / Negative */
+
+            const status =
+                document.createElement(
+                    "div"
+                );
+
+
+            status.className =
+                "game-status";
+
+
+            if (
+                game.positiveFile
+            ) {
+
+                status.innerHTML += `
+                    <span class="positive-status">
+                        Positive
+                    </span>
+                `;
+
+            }
+
+
+            if (
+                game.negativeFile
+            ) {
+
+                status.innerHTML += `
+                    <span class="negative-status">
+                        Negative
+                    </span>
+                `;
+
+            }
+
+
+            item.appendChild(
+                status
+            );
+
+
+            /* 클릭 */
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    selectGame(
+                        game
+                    );
+
+                }
+            );
+
+
+            list.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    /* 게임 개수 */
+
+    const count =
+        document.getElementById(
+            "gameCount"
+        );
+
+
+    if (count) {
+
+        count.textContent =
+            `${filteredGames.length} games`;
+
+    }
+
+}
+
+/* =========================================================
+   SELECT GAME
+========================================================= */
+
+async function selectGame(
+    game
+) {
+
+    if (
+        !game ||
+        !game.gameName
+    ) {
+
+        console.error(
+            "잘못된 게임:",
+            game
+        );
+
+        return;
+
+    }
+
+
+    console.log(
+        "게임 선택:",
+        game.gameName
+    );
+
+
+    /* 현재 게임 */
+
+    currentGame =
+        game;
+
+
+    /* 기존 리뷰 초기화 */
+
+    currentReviews =
+        [];
+
+
+    /* 선택된 게임 표시 */
+
+    const selectedGame =
+        document.getElementById(
+            "selectedGame"
+        );
+
+
+    if (
+        selectedGame
+    ) {
+
+        selectedGame.textContent =
+            game.gameName;
+
+    }
+
+
+    /* 선택 상태 */
+
+    document
+        .querySelectorAll(
+            ".game-item"
+        )
+        .forEach(
+            item => {
+
+                item.classList.remove(
+                    "selected"
+                );
+
+
+                const name =
+                    item.querySelector(
+                        ".game-name"
+                    );
+
+
+                if (
+                    name &&
+                    name.textContent.trim() ===
+                    game.gameName.trim()
+                ) {
+
+                    item.classList.add(
+                        "selected"
+                    );
+
+                }
+
+            }
+        );
+
+
+    /* 로딩 표시 */
+
+    const reviewList =
+        document.getElementById(
+            "reviewList"
+        );
+
+
+    if (
+        reviewList
+    ) {
+
+        reviewList.innerHTML = `
+            <div class="empty">
+                ${escapeHtml(
+                    game.gameName
+                )}
+                리뷰를 불러오는 중...
+            </div>
+        `;
+
+    }
+
+
+    try {
+
+        await loadGameReviews(
+            game
+        );
+
+    }
+    catch (
+        error
+    ) {
+
+        console.error(
+            "리뷰 로딩 실패:",
+            error
+        );
+
+
+        if (
+            reviewList
+        ) {
+
+            reviewList.innerHTML = `
+                <div class="empty">
+                    리뷰를 불러오지 못했습니다.
+                    <br>
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </div>
+            `;
+
+        }
+
+    }
+
+}
+
+/* =========================================================
+   LOAD GAME REVIEWS
+========================================================= */
+
+async function loadGameReviews(
+    game
+) {
+
+    if (
+        !game
+    ) {
+
+        console.error(
+            "게임 정보가 없습니다."
+        );
+
+        return;
+
+    }
+
+
+    console.log(
+        "게임 리뷰 로딩:",
+        game.gameName
+    );
+
+
+    let positiveReviews = [];
+
+    let negativeReviews = [];
+
+
+    /* =====================================================
+       POSITIVE
+    ===================================================== */
+
+    if (
+        game.positiveFile
+    ) {
+
+        console.log(
+            "Positive:",
+            game.positiveFile
+        );
+
+
+        positiveReviews =
+            await loadCSV(
+                game.positiveFile
+            );
+
+
+        positiveReviews =
+            positiveReviews.map(
+                review => {
+
+                    return {
+                        ...review,
+                        sentiment:
+                            "positive"
+                    };
+
+                }
+            );
+
+    }
+
+
+    /* =====================================================
+       NEGATIVE
+    ===================================================== */
+
+    if (
+        game.negativeFile
+    ) {
+
+        console.log(
+            "Negative:",
+            game.negativeFile
+        );
+
+
+        negativeReviews =
+            await loadCSV(
+                game.negativeFile
+            );
+
+
+        negativeReviews =
+            negativeReviews.map(
+                review => {
+
+                    return {
+                        ...review,
+                        sentiment:
+                            "negative"
+                    };
+
+                }
+            );
+
+    }
+
+
+    /* =====================================================
+       합치기
+    ===================================================== */
+
+    currentReviews = [
+
+        ...positiveReviews,
+
+        ...negativeReviews
+
+    ];
+
+
+    /* =====================================================
+       리뷰 데이터 가공
+    ===================================================== */
+
+    currentReviews =
+        currentReviews.map(
+            review => {
+
+                const text =
+                    getReviewText(
+                        review
+                    );
+
+
+                review._text =
+                    text;
+
+
+                review._date =
+                    findDate(
+                        review
+                    );
+
+
+                review._score =
+                    findScore(
+                        review
+                    );
+
+
+                return review;
+
+            }
+        );
+
+
+    console.log(
+        "총 리뷰:",
+        currentReviews.length
+    );
+
+
+    /* =====================================================
+       화면 업데이트
+    ===================================================== */
+
+    updateDashboard();
+
+}
+/* =========================================================
+   REFRESH REVIEW DASHBOARD
+========================================================= */
+
+function refreshReviewDashboard() {
+
+    const reviews =
+        getFilteredReviewsSafe();
+
+
+    /* -----------------------------------------
+       리뷰
+    ----------------------------------------- */
+
+    if (
+        typeof renderReviews ===
+        "function"
+    ) {
+
+        renderReviews();
+
+    }
+
+
+    /* -----------------------------------------
+       이슈
+    ----------------------------------------- */
+
+    if (
+        typeof analyzeIssues ===
+            "function" &&
+        typeof renderIssues ===
+            "function"
+    ) {
+
+        const issues =
+            analyzeIssues(
+                reviews
+            );
+
+
+        renderIssues(
+            issues
+        );
+
+
+        /* -----------------------------
+           AI Insight
+        ----------------------------- */
+
+        if (
+            typeof generateInsight ===
+            "function"
+        ) {
+
+            generateInsight(
+                reviews,
+                issues
+            );
+
+        }
+
+    }
+
+
+    /* -----------------------------------------
+       차트
+    ----------------------------------------- */
+
+    if (
+        typeof updateCharts ===
+        "function"
+    ) {
+
+        updateCharts(
+            reviews
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SAFE FILTER
+========================================================= */
+
+function getFilteredReviewsSafe() {
+
+    if (
+        typeof getFilteredReviews ===
+        "function"
+    ) {
+
+        return getFilteredReviews();
+
+    }
+
+
+    return [
+        ...currentReviews
+    ];
+
+}
+
+
+/* =========================================================
+   CSV LOAD
+   ---------------------------------------------------------
+   ★ 기존의 잘못된 GitHub blob URL 제거
+   ★ raw.githubusercontent.com 사용
+========================================================= */
+
+async function loadCSV(
+    filePath
+) {
+
+    if (
+        !filePath
+    ) {
+
+        throw new Error(
+            "CSV 파일 경로가 없습니다."
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       GitHub Raw URL
+    ----------------------------------------- */
+
+    const encodedPath =
+        filePath
+            .split("/")
+            .map(
+                part =>
+                    encodeURIComponent(
+                        part
+                    )
+            )
+            .join("/");
+
+
+    const url =
+        `https://raw.githubusercontent.com/` +
+        `dpjinn/CapstoneDesignBigData/` +
+        `main/` +
+        encodedPath;
+
+
+    console.log(
+        "CSV 로딩 URL:",
+        url
+    );
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                cache: "no-cache"
+            }
+        );
+
+
+    if (
+        !response.ok
+    ) {
+
+        throw new Error(
+            `CSV load failed: HTTP ${response.status}\n` +
+            `파일: ${filePath}\n` +
+            `URL: ${url}`
+        );
+
+    }
+
+
+    const text =
+        await response.text();
+
+
+    if (
+        !text.trim()
+    ) {
+
+        console.warn(
+            "CSV 파일이 비어 있습니다:",
+            filePath
+        );
+
+        return [];
+
+    }
+
+
+    return parseCSV(
+        text
+    );
+
+}
+
+
+/* =========================================================
+   CSV PARSER
+   ---------------------------------------------------------
+   쉼표가 들어간 리뷰,
+   큰따옴표가 들어간 리뷰도 처리
+========================================================= */
+
+function parseCSV(
+    text
+) {
+
+    text =
+        String(text)
+            .replace(
+                /^\uFEFF/,
+                ""
+            );
+
+
+    const rows =
+        [];
+
+
+    let row =
+        [];
+
+    let cell =
+        "";
+
+    let insideQuotes =
+        false;
+
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char =
+            text[i];
+
+        const next =
+            text[i + 1];
+
+
+        /* -----------------------------------------
+           큰따옴표
+        ----------------------------------------- */
+
+        if (
+            char === '"'
+        ) {
+
+            if (
+                insideQuotes &&
+                next === '"'
+            ) {
+
+                cell += '"';
+
+                i++;
+
+            }
+            else {
+
+                insideQuotes =
+                    !insideQuotes;
+
+            }
+
+            continue;
+
+        }
+
+
+        /* -----------------------------------------
+           쉼표
+        ----------------------------------------- */
+
+        if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(
+                cell
+            );
+
+            cell =
+                "";
+
+            continue;
+
+        }
+
+
+        /* -----------------------------------------
+           줄바꿈
+        ----------------------------------------- */
+
+        if (
+            (
+                char === "\n" ||
+                char === "\r"
+            ) &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                next === "\n"
+            ) {
+
+                i++;
+
+            }
+
+
+            row.push(
+                cell
+            );
+
+
+            rows.push(
+                row
+            );
+
+
+            row =
+                [];
+
+            cell =
+                "";
+
+            continue;
+
+        }
+
+
+        cell +=
+            char;
+
+    }
+
+
+    /* -----------------------------------------
+       마지막 셀
+    ----------------------------------------- */
+
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(
+            cell
+        );
+
+        rows.push(
+            row
+        );
+
+    }
+
+
+    if (
+        rows.length === 0
+    ) {
+
+        return [];
+
+    }
+
+
+    /* -----------------------------------------
+       Header
+    ----------------------------------------- */
+
+    const headers =
+        rows[0].map(
+            header =>
+                String(header)
+                    .trim()
+        );
+
+
+    /* -----------------------------------------
+       Object 변환
+    ----------------------------------------- */
+
+    const result =
+        [];
+
+
+    for (
+        let i = 1;
+        i < rows.length;
+        i++
+    ) {
+
+        const values =
+            rows[i];
+
+
+        /* 빈 줄 */
+
+        if (
+            values.length === 1 &&
+            !String(values[0]).trim()
+        ) {
+
+            continue;
+
+        }
+
+
+        const object =
+            {};
+
+
+        headers.forEach(
+            (
+                header,
+                index
+            ) => {
+
+                object[header] =
+                    values[index] ??
+                    "";
+
+            }
+        );
+
+
+        result.push(
+            object
+        );
+
+    }
+
+
+    console.log(
+        `CSV 파싱 완료: ${result.length}개`
+    );
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+   REVIEW DATE PARSER
+========================================================= */
+
+function parseReviewDate(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return null;
+
+    }
+
+
+    /* Steam timestamp */
+
+    const numeric =
+        Number(
+            value
+        );
+
+
+    if (
+        Number.isFinite(
+            numeric
+        )
+    ) {
+
+        const milliseconds =
+            numeric < 10000000000
+                ? numeric * 1000
+                : numeric;
+
+
+        const date =
+            new Date(
+                milliseconds
+            );
+
+
+        if (
+            !Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return date;
+
+        }
+
+    }
+
+
+    /* 일반 날짜 문자열 */
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        !Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return date;
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   REVIEW TEXT
+========================================================= */
+
+function getReviewText(
+    review
+) {
+
+    const keys = [
+
+        "review",
+        "Review",
+
+        "text",
+        "Text",
+
+        "content",
+        "Content",
+
+        "review_text",
+        "reviewText",
+
+        "리뷰",
+        "내용"
+
+    ];
+
+
+    for (
+        const key of keys
+    ) {
+
+        if (
+            review[key] !== undefined &&
+            review[key] !== null &&
+            String(
+                review[key]
+            ).trim()
+        ) {
+
+            return String(
+                review[key]
+            );
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   REVIEW FILTER EVENTS
+========================================================= */
+
+function setupReviewEvents() {
+
+    const sentimentFilter =
+        document.getElementById(
+            "sentimentFilter"
+        );
+
+
+    const periodFilter =
+        document.getElementById(
+            "periodFilter"
+        );
+
+
+    const priorityFilter =
+        document.getElementById(
+            "priorityFilter"
+        );
+
+
+   /* =========================================================
+   UI EVENTS
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        /* 게임 검색 */
+
+        const gameSearch =
+            document.getElementById(
+                "gameSearch"
+            );
+
+
+        if (
+            gameSearch
+        ) {
+
+            gameSearch.addEventListener(
+                "input",
+                filterGameList
+            );
+
+        }
+
+
+        /* 리뷰 검색 */
+
+        const reviewSearch =
+            document.getElementById(
+                "reviewSearch"
+            );
+
+
+        if (
+            reviewSearch
+        ) {
+
+            reviewSearch.addEventListener(
+                "input",
+                renderReviews
+            );
+
+        }
+
+
+        /* 리뷰 정렬 */
+
+        const reviewSort =
+            document.getElementById(
+                "reviewSort"
+            );
+
+
+        if (
+            reviewSort
+        ) {
+
+            reviewSort.addEventListener(
+                "change",
+                renderReviews
+            );
+
+        }
+
+
+        /* 감정 필터 */
+
+        const sentimentFilter =
+            document.getElementById(
+                "sentimentFilter"
+            );
+
+
+        if (
+            sentimentFilter
+        ) {
+
+            sentimentFilter.addEventListener(
+                "change",
+                updateDashboard
+            );
+
+        }
+
+
+        /* 기간 필터 */
+
+        const periodFilter =
+            document.getElementById(
+                "periodFilter"
+            );
+
+
+        if (
+            periodFilter
+        ) {
+
+            periodFilter.addEventListener(
+                "change",
+                updateDashboard
+            );
+
+        }
+
+
+        /* 우선순위 */
+
+        const priorityFilter =
+            document.getElementById(
+                "priorityFilter"
+            );
+
+
+        if (
+            priorityFilter
+        ) {
+
+            priorityFilter.addEventListener(
+                "change",
+                updateDashboard
+            );
+
+        }
+
+
+        /* GitHub 게임 목록 */
+
+        loadGithubFiles();
+
+    }
+);
+
+    /* -----------------------------------------
+       Positive / Negative
+    ----------------------------------------- */
+
+    if (
+        sentimentFilter
+    ) {
+
+        sentimentFilter.addEventListener(
+            "change",
+            () => {
+
+                refreshReviewDashboard();
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       기간
+    ----------------------------------------- */
+
+    if (
+        periodFilter
+    ) {
+
+        periodFilter.addEventListener(
+            "change",
+            () => {
+
+                refreshReviewDashboard();
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       리뷰 검색
+    ----------------------------------------- */
+
+    if (
+        reviewSearch
+    ) {
+
+        reviewSearch.addEventListener(
+            "input",
+            () => {
+
+                if (
+                    typeof renderReviews ===
+                    "function"
+                ) {
+
+                    renderReviews();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       리뷰 정렬
+    ----------------------------------------- */
+
+    if (
+        reviewSort
+    ) {
+
+        reviewSort.addEventListener(
+            "change",
+            () => {
+
+                if (
+                    typeof renderReviews ===
+                    "function"
+                ) {
+
+                    renderReviews();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       이슈 우선순위
+    ----------------------------------------- */
+
+    if (
+        priorityFilter
+    ) {
+
+        priorityFilter.addEventListener(
+            "change",
+            () => {
+
+                if (
+                    typeof analyzeIssues ===
+                        "function" &&
+                    typeof renderIssues ===
+                        "function"
+                ) {
+
+                    renderIssues(
+                        analyzeIssues(
+                            getFilteredReviewsSafe()
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        console.log(
+            "게임 리뷰 시스템 초기화"
+        );
+
+        setupReviewEvents();
+
+        setupChatControls();
+
+        loadGithubFiles();
+
+    }
+);
+/* =========================================================
+   HTML ESCAPE
+   게임 이름에 특수문자가 있어도 안전하게 표시
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+
+
+/* =========================================================
+   LOAD CSV
+========================================================= */
+
+async function loadCSV(filePath) {
+
+    try {
+
+        /*
+         * GitHub Contents API에서 받은
+         * file.path를 Raw GitHub URL로 변환
+         *
+         * 예:
+         * Yejin/data/Stardew_positive.csv
+         *
+         * →
+         * https://raw.githubusercontent.com/
+         * dpjinn/CapstoneDesignBigData/main/
+         * Yejin/data/Stardew_positive.csv
+         */
+
+        const url =
+            `https://raw.githubusercontent.com/` +
+            `dpjinn/CapstoneDesignBigData/main/` +
+            filePath
+                .split("/")
+                .map(part => encodeURIComponent(part))
+                .join("/");
+
+
+        console.log(
+            "CSV 로딩 URL:",
+            url
+        );
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `CSV load failed: HTTP ${response.status}\n` +
+                `파일: ${filePath}`
+            );
+
+        }
+
+
+        const text =
+            await response.text();
+
+
+        return parseCSV(text);
+
+    }
+    catch (error) {
+
+        console.error(
+            "CSV 로딩 오류:",
+            error
+        );
+
+        throw error;
+
+    }
+
+}
+
+
+/* =========================================================
+   CSV PARSER
+========================================================= */
+
+function parseCSV(text) {
+
+    const rows = [];
+
+    let row = [];
+
+    let cell = "";
+
+    let insideQuotes = false;
+
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char =
+            text[i];
+
+
+        const next =
+            text[i + 1];
+
+
+        /*
+         * 따옴표
+         */
+
+        if (
+            char === '"'
+        ) {
+
+            if (
+                insideQuotes &&
+                next === '"'
+            ) {
+
+                cell += '"';
+
+                i++;
+
+            } else {
+
+                insideQuotes =
+                    !insideQuotes;
+
+            }
+
+            continue;
+
+        }
+
+
+        /*
+         * 쉼표
+         */
+
+        if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(cell);
+
+            cell = "";
+
+            continue;
+
+        }
+
+
+        /*
+         * 줄바꿈
+         */
+
+        if (
+            (char === "\n" ||
+             char === "\r") &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                next === "\n"
+            ) {
+
+                i++;
+
+            }
+
+
+            row.push(cell);
+
+            cell = "";
+
+
+            if (
+                row.some(
+                    value =>
+                        value.trim() !== ""
+                )
+            ) {
+
+                rows.push(row);
+
+            }
+
+
+            row = [];
+
+            continue;
+
+        }
+
+
+        cell += char;
+
+    }
+
+
+    /*
+     * 마지막 셀
+     */
+
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(cell);
+
+        rows.push(row);
+
+    }
+
+
+    if (
+        rows.length === 0
+    ) {
+
+        return [];
+
+    }
+
+
+    /*
+     * 첫 번째 줄 = Header
+     */
+
+    const headers =
+        rows[0].map(
+            header =>
+                header
+                    .replace(
+                        /^\uFEFF/,
+                        ""
+                    )
+                    .trim()
+        );
+
+
+    /*
+     * 객체 배열 생성
+     */
+
+    return rows
+        .slice(1)
+        .map(
+            values => {
+
+                const obj = {};
+
+
+                headers.forEach(
+                    (header, index) => {
+
+                        obj[header] =
+                            values[index]
+                            ?? "";
+
+                    }
+                );
+
+
+                /*
+                 * 내부적으로 사용하는
+                 * 공통 필드
+                 */
+
+                obj._text =
+                    Object.values(
+                        obj
+                    )
+                    .join(" ");
+
+
+                obj._date =
+                    findDate(obj);
+
+
+                obj._score =
+                    findScore(obj);
+
+
+                return obj;
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   FIND DATE
+========================================================= */
+
+function findDate(review) {
+
+    const possibleKeys = [
+
+        "date",
+        "Date",
+        "created_at",
+        "timestamp",
+        "time",
+        "작성일",
+        "작성일자"
+
+    ];
+
+
+    for (
+        const key of possibleKeys
+    ) {
+
+        if (
+            review[key]
+        ) {
+
+            const date =
+                new Date(
+                    review[key]
+                );
+
+
+            if (
+                !isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return date;
+
+            }
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   FIND SCORE
+========================================================= */
+
+function findScore(review) {
+
+    const possibleKeys = [
+
+        "score",
+        "Score",
+        "rating",
+        "Rating",
+        "recommendation",
+        "추천",
+        "점수"
+
+    ];
+
+
+    for (
+        const key of possibleKeys
+    ) {
+
+        if (
+            review[key] !== undefined
+        ) {
+
+            const number =
+                Number(
+                    review[key]
+                );
+
+
+            if (
+                !isNaN(number)
+            ) {
+
+                return number;
+
+            }
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   UPDATE DASHBOARD
+========================================================= */
+
+function updateDashboard() {
+
+    if (
+        !currentGame
+    ) {
+
+        return;
+
+    }
+
+
+    const reviews =
+        getFilteredReviews();
+
+
+    /* =====================================================
+       통계
+    ===================================================== */
+
+    const total =
+        reviews.length;
+
+
+    const positive =
+        reviews.filter(
+            review =>
+                review.sentiment ===
+                "positive"
+        ).length;
+
+
+    const negative =
+        reviews.filter(
+            review =>
+                review.sentiment ===
+                "negative"
+        ).length;
+
+
+    const positiveRate =
+        total > 0
+            ? Math.round(
+                positive /
+                total *
+                100
+            )
+            : 0;
+
+
+    const negativeRate =
+        total > 0
+            ? Math.round(
+                negative /
+                total *
+                100
+            )
+            : 0;
+
+
+    const totalElement =
+        document.getElementById(
+            "totalReviews"
+        );
+
+
+    const positiveElement =
+        document.getElementById(
+            "positiveRate"
+        );
+
+
+    const negativeElement =
+        document.getElementById(
+            "negativeRate"
+        );
+
+
+    if (
+        totalElement
+    ) {
+
+        totalElement.textContent =
+            total.toLocaleString();
+
+    }
+
+
+    if (
+        positiveElement
+    ) {
+
+        positiveElement.textContent =
+            `${positiveRate}%`;
+
+    }
+
+
+    if (
+        negativeElement
+    ) {
+
+        negativeElement.textContent =
+            `${negativeRate}%`;
+
+    }
+
+
+    /* =====================================================
+       이슈
+    ===================================================== */
+
+    const issues =
+        analyzeIssues(
+            reviews
+        );
+
+
+    const issueCount =
+        document.getElementById(
+            "issueCount"
+        );
+
+
+    if (
+        issueCount
+    ) {
+
+        issueCount.textContent =
+            issues.length;
+
+    }
+
+
+    renderIssues(
+        issues
+    );
+
+
+    /* =====================================================
+       리뷰
+    ===================================================== */
+
+    renderReviews();
+
+
+    /* =====================================================
+       차트
+    ===================================================== */
+
+    updateCharts(
+        reviews
+    );
+
+
+    /* =====================================================
+       AI Insight
+    ===================================================== */
+
+    generateInsight(
+        reviews,
+        issues
+    );
+
+}
+
+
+/* =========================================================
+   FILTER REVIEWS
+========================================================= */
+
+function getFilteredReviews() {
+
+    let reviews =
+        [...currentReviews];
+
+
+    const sentiment =
+        document
+            .getElementById(
+                "sentimentFilter"
+            )
+            .value;
+
+
+    if (
+        sentiment !== "all"
+    ) {
+
+        reviews =
+            reviews.filter(
+                review =>
+                    review.sentiment ===
+                    sentiment
+            );
+
+    }
+
+
+    const period =
+        document
+            .getElementById(
+                "periodFilter"
+            )
+            .value;
+
+
+    if (
+        period !== "all"
+    ) {
+
+        const days =
+            Number(period);
+
+
+        const limit =
+            Date.now() -
+            days *
+            24 *
+            60 *
+            60 *
+            1000;
+
+
+        reviews =
+            reviews.filter(
+                review =>
+                    !review._date ||
+                    review._date.getTime() >=
+                    limit
+            );
+
+    }
+
+
+    return reviews;
+
+}
+
+
+/* =========================================================
+   ISSUE ANALYSIS
+========================================================= */
+
+function analyzeIssues(reviews) {
+
+    /*
+     * 실제 LLM 분석을 연결하기 전
+     * 리뷰에서 자주 등장하는 개발 이슈를
+     * 간단하게 추출하는 부분.
+     */
+
+    const keywords = {
+
+        "Server Stability": [
+            "server",
+            "서버",
+            "connection",
+            "disconnect",
+            "disconnecting",
+            "lag",
+            "렉"
+        ],
+
+        "Matchmaking": [
+            "matchmaking",
+            "match",
+            "매칭",
+            "queue",
+            "큐"
+        ],
+
+        "Weapon Balance": [
+            "weapon",
+            "gun",
+            "balance",
+            "무기",
+            "밸런스"
+        ],
+
+        "UI / UX": [
+            "ui",
+            "ux",
+            "interface",
+            "menu",
+            "화면",
+            "메뉴"
+        ],
+
+        "Tutorial": [
+            "tutorial",
+            "beginner",
+            "튜토리얼",
+            "초보"
+        ],
+
+        "Performance": [
+            "fps",
+            "performance",
+            "optimization",
+            "프레임",
+            "최적화"
+        ],
+
+        "Bug": [
+            "bug",
+            "glitch",
+            "crash",
+            "error",
+            "버그",
+            "오류",
+            "튕김"
+        ]
+
+    };
+
+
+    const results = [];
+
+
+    Object.entries(
+        keywords
+    ).forEach(
+        ([issue, words]) => {
+
+            let mentions = 0;
+
+            let negative = 0;
+
+
+            reviews.forEach(
+                review => {
+
+                    const text =
+                        String(
+                            review._text
+                        )
+                        .toLowerCase();
+
+
+                    const found =
+                        words.some(
+                            word =>
+                                text.includes(
+                                    word
+                                )
+                        );
+
+
+                    if (found) {
+
+                        mentions++;
+
+
+                        if (
+                            review.sentiment ===
+                            "negative"
+                        ) {
+
+                            negative++;
+
+                        }
+
+                    }
+
+                }
+            );
+
+
+            if (
+                mentions > 0
+            ) {
+
+                let priority =
+                    "low";
+
+
+                if (
+                    negative >= 20 ||
+                    mentions >= 100
+                ) {
+
+                    priority =
+                        "high";
+
+                } else if (
+                    negative >= 5 ||
+                    mentions >= 30
+                ) {
+
+                    priority =
+                        "medium";
+
+                }
+
+
+                results.push({
+
+                    issue,
+                    mentions,
+                    negative,
+                    priority
+
+                });
+
+            }
+
+        }
+    );
+
+
+    return results;
+
+}
+
+
+/* =========================================================
+   RENDER ISSUES
+========================================================= */
+
+function renderIssues(issues) {
+
+    const priorityFilter =
+        document
+            .getElementById(
+                "priorityFilter"
+            )
+            .value;
+
+
+    if (
+        priorityFilter !== "all"
+    ) {
+
+        issues =
+            issues.filter(
+                issue =>
+                    issue.priority ===
+                    priorityFilter
+            );
+
+    }
+
+
+    issues.sort(
+        (a, b) => {
+
+            let result;
+
+
+            if (
+                issueSortKey ===
+                "issue"
+            ) {
+
+                result =
+                    a.issue.localeCompare(
+                        b.issue
+                    );
+
+            } else {
+
+                result =
+                    a[issueSortKey] -
+                    b[issueSortKey];
+
+            }
+
+
+            return issueSortDirection ===
+                "asc"
+                ? result
+                : -result;
+
+        }
+    );
+
+
+    const tbody =
+        document
+            .getElementById(
+                "issueTable"
+            );
+
+
+    if (
+        issues.length === 0
+    ) {
+
+        tbody.innerHTML =
+            `
+            <tr>
+                <td colspan="4">
+                    <div class="empty">
+                        발견된 이슈가 없습니다.
+                    </div>
+                </td>
+            </tr>
+            `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        issues
+            .map(
+                issue => {
+
+                    return `
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        issue.issue
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${issue.mentions.toLocaleString()}
+                            </td>
+
+                            <td>
+                                ${issue.negative.toLocaleString()}
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="priority priority-${issue.priority}"
+                                >
+                                    ${issue.priority.toUpperCase()}
+                                </span>
+
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =========================================================
+   SORT ISSUES
+========================================================= */
+
+function sortIssues(key) {
+
+    if (
+        issueSortKey === key
+    ) {
+
+        issueSortDirection =
+            issueSortDirection === "asc"
+                ? "desc"
+                : "asc";
+
+    } else {
+
+        issueSortKey = key;
+
+        issueSortDirection = "desc";
+
+    }
+
+
+    const issues =
+        analyzeIssues(
+            getFilteredReviews()
+        );
+
+
+    const priorityOrder = {
+        low: 1,
+        medium: 2,
+        high: 3
+    };
+
+
+    issues.sort(
+        (a, b) => {
+
+            let result = 0;
+
+
+            if (
+                issueSortKey === "issue"
+            ) {
+
+                result =
+                    a.issue.localeCompare(
+                        b.issue
+                    );
+
+            } else if (
+                issueSortKey === "priority"
+            ) {
+
+                result =
+                    priorityOrder[a.priority] -
+                    priorityOrder[b.priority];
+
+            } else {
+
+                result =
+                    (a[issueSortKey] ?? 0) -
+                    (b[issueSortKey] ?? 0);
+
+            }
+
+
+            return issueSortDirection === "asc"
+                ? result
+                : -result;
+
+        }
+    );
+
+
+    renderIssues(
+        issues
+    );
+
+}
+
+
+/* =========================================================
+   RENDER REVIEWS
+========================================================= */
+
+function renderReviews() {
+
+    const list =
+        document.getElementById(
+            "reviewList"
+        );
+
+
+    if (
+        !list
+    ) {
+
+        return;
+
+    }
+
+
+    let reviews =
+        getFilteredReviews();
+
+
+    /* 리뷰 검색 */
+
+    const search =
+        document.getElementById(
+            "reviewSearch"
+        );
+
+
+    const keyword =
+        search
+            ? search.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    if (
+        keyword
+    ) {
+
+        reviews =
+            reviews.filter(
+                review =>
+                    String(
+                        review._text
+                    )
+                    .toLowerCase()
+                    .includes(
+                        keyword
+                    )
+            );
+
+    }
+
+
+    /* 정렬 */
+
+    const sortElement =
+        document.getElementById(
+            "reviewSort"
+        );
+
+
+    const sort =
+        sortElement
+            ? sortElement.value
+            : "latest";
+
+
+    if (
+        sort === "latest"
+    ) {
+
+        reviews.sort(
+            (a, b) =>
+                getTime(b) -
+                getTime(a)
+        );
+
+    }
+    else if (
+        sort === "oldest"
+    ) {
+
+        reviews.sort(
+            (a, b) =>
+                getTime(a) -
+                getTime(b)
+        );
+
+    }
+    else if (
+        sort === "score"
+    ) {
+
+        reviews.sort(
+            (a, b) =>
+                (b._score ?? 0) -
+                (a._score ?? 0)
+        );
+
+    }
+
+
+    /* 최대 50개 */
+
+    const displayReviews =
+        reviews.slice(
+            0,
+            50
+        );
+
+
+    /* 데이터 없음 */
+
+    if (
+        displayReviews.length === 0
+    ) {
+
+        list.innerHTML = `
+            <div class="empty">
+                표시할 리뷰가 없습니다.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* 리뷰 출력 */
+
+    list.innerHTML =
+        displayReviews
+            .map(
+                review => {
+
+                    const text =
+                        getReviewText(
+                            review
+                        );
+
+
+                    const date =
+                        review._date
+                            ? review._date
+                                .toLocaleDateString(
+                                    "ko-KR"
+                                )
+                            : "";
+
+
+                    const sentiment =
+                        review.sentiment ===
+                        "positive"
+                            ? "POSITIVE"
+                            : "NEGATIVE";
+
+
+                    return `
+                        <div class="review-item">
+
+                            <div class="review-top">
+
+                                <span
+                                    class="sentiment ${review.sentiment}"
+                                >
+                                    ${sentiment}
+                                </span>
+
+                            </div>
+
+                            <div class="review-text">
+                                ${escapeHtml(
+                                    text
+                                )}
+                            </div>
+
+                            <div class="review-meta">
+                                ${date}
+                            </div>
+
+                        </div>
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+    const reviewSearch =
+    document.getElementById(
+        "reviewSearch"
+    );
+
+if (reviewSearch) {
+
+    reviewSearch.addEventListener(
+        "input",
+        () => {
+
+            renderReviews();
+
+        }
+    );
+
+}
+
+ 
+
+/* =========================================================
+   GET REVIEW TEXT
+========================================================= */
+
+function getReviewText(review) {
+
+    const possibleKeys = [
+
+        "review",
+        "Review",
+        "text",
+        "Text",
+        "content",
+        "Content",
+        "review_text",
+        "reviewText",
+        "리뷰",
+        "내용"
+
+    ];
+
+
+    for (
+        const key of possibleKeys
+    ) {
+
+        if (
+            review[key] &&
+            String(
+                review[key]
+            ).trim()
+        ) {
+
+            return String(
+                review[key]
+            );
+
+        }
+
+    }
+
+
+    return review._text;
+
+}
+
+
+/* =========================================================
+   GET TIME
+========================================================= */
+
+function getTime(review) {
+
+    if (
+        review._date
+    ) {
+
+        return review
+            ._date
+            .getTime();
+
+    }
+
+
+    return 0;
+
+}
+
+
+/* =========================================================
+   CHARTS
+========================================================= */
+
+function updateCharts(reviews) {
+
+    const positive =
+        reviews.filter(
+            review =>
+                review.sentiment ===
+                "positive"
+        ).length;
+
+
+    const negative =
+        reviews.filter(
+            review =>
+                review.sentiment ===
+                "negative"
+        ).length;
+
+
+    /*
+     * Sentiment chart
+     */
+
+    const sentimentCanvas =
+        document
+            .getElementById(
+                "sentimentChart"
+            );
+
+
+    if (
+        sentimentChart
+    ) {
+
+        sentimentChart.destroy();
+
+    }
+
+
+    sentimentChart =
+        new Chart(
+            sentimentCanvas,
+            {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: [
+                        "Positive",
+                        "Negative"
+                    ],
+
+                    datasets: [
+
+                        {
+
+                            data: [
+                                positive,
+                                negative
+                            ]
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false
+
+                }
+
+            }
+        );
+
+
+    /*
+     * Review trend
+     */
+
+    const monthly =
+        {};
+
+
+    reviews.forEach(
+        review => {
+
+            if (
+                !review._date
+            ) return;
+
+
+            const key =
+                `${review._date.getFullYear()}-` +
+                `${String(
+                    review._date.getMonth() + 1
+                ).padStart(2, "0")}`;
+
+
+            if (
+                !monthly[key]
+            ) {
+
+                monthly[key] = {
+
+                    positive: 0,
+                    negative: 0
+
+                };
+
+            }
+
+
+            monthly[key][
+                review.sentiment
+            ]++;
+
+        }
+    );
+
+
+    const labels =
+        Object.keys(
+            monthly
+        ).sort();
+
+
+    const positiveData =
+        labels.map(
+            label =>
+                monthly[label].positive
+        );
+
+
+    const negativeData =
+        labels.map(
+            label =>
+                monthly[label].negative
+        );
+
+
+    const trendCanvas =
+        document
+            .getElementById(
+                "reviewTrendChart"
+            );
+
+
+    if (
+        reviewTrendChart
+    ) {
+
+        reviewTrendChart.destroy();
+
+    }
+
+
+    reviewTrendChart =
+        new Chart(
+            trendCanvas,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels,
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Positive",
+
+                            data:
+                                positiveData,
+
+                            tension:
+                                0.3
+
+                        },
+
+                        {
+
+                            label:
+                                "Negative",
+
+                            data:
+                                negativeData,
+
+                            tension:
+                                0.3
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    interaction: {
+
+                        intersect: false,
+
+                        mode: "index"
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   AI INSIGHT
+========================================================= */
+
+function generateInsight(
+    reviews,
+    issues
+) {
+
+    if (
+        !currentGame
+    ) {
+
+        return;
+
+    }
+
+
+    const total =
+        reviews.length;
+
+
+    const positive =
+        reviews.filter(
+            review =>
+                review.sentiment ===
+                "positive"
+        ).length;
+
+
+    const negative =
+        total -
+        positive;
+
+
+    if (
+        total === 0
+    ) {
+
+        document
+            .getElementById(
+                "insightTitle"
+            )
+            .textContent =
+            `${currentGame.gameName} 리뷰 데이터 없음`;
+
+
+        document
+            .getElementById(
+                "insightText"
+            )
+            .textContent =
+            "현재 필터 조건에 해당하는 리뷰가 없습니다.";
+
+        return;
+
+    }
+
+
+    const positiveRate =
+        Math.round(
+            positive /
+            total *
+            100
+        );
+
+
+    const topIssue =
+        [...issues]
+            .sort(
+                (a, b) =>
+                    b.mentions -
+                    a.mentions
+            )[0];
+
+
+    document
+        .getElementById(
+            "insightTitle"
+        )
+        .textContent =
+        `${currentGame.gameName} 사용자 의견 분석`;
+
+
+    let text =
+        `총 ${total.toLocaleString()}개의 리뷰 중 ` +
+        `긍정 리뷰는 ${positiveRate}%입니다. `;
+
+
+    if (
+        topIssue
+    ) {
+
+        text +=
+            `현재 가장 많이 언급되는 개발 이슈는 ` +
+            `"${topIssue.issue}"이며 ` +
+            `${topIssue.mentions.toLocaleString()}개의 리뷰에서 ` +
+            `관련 내용이 발견되었습니다. `;
+
+    }
+
+
+    if (
+        negative > positive
+    ) {
+
+        text +=
+            "부정 리뷰가 긍정 리뷰보다 많기 때문에 " +
+            "부정 의견에서 반복적으로 나타나는 원인을 " +
+            "우선적으로 확인할 필요가 있습니다.";
+
+    } else {
+
+        text +=
+            "전체적인 사용자 반응은 긍정적인 편이며, " +
+            "반복적으로 등장하는 부정 이슈를 중심으로 " +
+            "개선 사항을 확인할 수 있습니다.";
+
+    }
+
+
+    document
+        .getElementById(
+            "insightText"
+        )
+        .textContent =
+        text;
+
+}
+
+
+/* =========================================================
+   COMPARISON A
+========================================================= */
+
+function updateComparisonA(game) {
+
+    const reviews =
+        currentReviews;
+
+
+    const positive =
+        reviews.filter(
+            review =>
+                review.sentiment ===
+                "positive"
+        ).length;
+
+
+    const negative =
+        reviews.length -
+        positive;
+
+
+    document
+        .getElementById(
+            "compareGameA"
+        )
+        .textContent =
+        game.gameName;
+
+
+    document
+        .getElementById(
+            "compareReviewsA"
+        )
+        .textContent =
+        reviews.length
+            .toLocaleString();
+
+
+    document
+        .getElementById(
+            "comparePositiveA"
+        )
+        .textContent =
+        positive
+            .toLocaleString();
+
+
+    document
+        .getElementById(
+            "compareNegativeA"
+        )
+        .textContent =
+        negative
+            .toLocaleString();
+
+}
+
+
+/* =========================================================
+   COMPARISON B
+========================================================= */
+
+async function setComparisonGameB(gameName) {
+
+    const game =
+        games.find(
+            item =>
+                item.gameName ===
+                gameName
+        );
+
+
+    if (!game) return;
+
+
+    try {
+
+        const reviews =
+            await loadGameReviews(
+                game
+            );
+
+
+        const positive =
+            reviews.filter(
+                review =>
+                    review.sentiment ===
+                    "positive"
+            ).length;
+
+
+        const negative =
+            reviews.length -
+            positive;
+
+
+        document
+            .getElementById(
+                "compareGameB"
+            )
+            .textContent =
+            game.gameName;
+
+
+        document
+            .getElementById(
+                "compareReviewsB"
+            )
+            .textContent =
+            reviews.length
+                .toLocaleString();
+
+
+        document
+            .getElementById(
+                "comparePositiveB"
+            )
+            .textContent =
+            positive
+                .toLocaleString();
+
+
+        document
+            .getElementById(
+                "compareNegativeB"
+            )
+            .textContent =
+            negative
+                .toLocaleString();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+function handleChatKey(event) {
+
+    if (
+        event.key === "Enter"
+    ) {
+
+        sendChat();
+
+    }
+
+}
+
+
+async function sendChat() {
+
+    const input = document.getElementById("chatInput");
+    const question = input.value.trim();
+
+    if (!question) return;
+
+    addChatMessage(question, "user");
+    input.value = "";
+
+    try {
+
+        if (!currentGame) {
+            addChatMessage(
+                "먼저 게임을 선택해주세요.",
+                "ai"
+            );
+            return;
+        }
+
+        if (!currentReviews || currentReviews.length === 0) {
+            addChatMessage(
+                "현재 선택된 게임의 리뷰 데이터가 없습니다.",
+                "ai"
+            );
+            return;
+        }
+
+        const reviewsForAI = currentReviews
+            .slice(0, 100)
+            .map(review => {
+
+                return {
+                    sentiment: review.sentiment,
+                    review: getReviewText(review),
+                    date: review._date
+                        ? review._date.toISOString()
+                        : "",
+                    score: review._score ?? ""
+                };
+
+            });
+
+        const response = await fetch(
+            "http://127.0.0.1:5000/chat",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    game: currentGame.gameName,
+                    question: question,
+                    reviews: reviewsForAI
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `서버 오류: ${response.status}`
+            );
+        }
+
+        const data = await response.json();
+
+        addChatMessage(
+            data.answer,
+            "ai"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "채팅 오류:",
+            error
+        );
+
+        addChatMessage(
+            "AI 응답을 가져오지 못했습니다.",
+            "ai"
+        );
+    }
+}
+        
+
+
+function addChatMessage(
+    text,
+    type
+) {
+
+    const container =
+        document
+            .getElementById(
+                "chatMessages"
+            );
+
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+
+    message.className =
+        `message ${type}`;
+
+
+    message.textContent =
+        text;
+
+
+    container.appendChild(
+        message
+    );
+
+
+    container.scrollTop =
+        container.scrollHeight;
+
+}
+
+/* =========================================================
+   AI CHAT WINDOW CONTROL
+========================================================= */
+
+function setupChatControls() {
+
+    const chatBox = document.getElementById("chatBox");
+    const minimizeBtn = document.getElementById("chatMinimizeBtn");
+    const closeBtn = document.getElementById("chatCloseBtn");
+    const openBtn = document.getElementById("chatOpenBtn");
+
+    console.log("CHAT CONTROL:", {
+        chatBox,
+        minimizeBtn,
+        closeBtn,
+        openBtn
+    });
+
+    if (!chatBox || !minimizeBtn || !closeBtn || !openBtn) {
+        console.error("채팅창 버튼을 찾지 못했습니다.");
+        return;
+    }
+
+    /* 최소화 */
+    minimizeBtn.onclick = function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log("최소화 버튼 클릭");
+
+        const isMinimized =
+            chatBox.classList.toggle("minimized");
+
+        if (isMinimized) {
+
+            minimizeBtn.textContent = "+";
+            minimizeBtn.title = "채팅창 펼치기";
+
+        } else {
+
+            minimizeBtn.textContent = "−";
+            minimizeBtn.title = "최소화";
+
+        }
+    };
+
+
+    /* 닫기 */
+    closeBtn.onclick = function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log("닫기 버튼 클릭");
+
+        chatBox.style.display = "none";
+
+        openBtn.style.display = "flex";
+    };
+
+
+    /* 다시 열기 */
+    openBtn.onclick = function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log("채팅창 다시 열기");
+
+        chatBox.style.display = "flex";
+
+        openBtn.style.display = "none";
+
+        /* 닫았을 때 최소화 상태였다면 복원 */
+        chatBox.classList.remove("minimized");
+
+        minimizeBtn.textContent = "−";
+        minimizeBtn.title = "최소화";
+    };
+
+}
+/* =========================================================
+   COPY INSIGHT
+========================================================= */
+
+async function copyInsight() {
+
+    const title =
+        document
+            .getElementById(
+                "insightTitle"
+            )
+            .textContent;
+
+
+    const text =
+        document
+            .getElementById(
+                "insightText"
+            )
+            .textContent;
+
+
+    const content =
+        `${title}\n\n${text}`;
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            content
+        );
+
+
+        alert(
+            "AI Insight가 복사되었습니다."
+        );
+
+    } catch (error) {
+
+        alert(
+            "복사에 실패했습니다."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EXPORT CSV
+========================================================= */
+
+function exportCSV() {
+
+    if (
+        !currentReviews ||
+        currentReviews.length === 0
+    ) {
+
+        alert(
+            "먼저 게임을 선택해주세요."
+        );
+
+        return;
+
+    }
+
+
+    const headers = [
+
+        "sentiment",
+        "date",
+        "score",
+        "review"
+
+    ];
+
+
+    const rows =
+        currentReviews.map(
+            review => [
+
+                review.sentiment,
+
+                review._date
+                    ? review._date
+                        .toISOString()
+                    : "",
+
+                review._score
+                    ?? "",
+
+                getReviewText(
+                    review
+                )
+
+            ]
+        );
+
+
+    const csv =
+        [
+            headers,
+            ...rows
+        ]
+        .map(
+            row =>
+                row
+                    .map(
+                        value =>
+                            `"${String(
+                                value
+                            )
+                            .replace(
+                                /"/g,
+                                '""'
+                            )}"`
+                    )
+                    .join(",")
+        )
+        .join("\n");
+
+
+    const blob =
+        new Blob(
+            [
+                "\uFEFF" +
+                csv
+            ],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        currentGame
+            ? `${currentGame.gameName}_analysis.csv`
+            : "game_analysis.csv";
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+/* =========================================================
+   RESET FILTERS
+========================================================= */
+
+function resetFilters() {
+
+    document
+        .getElementById(
+            "genreFilter"
+        )
+        .value =
+        "all";
+
+
+    document
+        .getElementById(
+            "periodFilter"
+        )
+        .value =
+        "all";
+
+
+    document
+        .getElementById(
+            "sentimentFilter"
+        )
+        .value =
+        "all";
+
+
+    document
+        .getElementById(
+            "priorityFilter"
+        )
+        .value =
+        "all";
+
+
+    document
+        .getElementById(
+            "reviewSearch"
+        )
+        .value =
+        "";
+
+
+    if (
+        currentGame
+    ) {
+
+        updateDashboard();
+
+    }
+
+}
+
+
+/* =========================================================
+   FILTER EVENTS
+========================================================= */
+
+    /* =========================================================
+   FILTER EVENTS
+========================================================= */
+
+function applyReviewFilters() {
+
+    const reviews =
+        getFilteredReviews();
+
+
+    /* 리뷰 */
+
+    renderReviews();
+
+
+    /* 이슈 */
+
+    const issues =
+        analyzeIssues(
+            reviews
+        );
+
+    renderIssues(
+        issues
+    );
+
+
+    /* 차트 */
+
+    updateCharts(
+        reviews
+    );
+
+
+    /* AI Insight */
+
+    generateInsight(
+        reviews,
+        issues
+    );
+
+}
+
+
+/* Sentiment */
+
+const sentimentFilter =
+    document.getElementById(
+        "sentimentFilter"
+    );
+
+if (sentimentFilter) {
+
+    sentimentFilter.addEventListener(
+        "change",
+        applyReviewFilters
+    );
+
+}
+
+
+/* Period */
+
+const periodFilter =
+    document.getElementById(
+        "periodFilter"
+    );
+
+if (periodFilter) {
+
+    periodFilter.addEventListener(
+        "change",
+        applyReviewFilters
+    );
+
+}
+
+document
+    .getElementById(
+        "genreFilter"
+    )
+    .addEventListener(
+        "change",
+        () => {
+
+            if (
+                currentGame
+            ) {
+
+                updateDashboard();
+
+            }
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "periodFilter"
+    )
+    .addEventListener(
+        "change",
+        () => {
+
+            if (
+                currentGame
+            ) {
+
+                updateDashboard();
+
+            }
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "sentimentFilter"
+    )
+    .addEventListener(
+        "change",
+        () => {
+
+            if (
+                currentGame
+            ) {
+
+                updateDashboard();
+
+            }
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "priorityFilter"
+    )
+    .addEventListener(
+        "change",
+        () => {
+
+            if (
+                currentGame
+            ) {
+
+                updateDashboard();
+
+            }
+
+        }
+    );
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollToSection(
+    id
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (
+        element
+    ) {
+
+        element.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+function showError(
+    message
+) {
+
+    const box =
+        document
+            .getElementById(
+                "errorBox"
+            );
+
+
+    if (!message) {
+
+        box.style.display =
+            "none";
+
+        box.textContent =
+            "";
+
+        return;
+
+    }
+
+
+    box.textContent =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+</script>
+
+</body>
+</html>
