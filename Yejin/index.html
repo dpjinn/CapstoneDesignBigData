@@ -2471,133 +2471,295 @@ async function selectGame(game) {
 }
 /* =========================================================
    LOAD GAME REVIEWS
-   선택한 게임의 positive / negative CSV 로딩
 ========================================================= */
 
 async function loadGameReviews(game) {
 
+    if (!game) {
+        console.error("게임 정보가 없습니다.");
+        return [];
+    }
+
+    console.log("게임 리뷰 로딩:", game.gameName);
+
     try {
 
+        let positiveReviews = [];
+        let negativeReviews = [];
+
+        /* -------------------------
+           Positive CSV
+        ------------------------- */
+
+        if (game.positiveFile) {
+
+            try {
+
+                positiveReviews =
+                    await loadCSV(game.positiveFile);
+
+                positiveReviews =
+                    positiveReviews.map(review => {
+
+                        return {
+                            ...review,
+                            sentiment: "positive"
+                        };
+
+                    });
+
+            } catch (error) {
+
+                console.error(
+                    "긍정 리뷰 CSV 로딩 실패:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* -------------------------
+           Negative CSV
+        ------------------------- */
+
+        if (game.negativeFile) {
+
+            try {
+
+                negativeReviews =
+                    await loadCSV(game.negativeFile);
+
+                negativeReviews =
+                    negativeReviews.map(review => {
+
+                        return {
+                            ...review,
+                            sentiment: "negative"
+                        };
+
+                    });
+
+            } catch (error) {
+
+                console.error(
+                    "부정 리뷰 CSV 로딩 실패:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* -------------------------
+           Combine
+        ------------------------- */
+
+        currentReviews = [
+            ...positiveReviews,
+            ...negativeReviews
+        ];
+
+
         console.log(
-            "리뷰 로딩 시작:",
-            game.gameName
+            `${game.gameName} 리뷰 로딩 완료`,
+            {
+                positive: positiveReviews.length,
+                negative: negativeReviews.length,
+                total: currentReviews.length
+            }
         );
 
 
-        const reviews = [];
-
-
-        /* =================================================
-           Positive CSV
-        ================================================= */
-
-        if (
-            game.positiveFile
-        ) {
-
-            console.log(
-                "Positive CSV:",
-                game.positiveFile
-            );
-
-
-            const positiveReviews =
-                await loadCSV(
-                    game.positiveFile
-                );
-
-
-            positiveReviews.forEach(
-                review => {
-
-                    review.sentiment =
-                        "positive";
-
-                    reviews.push(
-                        review
-                    );
-
-                }
-            );
-
-        }
-
-
-        /* =================================================
-           Negative CSV
-        ================================================= */
-
-        if (
-            game.negativeFile
-        ) {
-
-            console.log(
-                "Negative CSV:",
-                game.negativeFile
-            );
-
-
-            const negativeReviews =
-                await loadCSV(
-                    game.negativeFile
-                );
-
-
-            negativeReviews.forEach(
-                review => {
-
-                    review.sentiment =
-                        "negative";
-
-                    reviews.push(
-                        review
-                    );
-
-                }
-            );
-
-        }
-
-
-        /* =================================================
-           리뷰 저장
-        ================================================= */
+        /* -------------------------
+           리뷰 데이터 전처리
+        ------------------------- */
 
         currentReviews =
-            reviews;
+            currentReviews.map(review => {
+
+                const text =
+                    getReviewText(review);
+
+                review._text = text;
 
 
-        filteredReviews =
-            [...reviews];
+                /* 날짜 */
+
+                const possibleDateKeys = [
+                    "timestamp_created",
+                    "timestamp",
+                    "date",
+                    "Date",
+                    "created_at",
+                    "createdAt"
+                ];
+
+                let dateValue = null;
+
+                for (
+                    const key of possibleDateKeys
+                ) {
+
+                    if (
+                        review[key] !== undefined &&
+                        review[key] !== null &&
+                        review[key] !== ""
+                    ) {
+
+                        dateValue =
+                            review[key];
+
+                        break;
+
+                    }
+
+                }
 
 
-        console.log(
-            `${game.gameName}: ` +
-            `${reviews.length} reviews`
+                if (dateValue) {
+
+                    let date =
+                        new Date(
+                            Number(dateValue) * 1000
+                        );
+
+                    if (
+                        isNaN(date.getTime())
+                    ) {
+
+                        date =
+                            new Date(dateValue);
+
+                    }
+
+                    if (
+                        !isNaN(date.getTime())
+                    ) {
+
+                        review._date = date;
+
+                    } else {
+
+                        review._date = null;
+
+                    }
+
+                } else {
+
+                    review._date = null;
+
+                }
+
+
+                /* 점수 */
+
+                const possibleScoreKeys = [
+                    "score",
+                    "Score",
+                    "sentiment_score",
+                    "sentimentScore"
+                ];
+
+                review._score = null;
+
+                for (
+                    const key of possibleScoreKeys
+                ) {
+
+                    if (
+                        review[key] !== undefined &&
+                        review[key] !== null &&
+                        review[key] !== ""
+                    ) {
+
+                        const score =
+                            Number(review[key]);
+
+                        if (!isNaN(score)) {
+
+                            review._score =
+                                score;
+
+                        }
+
+                        break;
+
+                    }
+
+                }
+
+
+                return review;
+
+            });
+
+
+        /* -------------------------
+           화면 갱신
+        ------------------------- */
+
+        renderReviews();
+
+
+        const filteredReviews =
+            getFilteredReviews();
+
+
+        const issues =
+            analyzeIssues(
+                filteredReviews
+            );
+
+
+        renderIssues(
+            issues
         );
 
 
-        /* =================================================
-           대시보드 업데이트
-        ================================================= */
-
-        updateDashboard();
+        updateCharts(
+            filteredReviews
+        );
 
 
-    }
-    catch (error) {
+        generateInsight(
+            filteredReviews,
+            issues
+        );
+
+
+        /* -------------------------
+           Comparison A
+        ------------------------- */
+
+        updateComparisonA(
+            game
+        );
+
+
+        return currentReviews;
+
+
+    } catch (error) {
 
         console.error(
-            "리뷰 로딩 실패:",
+            "게임 리뷰 로딩 오류:",
             error
         );
 
+        currentReviews = [];
 
-        alert(
-            `"${game.gameName}"의 리뷰 데이터를 ` +
-            `불러오지 못했습니다.\n\n` +
-            error.message
-        );
+        renderReviews();
+
+        renderIssues([]);
+
+        updateCharts([]);
+
+        generateInsight([], []);
+
+        throw error;
 
     }
 
