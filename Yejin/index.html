@@ -6004,85 +6004,60 @@ function handleChatKey(event) {
 }
 
 
-function sendChat() {
+async function sendChat() {
+    const input = document.getElementById("chatInput");
+    const messages = document.getElementById("chatMessages");
 
-    const input =
-        document
-            .getElementById(
-                "chatInput"
-            );
+    const question = input.value.trim();
 
+    if (!question) return;
 
-    const text =
-        input.value.trim();
-
-
-    if (!text) return;
-
-
-    addChatMessage(
-        text,
-        "user"
-    );
-
+    // 사용자 메시지 표시
+    messages.innerHTML += `
+        <div class="user-message">
+            ${question}
+        </div>
+    `;
 
     input.value = "";
 
-
-    /*
-     * 현재는 프론트엔드 테스트용.
-     *
-     * 실제 OpenAI API 연결 시:
-     *
-     * fetch("/api/chat", {
-     *     method: "POST",
-     *     headers: {
-     *         "Content-Type": "application/json"
-     *     },
-     *     body: JSON.stringify({
-     *         game: currentGame,
-     *         reviews: currentReviews,
-     *         question: text
-     *     })
-     * })
-     *
-     * 형태로 백엔드와 연결하면 된다.
-     */
-
-
-    setTimeout(
-        () => {
-
-            let answer =
-                "현재 선택된 게임";
-
-
-            if (
-                currentGame
-            ) {
-
-                answer +=
-                    ` "${currentGame.gameName}"의 `;
-
+    try {
+        const response = await fetch(
+            "https://YOUR-BACKEND-URL/chat",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: question
+                })
             }
+        );
 
+        if (!response.ok) {
+            throw new Error("서버 오류");
+        }
 
-            answer +=
-                `리뷰 ${currentReviews.length.toLocaleString()}개를 ` +
-                "기준으로 분석할 수 있습니다. " +
-                "실제 LLM 연결 후에는 질문에 대한 " +
-                "자연어 분석 결과를 제공할 수 있습니다.";
+        const data = await response.json();
 
+        messages.innerHTML += `
+            <div class="ai-message">
+                ${data.answer}
+            </div>
+        `;
 
-            addChatMessage(
-                answer,
-                "ai"
-            );
+        messages.scrollTop = messages.scrollHeight;
 
-        },
-        400
-    );
+    } catch (error) {
+        console.error(error);
 
+        messages.innerHTML += `
+            <div class="ai-message">
+                AI 응답을 가져오지 못했습니다.
+            </div>
+        `;
+    }
 }
 
 
