@@ -1972,48 +1972,192 @@ async function loadGithubFiles() {
 }
 
 /* =========================================================
+   GITHUB GAME REVIEW SYSTEM
+   ---------------------------------------------------------
+   파일 구조:
+
+   Yejin/data/
+   ├─ Stardew_positive.csv
+   ├─ Stardew_negative.csv
+   ├─ 20XX_positive.csv
+   ├─ 20XX_negative.csv
+   ├─ A Hat in Time_positive.csv
+   └─ A Hat in Time_negative.csv
+
+   게임 이름은 "_positive.csv" 또는 "_negative.csv"
+   앞부분을 사용한다.
+========================================================= */
+
+
+/* =========================================================
+   LOAD GITHUB FILE LIST
+========================================================= */
+
+async function loadGithubFiles() {
+
+    try {
+
+        const apiUrl =
+            "https://api.github.com/repos/" +
+            "dpjinn/CapstoneDesignBigData/" +
+            "contents/Yejin/data";
+
+        console.log(
+            "GitHub 파일 목록 요청:",
+            apiUrl
+        );
+
+
+        const response =
+            await fetch(apiUrl, {
+                headers: {
+                    "Accept":
+                        "application/vnd.github+json"
+                }
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `GitHub 파일 목록 로딩 실패: HTTP ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!Array.isArray(data)) {
+
+            throw new Error(
+                "GitHub API 응답이 파일 목록이 아닙니다."
+            );
+
+        }
+
+
+        githubFiles =
+            data.filter(file => {
+
+                return (
+                    file.type === "file" &&
+                    file.name
+                        .toLowerCase()
+                        .endsWith(".csv")
+                );
+
+            });
+
+
+        console.log(
+            "CSV 파일:",
+            githubFiles
+        );
+
+
+        createGameList();
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "GitHub 파일 목록 로딩 오류:",
+            error
+        );
+
+
+        const list =
+            document.getElementById(
+                "gameList"
+            );
+
+
+        if (list) {
+
+            list.innerHTML = `
+                <div class="game-empty">
+                    게임 데이터를 불러오지 못했습니다.<br>
+                    <small>
+                        ${escapeHtml(error.message)}
+                    </small>
+                </div>
+            `;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
    CREATE GAME LIST
+   ---------------------------------------------------------
+   Stardew_positive.csv
+        ↓
+   gameName = Stardew
+
+   Stardew_negative.csv
+        ↓
+   gameName = Stardew
+
+   A Hat in Time_positive.csv
+        ↓
+   gameName = A Hat in Time
 ========================================================= */
 
 function createGameList() {
 
-    const gameMap = new Map();
+    const gameMap =
+        new Map();
 
 
     githubFiles.forEach(file => {
 
-        // CSV 파일 이름
-        const filename = file.name;
+        const filename =
+            file.name;
 
-        // 확장자 제거
         const lowerFilename =
             filename.toLowerCase();
 
 
-        /*
-         * positive 파일
-         * 예:
-         * Stardew_positive.csv
-         * 20XX_positive.csv
-         */
+        /* -----------------------------------------
+           POSITIVE
+        ----------------------------------------- */
 
-        if (lowerFilename.endsWith("_positive.csv")) {
+        if (
+            lowerFilename.endsWith(
+                "_positive.csv"
+            )
+        ) {
 
             const gameName =
                 filename.substring(
                     0,
-                    filename.length - "_positive.csv".length
+                    filename.length -
+                    "_positive.csv".length
                 );
 
 
-            if (!gameMap.has(gameName)) {
+            if (
+                !gameMap.has(gameName)
+            ) {
 
                 gameMap.set(
                     gameName,
                     {
-                        gameName: gameName,
-                        positiveFile: null,
-                        negativeFile: null
+                        gameName:
+                            gameName,
+
+                        positiveFile:
+                            null,
+
+                        negativeFile:
+                            null
                     }
                 );
 
@@ -2021,7 +2165,9 @@ function createGameList() {
 
 
             const game =
-                gameMap.get(gameName);
+                gameMap.get(
+                    gameName
+                );
 
 
             game.positiveFile =
@@ -2030,32 +2176,39 @@ function createGameList() {
         }
 
 
-        /*
-         * negative 파일
-         * 예:
-         * Stardew_negative.csv
-         * 20XX_negative.csv
-         */
+        /* -----------------------------------------
+           NEGATIVE
+        ----------------------------------------- */
 
         else if (
-            lowerFilename.endsWith("_negative.csv")
+            lowerFilename.endsWith(
+                "_negative.csv"
+            )
         ) {
 
             const gameName =
                 filename.substring(
                     0,
-                    filename.length - "_negative.csv".length
+                    filename.length -
+                    "_negative.csv".length
                 );
 
 
-            if (!gameMap.has(gameName)) {
+            if (
+                !gameMap.has(gameName)
+            ) {
 
                 gameMap.set(
                     gameName,
                     {
-                        gameName: gameName,
-                        positiveFile: null,
-                        negativeFile: null
+                        gameName:
+                            gameName,
+
+                        positiveFile:
+                            null,
+
+                        negativeFile:
+                            null
                     }
                 );
 
@@ -2063,7 +2216,9 @@ function createGameList() {
 
 
             const game =
-                gameMap.get(gameName);
+                gameMap.get(
+                    gameName
+                );
 
 
             game.negativeFile =
@@ -2074,9 +2229,9 @@ function createGameList() {
     });
 
 
-    /*
-     * Map → Array
-     */
+    /* -----------------------------------------
+       Map → Array
+    ----------------------------------------- */
 
     games =
         Array.from(
@@ -2084,9 +2239,9 @@ function createGameList() {
         );
 
 
-    /*
-     * 게임 이름순 정렬
-     */
+    /* -----------------------------------------
+       이름순 정렬
+    ----------------------------------------- */
 
     games.sort(
         (a, b) =>
@@ -2096,25 +2251,33 @@ function createGameList() {
     );
 
 
-    /*
-     * 게임 개수 표시
-     */
-
-    const gameCountElement =
-        document.getElementById("gameCount");
+    console.log(
+        "게임 목록 생성 완료:",
+        games
+    );
 
 
-    if (gameCountElement) {
+    /* -----------------------------------------
+       게임 개수
+    ----------------------------------------- */
 
-        gameCountElement.textContent =
+    const gameCount =
+        document.getElementById(
+            "gameCount"
+        );
+
+
+    if (gameCount) {
+
+        gameCount.textContent =
             `${games.length.toLocaleString()} games`;
 
     }
 
 
-    /*
-     * 게임 목록 출력
-     */
+    /* -----------------------------------------
+       게임 목록 표시
+    ----------------------------------------- */
 
     renderGameList("");
 
@@ -2122,63 +2285,68 @@ function createGameList() {
 
 
 /* =========================================================
-   GAME SEARCH
-   - 게임 이름 일부 검색 가능
-   - 1~2단어 검색 시 여러 게임 표시
-   - 자동 선택하지 않음
-   - 사용자가 게임을 클릭하면 CSV 로딩
-========================================================= */
-
-
-/* =========================================================
    SEARCH GAME
-   검색 버튼을 눌렀을 때
 ========================================================= */
 
 function searchGame() {
 
     const searchInput =
-        document.getElementById("searchInput");
+        document.getElementById(
+            "searchInput"
+        );
+
 
     const keyword =
         searchInput
             ? searchInput.value.trim()
             : "";
 
-    renderGameList(keyword);
+
+    renderGameList(
+        keyword
+    );
 
 }
 
 
 /* =========================================================
-   FILTER GAME LIST
-   검색창에 입력할 때마다 실행
+   LIVE GAME SEARCH
 ========================================================= */
 
 function filterGameList() {
 
     const searchInput =
-        document.getElementById("searchInput");
+        document.getElementById(
+            "searchInput"
+        );
+
 
     const keyword =
         searchInput
             ? searchInput.value.trim()
             : "";
 
-    renderGameList(keyword);
+
+    renderGameList(
+        keyword
+    );
 
 }
 
 
 /* =========================================================
    RENDER GAME LIST
-   게임 목록 출력
 ========================================================= */
 
-function renderGameList(keyword = "") {
+function renderGameList(
+    keyword = ""
+) {
 
     const list =
-        document.getElementById("gameList");
+        document.getElementById(
+            "gameList"
+        );
+
 
     if (!list) {
 
@@ -2191,51 +2359,44 @@ function renderGameList(keyword = "") {
     }
 
 
-    // 기존 목록 삭제
     list.innerHTML = "";
 
 
-    // 검색어 정리
     const normalizedKeyword =
-        keyword.toLowerCase().trim();
+        keyword
+            .toLowerCase()
+            .trim();
 
 
-    /* -----------------------------------------------------
-       게임 검색
-       -----------------------------------------------------
-       예:
-       "star"
-       → Starfield
-       → Stardew Valley
-       → Star Wars
-       → Starbound
-
-       "cyber"
-       → Cyberpunk 2077
-       → ...
-    ----------------------------------------------------- */
+    /* -----------------------------------------
+       검색
+    ----------------------------------------- */
 
     const filteredGames =
         games.filter(game => {
 
-            if (!game || !game.gameName) {
+            if (
+                !game ||
+                !game.gameName
+            ) {
+
                 return false;
+
             }
 
-            const gameName =
-                game.gameName
-                    .toLowerCase();
 
-            return gameName.includes(
-                normalizedKeyword
-            );
+            return game.gameName
+                .toLowerCase()
+                .includes(
+                    normalizedKeyword
+                );
 
         });
 
 
-    /* =====================================================
-       검색 결과 없음
-    ===================================================== */
+    /* -----------------------------------------
+       결과 없음
+    ----------------------------------------- */
 
     if (
         filteredGames.length === 0
@@ -2243,7 +2404,12 @@ function renderGameList(keyword = "") {
 
         list.innerHTML = `
             <div class="game-empty">
-                <div style="font-size:24px; margin-bottom:8px;">
+                <div
+                    style="
+                        font-size:24px;
+                        margin-bottom:8px;
+                    "
+                >
                     🔍
                 </div>
 
@@ -2259,6 +2425,7 @@ function renderGameList(keyword = "") {
                 "gameCount"
             );
 
+
         if (count) {
 
             count.textContent =
@@ -2266,169 +2433,193 @@ function renderGameList(keyword = "") {
 
         }
 
+
         return;
 
     }
 
 
-    /* =====================================================
-       검색 결과 게임 출력
-    ===================================================== */
+    /* -----------------------------------------
+       게임 출력
+    ----------------------------------------- */
 
-    filteredGames.forEach(game => {
+    filteredGames.forEach(
+        game => {
 
-        const item =
-            document.createElement("div");
-
-
-        item.className =
-            "game-item";
-
-
-        /* -------------------------------------------------
-           게임 이름
-        ------------------------------------------------- */
-
-        const name =
-            document.createElement("div");
-
-        name.className =
-            "game-name";
-
-
-        /* -------------------------------------------------
-           검색어가 있으면 일치 부분 강조
-        ------------------------------------------------- */
-
-        if (normalizedKeyword) {
-
-            const gameName =
-                game.gameName;
-
-            const lowerName =
-                gameName.toLowerCase();
-
-            const index =
-                lowerName.indexOf(
-                    normalizedKeyword
+            const item =
+                document.createElement(
+                    "div"
                 );
 
 
-            if (index !== -1) {
+            item.className =
+                "game-item";
 
-                const before =
-                    gameName.substring(
-                        0,
-                        index
+
+            /* ---------------------------------
+               게임 이름
+            --------------------------------- */
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "game-name";
+
+
+            if (
+                normalizedKeyword
+            ) {
+
+                const gameName =
+                    game.gameName;
+
+                const lowerName =
+                    gameName.toLowerCase();
+
+
+                const index =
+                    lowerName.indexOf(
+                        normalizedKeyword
                     );
 
-                const matched =
-                    gameName.substring(
-                        index,
-                        index +
-                        normalizedKeyword.length
-                    );
 
-                const after =
-                    gameName.substring(
-                        index +
-                        normalizedKeyword.length
-                    );
+                if (
+                    index !== -1
+                ) {
+
+                    const before =
+                        gameName.substring(
+                            0,
+                            index
+                        );
 
 
-                name.innerHTML =
-                    escapeHtml(before) +
-                    `<strong>${escapeHtml(matched)}</strong>` +
-                    escapeHtml(after);
+                    const matched =
+                        gameName.substring(
+                            index,
+                            index +
+                            normalizedKeyword.length
+                        );
+
+
+                    const after =
+                        gameName.substring(
+                            index +
+                            normalizedKeyword.length
+                        );
+
+
+                    name.innerHTML =
+                        escapeHtml(before) +
+                        `<strong>${escapeHtml(matched)}</strong>` +
+                        escapeHtml(after);
+
+                }
+                else {
+
+                    name.textContent =
+                        gameName;
+
+                }
 
             }
             else {
 
                 name.textContent =
-                    gameName;
+                    game.gameName;
 
             }
 
+
+            item.appendChild(
+                name
+            );
+
+
+            /* ---------------------------------
+               Positive / Negative 상태
+            --------------------------------- */
+
+            const status =
+                document.createElement(
+                    "div"
+                );
+
+
+            status.className =
+                "game-status";
+
+
+            if (
+                game.positiveFile
+            ) {
+
+                status.innerHTML += `
+                    <span class="positive-status">
+                        Positive
+                    </span>
+                `;
+
+            }
+
+
+            if (
+                game.negativeFile
+            ) {
+
+                status.innerHTML += `
+                    <span class="negative-status">
+                        Negative
+                    </span>
+                `;
+
+            }
+
+
+            item.appendChild(
+                status
+            );
+
+
+            /* ---------------------------------
+               게임 클릭
+               ★ 중요
+               gameName이 아니라 game 객체 전달
+            --------------------------------- */
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    selectGame(
+                        game
+                    );
+
+                }
+            );
+
+
+            list.appendChild(
+                item
+            );
+
         }
-        else {
-
-            name.textContent =
-                game.gameName;
-
-        }
+    );
 
 
-        item.appendChild(name);
-
-
-        /* -------------------------------------------------
-           Positive / Negative 파일 상태
-        ------------------------------------------------- */
-
-        const status =
-            document.createElement("div");
-
-        status.className =
-            "game-status";
-
-
-        if (
-            game.positiveFile
-        ) {
-
-            status.innerHTML +=
-                `<span class="positive-status">
-                    Positive
-                </span>`;
-
-        }
-
-
-        if (
-            game.negativeFile
-        ) {
-
-            status.innerHTML +=
-                `<span class="negative-status">
-                    Negative
-                </span>`;
-
-        }
-
-
-        item.appendChild(status);
-
-
-        /* -------------------------------------------------
-           게임 클릭
-           
-           자동 선택하지 않고
-           사용자가 클릭했을 때만 선택
-        ------------------------------------------------- */
-
-        item.addEventListener(
-    "click",
-    () => {
-
-        selectGame(game);
-
-    }
-);
-
-
-        list.appendChild(item);
-
-    });
-
-
-    /* =====================================================
-       게임 개수 표시
-    ===================================================== */
+    /* -----------------------------------------
+       검색 결과 개수
+    ----------------------------------------- */
 
     const count =
         document.getElementById(
             "gameCount"
         );
+
 
     if (count) {
 
@@ -2442,10 +2633,14 @@ function renderGameList(keyword = "") {
 
 /* =========================================================
    SELECT GAME
-   사용자가 게임 목록을 클릭했을 때
+   ---------------------------------------------------------
+   ★ gameName 문자열을 받지 않는다.
+   ★ game 객체를 직접 받는다.
 ========================================================= */
 
-async function selectGame(game) {
+async function selectGame(
+    game
+) {
 
     console.log(
         "게임 선택:",
@@ -2453,8 +2648,14 @@ async function selectGame(game) {
     );
 
 
-    // 게임 객체가 없는 경우
-    if (!game || !game.gameName) {
+    /* -----------------------------------------
+       게임 객체 확인
+    ----------------------------------------- */
+
+    if (
+        !game ||
+        !game.gameName
+    ) {
 
         console.error(
             "잘못된 게임 정보:",
@@ -2466,332 +2667,479 @@ async function selectGame(game) {
     }
 
 
-    /* -----------------------------------------------------
-       현재 게임 저장
-    ----------------------------------------------------- */
+    /* -----------------------------------------
+       현재 게임
+    ----------------------------------------- */
 
-    currentGame = game;
-
-
-    /* -----------------------------------------------------
-       현재 리뷰 초기화
-    ----------------------------------------------------- */
-
-    currentReviews = [];
-    filteredReviews = [];
+    currentGame =
+        game;
 
 
-    /* -----------------------------------------------------
-       선택된 게임 이름 표시
-    ----------------------------------------------------- */
+    currentReviews =
+        [];
 
-    const selectedGameElement =
+    filteredReviews =
+        [];
+
+
+    /* -----------------------------------------
+       선택된 게임 이름
+    ----------------------------------------- */
+
+    const selectedGame =
         document.getElementById(
             "selectedGame"
         );
 
 
-    if (selectedGameElement) {
+    if (selectedGame) {
 
-        selectedGameElement.textContent =
+        selectedGame.textContent =
             game.gameName;
 
     }
 
 
-    /* -----------------------------------------------------
-       기존 선택 상태 제거
-    ----------------------------------------------------- */
+    /* -----------------------------------------
+       선택 표시 초기화
+    ----------------------------------------- */
 
     document
-        .querySelectorAll(".game-item")
-        .forEach(item => {
+        .querySelectorAll(
+            ".game-item"
+        )
+        .forEach(
+            item => {
 
-            item.classList.remove(
-                "selected"
-            );
-
-        });
-
-
-    /* -----------------------------------------------------
-       현재 게임 선택 상태 표시
-    ----------------------------------------------------- */
-
-    document
-        .querySelectorAll(".game-item")
-        .forEach(item => {
-
-            const nameElement =
-                item.querySelector(
-                    ".game-name"
-                );
-
-
-            if (
-                nameElement &&
-                nameElement.textContent ===
-                game.gameName
-            ) {
-
-                item.classList.add(
+                item.classList.remove(
                     "selected"
                 );
 
             }
-
-        });
-
-
-    /* -----------------------------------------------------
-       리뷰 CSV 로딩
-    ----------------------------------------------------- */
-
-    await loadGameReviews(game);
-
-}
-/* =========================================================
-   LOAD GAME REVIEWS
-========================================================= */
-
-async function loadGameReviews(game) {
-
-    if (!game) {
-        console.error("게임 정보가 없습니다.");
-        return [];
-    }
-
-    console.log("게임 리뷰 로딩:", game.gameName);
-
-    try {
-
-        let positiveReviews = [];
-        let negativeReviews = [];
-
-        /* -------------------------
-           Positive CSV
-        ------------------------- */
-
-        if (game.positiveFile) {
-
-            try {
-
-                positiveReviews =
-                    await loadCSV(game.positiveFile);
-
-                positiveReviews =
-                    positiveReviews.map(review => {
-
-                        return {
-                            ...review,
-                            sentiment: "positive"
-                        };
-
-                    });
-
-            } catch (error) {
-
-                console.error(
-                    "긍정 리뷰 CSV 로딩 실패:",
-                    error
-                );
-
-            }
-
-        }
+        );
 
 
-        /* -------------------------
-           Negative CSV
-        ------------------------- */
+    /* -----------------------------------------
+       현재 게임 선택 표시
+    ----------------------------------------- */
 
-        if (game.negativeFile) {
+    document
+        .querySelectorAll(
+            ".game-item"
+        )
+        .forEach(
+            item => {
 
-            try {
-
-                negativeReviews =
-                    await loadCSV(game.negativeFile);
-
-                negativeReviews =
-                    negativeReviews.map(review => {
-
-                        return {
-                            ...review,
-                            sentiment: "negative"
-                        };
-
-                    });
-
-            } catch (error) {
-
-                console.error(
-                    "부정 리뷰 CSV 로딩 실패:",
-                    error
-                );
-
-            }
-
-        }
+                const nameElement =
+                    item.querySelector(
+                        ".game-name"
+                    );
 
 
-        /* -------------------------
-           Combine
-        ------------------------- */
+                if (
+                    nameElement &&
+                    nameElement.textContent
+                        .trim() ===
+                    game.gameName.trim()
+                ) {
 
-        currentReviews = [
-            ...positiveReviews,
-            ...negativeReviews
-        ];
+                    item.classList.add(
+                        "selected"
+                    );
 
+                }
 
-        console.log(
-            `${game.gameName} 리뷰 로딩 완료`,
-            {
-                positive: positiveReviews.length,
-                negative: negativeReviews.length,
-                total: currentReviews.length
             }
         );
 
 
-        /* -------------------------
-           리뷰 데이터 전처리
-        ------------------------- */
+    /* -----------------------------------------
+       로딩 표시
+    ----------------------------------------- */
 
-        currentReviews =
-            currentReviews.map(review => {
-
-                const text =
-                    getReviewText(review);
-
-                review._text = text;
+    const reviewList =
+        document.getElementById(
+            "reviewList"
+        );
 
 
-                /* 날짜 */
+    if (reviewList) {
 
-                const possibleDateKeys = [
-                    "timestamp_created",
-                    "timestamp",
-                    "date",
-                    "Date",
-                    "created_at",
-                    "createdAt"
-                ];
+        reviewList.innerHTML = `
+            <div class="empty">
+                ${escapeHtml(game.gameName)}
+                리뷰를 불러오는 중...
+            </div>
+        `;
 
-                let dateValue = null;
+    }
 
-                for (
-                    const key of possibleDateKeys
+
+    try {
+
+        await loadGameReviews(
+            game
+        );
+
+
+        console.log(
+            "게임 로딩 완료:",
+            game.gameName
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "게임 선택 오류:",
+            error
+        );
+
+
+        if (reviewList) {
+
+            reviewList.innerHTML = `
+                <div class="empty">
+                    리뷰 데이터를 불러오지 못했습니다.
+                    <br><br>
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD GAME REVIEWS
+   ---------------------------------------------------------
+   ★ 이 함수는 파일 전체에서 하나만 존재해야 한다.
+========================================================= */
+
+async function loadGameReviews(
+    game
+) {
+
+    if (
+        !game
+    ) {
+
+        throw new Error(
+            "게임 정보가 없습니다."
+        );
+
+    }
+
+
+    console.log(
+        "리뷰 로딩 시작:",
+        game.gameName
+    );
+
+
+    const reviews =
+        [];
+
+
+    /* =====================================================
+       POSITIVE CSV
+    ===================================================== */
+
+    if (
+        game.positiveFile
+    ) {
+
+        console.log(
+            "Positive CSV:",
+            game.positiveFile
+        );
+
+
+        try {
+
+            const positiveReviews =
+                await loadCSV(
+                    game.positiveFile
+                );
+
+
+            positiveReviews.forEach(
+                review => {
+
+                    review.sentiment =
+                        "positive";
+
+                    reviews.push(
+                        review
+                    );
+
+                }
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Positive CSV 로딩 실패:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       NEGATIVE CSV
+    ===================================================== */
+
+    if (
+        game.negativeFile
+    ) {
+
+        console.log(
+            "Negative CSV:",
+            game.negativeFile
+        );
+
+
+        try {
+
+            const negativeReviews =
+                await loadCSV(
+                    game.negativeFile
+                );
+
+
+            negativeReviews.forEach(
+                review => {
+
+                    review.sentiment =
+                        "negative";
+
+                    reviews.push(
+                        review
+                    );
+
+                }
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Negative CSV 로딩 실패:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       리뷰 전처리
+    ===================================================== */
+
+    reviews.forEach(
+        review => {
+
+            /* ---------------------------------
+               리뷰 텍스트
+            --------------------------------- */
+
+            review._text =
+                getReviewText(
+                    review
+                );
+
+
+            /* ---------------------------------
+               날짜
+            --------------------------------- */
+
+            const dateKeys = [
+                "timestamp_created",
+                "timestamp",
+                "date",
+                "Date",
+                "created_at",
+                "createdAt"
+            ];
+
+
+            let dateValue =
+                null;
+
+
+            for (
+                const key of dateKeys
+            ) {
+
+                if (
+                    review[key] !== undefined &&
+                    review[key] !== null &&
+                    review[key] !== ""
                 ) {
 
-                    if (
-                        review[key] !== undefined &&
-                        review[key] !== null &&
-                        review[key] !== ""
-                    ) {
+                    dateValue =
+                        review[key];
 
-                        dateValue =
-                            review[key];
-
-                        break;
-
-                    }
+                    break;
 
                 }
 
+            }
 
-                if (dateValue) {
 
-                    let date =
-                        new Date(
-                            Number(dateValue) * 1000
+            review._date =
+                parseReviewDate(
+                    dateValue
+                );
+
+
+            /* ---------------------------------
+               Score
+            --------------------------------- */
+
+            const scoreKeys = [
+                "score",
+                "Score",
+                "sentiment_score",
+                "sentimentScore"
+            ];
+
+
+            review._score =
+                null;
+
+
+            for (
+                const key of scoreKeys
+            ) {
+
+                if (
+                    review[key] !== undefined &&
+                    review[key] !== null &&
+                    review[key] !== ""
+                ) {
+
+                    const value =
+                        Number(
+                            review[key]
                         );
 
+
                     if (
-                        isNaN(date.getTime())
+                        !Number.isNaN(
+                            value
+                        )
                     ) {
 
-                        date =
-                            new Date(dateValue);
+                        review._score =
+                            value;
 
                     }
 
-                    if (
-                        !isNaN(date.getTime())
-                    ) {
 
-                        review._date = date;
-
-                    } else {
-
-                        review._date = null;
-
-                    }
-
-                } else {
-
-                    review._date = null;
+                    break;
 
                 }
 
+            }
 
-                /* 점수 */
-
-                const possibleScoreKeys = [
-                    "score",
-                    "Score",
-                    "sentiment_score",
-                    "sentimentScore"
-                ];
-
-                review._score = null;
-
-                for (
-                    const key of possibleScoreKeys
-                ) {
-
-                    if (
-                        review[key] !== undefined &&
-                        review[key] !== null &&
-                        review[key] !== ""
-                    ) {
-
-                        const score =
-                            Number(review[key]);
-
-                        if (!isNaN(score)) {
-
-                            review._score =
-                                score;
-
-                        }
-
-                        break;
-
-                    }
-
-                }
+        }
+    );
 
 
-                return review;
+    /* =====================================================
+       현재 리뷰 저장
+    ===================================================== */
 
-            });
+    currentReviews =
+        reviews;
 
 
-        /* -------------------------
-           화면 갱신
-        ------------------------- */
+    filteredReviews =
+        [
+            ...reviews
+        ];
+
+
+    console.log(
+        `${game.gameName}: ${reviews.length} reviews`
+    );
+
+
+    /* =====================================================
+       화면 갱신
+    ===================================================== */
+
+    refreshReviewDashboard();
+
+
+    /* =====================================================
+       비교 A
+    ===================================================== */
+
+    if (
+        typeof updateComparisonA ===
+        "function"
+    ) {
+
+        updateComparisonA(
+            game
+        );
+
+    }
+
+
+    return reviews;
+
+}
+
+
+/* =========================================================
+   REFRESH REVIEW DASHBOARD
+========================================================= */
+
+function refreshReviewDashboard() {
+
+    const reviews =
+        getFilteredReviewsSafe();
+
+
+    /* -----------------------------------------
+       리뷰
+    ----------------------------------------- */
+
+    if (
+        typeof renderReviews ===
+        "function"
+    ) {
 
         renderReviews();
 
+    }
 
-        const filteredReviews =
-            getFilteredReviews();
 
+    /* -----------------------------------------
+       이슈
+    ----------------------------------------- */
+
+    if (
+        typeof analyzeIssues ===
+            "function" &&
+        typeof renderIssues ===
+            "function"
+    ) {
 
         const issues =
             analyzeIssues(
-                filteredReviews
+                reviews
             );
 
 
@@ -2800,52 +3148,776 @@ async function loadGameReviews(game) {
         );
 
 
+        /* -----------------------------
+           AI Insight
+        ----------------------------- */
+
+        if (
+            typeof generateInsight ===
+            "function"
+        ) {
+
+            generateInsight(
+                reviews,
+                issues
+            );
+
+        }
+
+    }
+
+
+    /* -----------------------------------------
+       차트
+    ----------------------------------------- */
+
+    if (
+        typeof updateCharts ===
+        "function"
+    ) {
+
         updateCharts(
-            filteredReviews
+            reviews
         );
-
-
-        generateInsight(
-            filteredReviews,
-            issues
-        );
-
-
-        /* -------------------------
-           Comparison A
-        ------------------------- */
-
-        updateComparisonA(
-            game
-        );
-
-
-        return currentReviews;
-
-
-    } catch (error) {
-
-        console.error(
-            "게임 리뷰 로딩 오류:",
-            error
-        );
-
-        currentReviews = [];
-
-        renderReviews();
-
-        renderIssues([]);
-
-        updateCharts([]);
-
-        generateInsight([], []);
-
-        throw error;
 
     }
 
 }
 
+
+/* =========================================================
+   SAFE FILTER
+========================================================= */
+
+function getFilteredReviewsSafe() {
+
+    if (
+        typeof getFilteredReviews ===
+        "function"
+    ) {
+
+        return getFilteredReviews();
+
+    }
+
+
+    return [
+        ...currentReviews
+    ];
+
+}
+
+
+/* =========================================================
+   CSV LOAD
+   ---------------------------------------------------------
+   ★ 기존의 잘못된 GitHub blob URL 제거
+   ★ raw.githubusercontent.com 사용
+========================================================= */
+
+async function loadCSV(
+    filePath
+) {
+
+    if (
+        !filePath
+    ) {
+
+        throw new Error(
+            "CSV 파일 경로가 없습니다."
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       GitHub Raw URL
+    ----------------------------------------- */
+
+    const encodedPath =
+        filePath
+            .split("/")
+            .map(
+                part =>
+                    encodeURIComponent(
+                        part
+                    )
+            )
+            .join("/");
+
+
+    const url =
+        `https://raw.githubusercontent.com/` +
+        `dpjinn/CapstoneDesignBigData/` +
+        `main/` +
+        encodedPath;
+
+
+    console.log(
+        "CSV 로딩 URL:",
+        url
+    );
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                cache: "no-cache"
+            }
+        );
+
+
+    if (
+        !response.ok
+    ) {
+
+        throw new Error(
+            `CSV load failed: HTTP ${response.status}\n` +
+            `파일: ${filePath}\n` +
+            `URL: ${url}`
+        );
+
+    }
+
+
+    const text =
+        await response.text();
+
+
+    if (
+        !text.trim()
+    ) {
+
+        console.warn(
+            "CSV 파일이 비어 있습니다:",
+            filePath
+        );
+
+        return [];
+
+    }
+
+
+    return parseCSV(
+        text
+    );
+
+}
+
+
+/* =========================================================
+   CSV PARSER
+   ---------------------------------------------------------
+   쉼표가 들어간 리뷰,
+   큰따옴표가 들어간 리뷰도 처리
+========================================================= */
+
+function parseCSV(
+    text
+) {
+
+    text =
+        String(text)
+            .replace(
+                /^\uFEFF/,
+                ""
+            );
+
+
+    const rows =
+        [];
+
+
+    let row =
+        [];
+
+    let cell =
+        "";
+
+    let insideQuotes =
+        false;
+
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char =
+            text[i];
+
+        const next =
+            text[i + 1];
+
+
+        /* -----------------------------------------
+           큰따옴표
+        ----------------------------------------- */
+
+        if (
+            char === '"'
+        ) {
+
+            if (
+                insideQuotes &&
+                next === '"'
+            ) {
+
+                cell += '"';
+
+                i++;
+
+            }
+            else {
+
+                insideQuotes =
+                    !insideQuotes;
+
+            }
+
+            continue;
+
+        }
+
+
+        /* -----------------------------------------
+           쉼표
+        ----------------------------------------- */
+
+        if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(
+                cell
+            );
+
+            cell =
+                "";
+
+            continue;
+
+        }
+
+
+        /* -----------------------------------------
+           줄바꿈
+        ----------------------------------------- */
+
+        if (
+            (
+                char === "\n" ||
+                char === "\r"
+            ) &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                next === "\n"
+            ) {
+
+                i++;
+
+            }
+
+
+            row.push(
+                cell
+            );
+
+
+            rows.push(
+                row
+            );
+
+
+            row =
+                [];
+
+            cell =
+                "";
+
+            continue;
+
+        }
+
+
+        cell +=
+            char;
+
+    }
+
+
+    /* -----------------------------------------
+       마지막 셀
+    ----------------------------------------- */
+
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(
+            cell
+        );
+
+        rows.push(
+            row
+        );
+
+    }
+
+
+    if (
+        rows.length === 0
+    ) {
+
+        return [];
+
+    }
+
+
+    /* -----------------------------------------
+       Header
+    ----------------------------------------- */
+
+    const headers =
+        rows[0].map(
+            header =>
+                String(header)
+                    .trim()
+        );
+
+
+    /* -----------------------------------------
+       Object 변환
+    ----------------------------------------- */
+
+    const result =
+        [];
+
+
+    for (
+        let i = 1;
+        i < rows.length;
+        i++
+    ) {
+
+        const values =
+            rows[i];
+
+
+        /* 빈 줄 */
+
+        if (
+            values.length === 1 &&
+            !String(values[0]).trim()
+        ) {
+
+            continue;
+
+        }
+
+
+        const object =
+            {};
+
+
+        headers.forEach(
+            (
+                header,
+                index
+            ) => {
+
+                object[header] =
+                    values[index] ??
+                    "";
+
+            }
+        );
+
+
+        result.push(
+            object
+        );
+
+    }
+
+
+    console.log(
+        `CSV 파싱 완료: ${result.length}개`
+    );
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+   REVIEW DATE PARSER
+========================================================= */
+
+function parseReviewDate(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return null;
+
+    }
+
+
+    /* Steam timestamp */
+
+    const numeric =
+        Number(
+            value
+        );
+
+
+    if (
+        Number.isFinite(
+            numeric
+        )
+    ) {
+
+        const milliseconds =
+            numeric < 10000000000
+                ? numeric * 1000
+                : numeric;
+
+
+        const date =
+            new Date(
+                milliseconds
+            );
+
+
+        if (
+            !Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return date;
+
+        }
+
+    }
+
+
+    /* 일반 날짜 문자열 */
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        !Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return date;
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   REVIEW TEXT
+========================================================= */
+
+function getReviewText(
+    review
+) {
+
+    const keys = [
+
+        "review",
+        "Review",
+
+        "text",
+        "Text",
+
+        "content",
+        "Content",
+
+        "review_text",
+        "reviewText",
+
+        "리뷰",
+        "내용"
+
+    ];
+
+
+    for (
+        const key of keys
+    ) {
+
+        if (
+            review[key] !== undefined &&
+            review[key] !== null &&
+            String(
+                review[key]
+            ).trim()
+        ) {
+
+            return String(
+                review[key]
+            );
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   REVIEW FILTER EVENTS
+========================================================= */
+
+function setupReviewEvents() {
+
+    const sentimentFilter =
+        document.getElementById(
+            "sentimentFilter"
+        );
+
+
+    const periodFilter =
+        document.getElementById(
+            "periodFilter"
+        );
+
+
+    const priorityFilter =
+        document.getElementById(
+            "priorityFilter"
+        );
+
+
+    const reviewSearch =
+        document.getElementById(
+            "reviewSearch"
+        );
+
+
+    const reviewSort =
+        document.getElementById(
+            "reviewSort"
+        );
+
+
+    /* -----------------------------------------
+       Positive / Negative
+    ----------------------------------------- */
+
+    if (
+        sentimentFilter
+    ) {
+
+        sentimentFilter.addEventListener(
+            "change",
+            () => {
+
+                refreshReviewDashboard();
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       기간
+    ----------------------------------------- */
+
+    if (
+        periodFilter
+    ) {
+
+        periodFilter.addEventListener(
+            "change",
+            () => {
+
+                refreshReviewDashboard();
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       리뷰 검색
+    ----------------------------------------- */
+
+    if (
+        reviewSearch
+    ) {
+
+        reviewSearch.addEventListener(
+            "input",
+            () => {
+
+                if (
+                    typeof renderReviews ===
+                    "function"
+                ) {
+
+                    renderReviews();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       리뷰 정렬
+    ----------------------------------------- */
+
+    if (
+        reviewSort
+    ) {
+
+        reviewSort.addEventListener(
+            "change",
+            () => {
+
+                if (
+                    typeof renderReviews ===
+                    "function"
+                ) {
+
+                    renderReviews();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       이슈 우선순위
+    ----------------------------------------- */
+
+    if (
+        priorityFilter
+    ) {
+
+        priorityFilter.addEventListener(
+            "change",
+            () => {
+
+                if (
+                    typeof analyzeIssues ===
+                        "function" &&
+                    typeof renderIssues ===
+                        "function"
+                ) {
+
+                    renderIssues(
+                        analyzeIssues(
+                            getFilteredReviewsSafe()
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        console.log(
+            "게임 리뷰 시스템 초기화"
+        );
+
+
+        setupReviewEvents();
+
+
+        /* -----------------------------------------
+           GitHub CSV 목록 불러오기
+        ----------------------------------------- */
+
+        loadGithubFiles();
+
+    }
+);
 
 /* =========================================================
    HTML ESCAPE
