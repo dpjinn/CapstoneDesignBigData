@@ -6456,6 +6456,27 @@ async function sendChat() {
 
             });
 
+        console.log("POST 요청 직전");
+
+const response =
+    await fetch(
+        "http://127.0.0.1:5000/register",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        }
+    );
+
+console.log("POST 요청 완료");
+
         const response = await fetch(
             "http://127.0.0.1:5000/chat",
             {
