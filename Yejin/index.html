@@ -7104,31 +7104,22 @@ function escapeHtml(
 
 }
 
-        /*=============================================
-            로그인 기능
-    ==============================================*/
-
-    document
-    .getElementById("loginForm")
-    .addEventListener("submit", async function(event) {
+document.getElementById("loginForm").addEventListener(
+    "submit",
+    async function(event) {
 
         event.preventDefault();
 
         const username =
-            document
-                .getElementById("loginUsername")
-                .value
-                .trim();
+            document.getElementById("loginUsername").value.trim();
 
         const password =
-            document
-                .getElementById("loginPassword")
-                .value;
+            document.getElementById("loginPassword").value;
 
-        const error =
+        const errorBox =
             document.getElementById("loginError");
 
-        error.textContent = "";
+        errorBox.textContent = "";
 
         try {
 
@@ -7152,39 +7143,48 @@ function escapeHtml(
 
             const data = await response.json();
 
-            if (!data.success) {
+            console.log(
+                "로그인 응답:",
+                response.status,
+                data
+            );
 
-                error.textContent =
-                    data.message;
-
-                return;
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                    `로그인 실패 (${response.status})`
+                );
             }
 
-            // 로그인 성공
-            document
-                .getElementById("loginPage")
-                .style.display = "none";
+            if (data.success) {
 
-            document
-                .getElementById("mainPage")
-                .style.display = "block";
+                alert("로그인 성공!");
 
-            console.log(
-                "로그인 성공:",
-                data.username
-            );
+                document.getElementById(
+                    "loginPage"
+                ).style.display = "none";
+
+            } else {
+
+                errorBox.textContent =
+                    data.message ||
+                    "로그인에 실패했습니다.";
+            }
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "로그인 오류:",
+                error
+            );
 
-            document
-                .getElementById("loginError")
-                .textContent =
-                    "서버에 연결할 수 없습니다.";
+            errorBox.textContent =
+                error.message ||
+                "서버에 연결할 수 없습니다.";
         }
 
-    });
+    }
+);
 
     function showRegisterPage() {
 
