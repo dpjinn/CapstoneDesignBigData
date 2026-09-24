@@ -1,3 +1,8 @@
 {
-    "users":  []
+  "users": [
+    {
+      "username": "test",
+      "password": "scrypt:32768:8:1$smGYLAz3qSHY0ZKz$47f62ff124a0b9b1cbbcd21f3a9d6c64be961e12b160930434f1d6d7861a44408285b4c04ec8d70fc5d3c077ed7725083b636606252f221681970b40f6856031"
+    }
+  ]
 }
