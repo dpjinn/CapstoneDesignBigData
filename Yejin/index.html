@@ -7313,7 +7313,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
-                    const response =
+                    const RegisterResponse =
                         await fetch(
                             "http://127.0.0.1:5000/register",
                             {
@@ -7334,12 +7334,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     console.log(
                         "Flask 응답 상태:",
-                        response.status
+                        RegisterResponse.status
                     );
 
 
                     const data =
-                        await response.json();
+                        await RegisterResponse.json();
 
 
                     console.log(
@@ -7352,7 +7352,7 @@ document.addEventListener("DOMContentLoaded", function () {
                        서버 오류
                     ----------------------------- */
 
-                    if (!response.ok) {
+                    if (!RegisterResponse.ok) {
 
                         errorBox.textContent =
                             data.message ||
@@ -7496,7 +7496,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
-                    const response =
+                    const loginResponse =
                         await fetch(
                             "http://127.0.0.1:5000/login",
                             {
@@ -7517,12 +7517,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     console.log(
                         "로그인 응답 상태:",
-                        response.status
+                        loginResponse.status
                     );
 
 
                     const data =
-                        await response.json();
+                        await loginResponse.json();
 
 
                     console.log(
@@ -7531,7 +7531,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
-                    if (!response.ok) {
+                    if (!loginResponse.ok) {
 
                         errorBox.textContent =
                             data.message ||
