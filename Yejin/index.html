@@ -1434,6 +1434,100 @@
     </div>
 
 </div>
+
+    <!-- =========================================================
+     REGISTER PAGE
+========================================================= -->
+
+<div id="registerPage" class="register-page">
+
+    <div class="register-box">
+
+        <div class="login-logo">
+            🎮
+        </div>
+
+        <h1>회원가입</h1>
+
+        <p class="register-subtitle">
+            DevInsight 계정을 만들어보세요.
+        </p>
+
+        <form id="registerForm">
+
+            <div class="register-field">
+
+                <label for="registerUsername">
+                    아이디
+                </label>
+
+                <input
+                    id="registerUsername"
+                    type="text"
+                    placeholder="아이디 입력"
+                    required
+                    minlength="4"
+                    maxlength="20"
+                >
+
+            </div>
+
+            <div class="register-field">
+
+                <label for="registerPassword">
+                    비밀번호
+                </label>
+
+                <input
+                    id="registerPassword"
+                    type="password"
+                    placeholder="비밀번호 입력"
+                    required
+                    minlength="6"
+                >
+
+            </div>
+
+            <div class="register-field">
+
+                <label for="registerPasswordConfirm">
+                    비밀번호 확인
+                </label>
+
+                <input
+                    id="registerPasswordConfirm"
+                    type="password"
+                    placeholder="비밀번호 다시 입력"
+                    required
+                >
+
+            </div>
+
+            <div
+                id="registerError"
+                class="register-error"
+            ></div>
+
+            <button
+                type="submit"
+                class="register-submit-button"
+            >
+                회원가입
+            </button>
+
+        </form>
+
+        <button
+            type="button"
+            class="back-login-button"
+            onclick="showLoginPage()"
+        >
+            로그인으로 돌아가기
+        </button>
+
+    </div>
+
+</div>
 <div id="mainPage">
 <!-- =========================================================
      HEADER
