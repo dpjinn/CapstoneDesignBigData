@@ -7206,6 +7206,213 @@ function showLoginPage() {
 
 }
 
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const registerButton =
+        document.getElementById("registerButton");
+
+    const registerForm =
+        document.getElementById("registerForm");
+
+    const backLoginButton =
+        document.getElementById("backLoginButton");
+
+    const loginPage =
+        document.getElementById("loginPage");
+
+    const registerPage =
+        document.getElementById("registerPage");
+
+
+    /* ================================
+       회원가입 화면 열기
+    ================================= */
+
+    registerButton.addEventListener("click", function () {
+
+        console.log("회원가입 화면 열기");
+
+        loginPage.style.display = "none";
+        registerPage.style.display = "flex";
+
+    });
+
+
+    /* ================================
+       로그인 화면으로 돌아가기
+    ================================= */
+
+    backLoginButton.addEventListener("click", function () {
+
+        registerPage.style.display = "none";
+        loginPage.style.display = "flex";
+
+    });
+
+
+    /* ================================
+       회원가입
+    ================================= */
+
+    registerForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            // ⭐ 중요
+            event.preventDefault();
+
+            console.log("========== 회원가입 시작 ==========");
+
+
+            const username =
+                document
+                    .getElementById("registerUsername")
+                    .value
+                    .trim();
+
+            const password =
+                document
+                    .getElementById("registerPassword")
+                    .value;
+
+            const passwordConfirm =
+                document
+                    .getElementById("registerPasswordConfirm")
+                    .value;
+
+            const errorBox =
+                document.getElementById("registerError");
+
+
+            console.log("아이디:", username);
+            console.log("비밀번호 입력 여부:", password.length > 0);
+
+
+            /* 비밀번호 확인 */
+
+            if (password !== passwordConfirm) {
+
+                console.log("비밀번호 불일치");
+
+                errorBox.textContent =
+                    "비밀번호가 일치하지 않습니다.";
+
+                return;
+            }
+
+
+            try {
+
+                console.log(
+                    "Flask /register 요청 시작"
+                );
+
+
+                const response = await fetch(
+                    "http://127.0.0.1:5000/register",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        credentials: "include",
+
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    }
+                );
+
+
+                console.log(
+                    "Flask 응답 상태:",
+                    response.status
+                );
+
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    "Flask 응답 데이터:",
+                    data
+                );
+
+
+                if (!response.ok) {
+
+                    errorBox.textContent =
+                        data.message ||
+                        "회원가입에 실패했습니다.";
+
+                    return;
+                }
+
+
+                if (data.success) {
+
+                    console.log(
+                        "회원가입 성공"
+                    );
+
+                    alert(
+                        "회원가입이 완료되었습니다."
+                    );
+
+
+                    /*
+                     * 성공했을 때만
+                     * 로그인 화면으로 이동
+                     */
+
+                    registerPage.style.display = "none";
+
+                    loginPage.style.display = "flex";
+
+
+                    /*
+                     * 로그인 아이디 자동 입력
+                     */
+
+                    document
+                        .getElementById("loginUsername")
+                        .value = username;
+
+
+                    registerForm.reset();
+
+
+                } else {
+
+                    errorBox.textContent =
+                        data.message ||
+                        "회원가입에 실패했습니다.";
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "회원가입 요청 오류:",
+                    error
+                );
+
+
+                errorBox.textContent =
+                    "서버에 연결할 수 없습니다.";
+
+            }
+
+        }
+    );
+
+});
+
 
 </script>
 
