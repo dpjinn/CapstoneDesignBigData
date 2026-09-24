@@ -1279,8 +1279,50 @@
     </style>
 </head>
 
-
+<!=======================================
+    로그인 화면
+    ====================================!>
 <body>
+
+<div id="loginPage" class="login-page">
+
+    <div class="login-box">
+
+        <div class="login-logo">
+            🎮
+        </div>
+
+        <h1>DevInsight</h1>
+
+        <p>게임 리뷰 분석 시스템</p>
+
+        <form id="loginForm">
+
+            <input
+                id="loginUsername"
+                type="text"
+                placeholder="아이디"
+                required
+            >
+
+            <input
+                id="loginPassword"
+                type="password"
+                placeholder="비밀번호"
+                required
+            >
+
+            <div id="loginError"></div>
+
+            <button type="submit">
+                로그인
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
 
 <!-- =========================================================
      HEADER
