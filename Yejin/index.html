@@ -7552,10 +7552,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             "로그인되었습니다."
                         );
 
-                        /*
-                         * 여기에 로그인 성공 후
-                         * 메인 화면으로 이동하는 코드를 넣으면 됩니다.
-                         */
+                       // 로그인 화면 숨기기
+    loginPage.style.display = "none";
+
+    // 메인 화면 보여주기
+    mainPage.style.display = "block";
 
                     } else {
 
