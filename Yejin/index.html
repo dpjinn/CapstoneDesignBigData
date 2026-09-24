@@ -4849,6 +4849,8 @@ function getFilteredReviews() {
 
 }
 
+    
+
 
 /* =========================================================
    ISSUE ANALYSIS
@@ -6479,9 +6481,6 @@ function resetFilters() {
 }
 
 
-/* =========================================================
-   FILTER EVENTS
-========================================================= */
 
     /* =========================================================
    FILTER EVENTS
@@ -6666,87 +6665,6 @@ function scrollToSection(
 
 }
 
-    /*=============================================
-            로그인 기능
-    ==============================================*/
-
-    document
-    .getElementById("loginForm")
-    .addEventListener("submit", async function(event) {
-
-        event.preventDefault();
-
-        const username =
-            document
-                .getElementById("loginUsername")
-                .value
-                .trim();
-
-        const password =
-            document
-                .getElementById("loginPassword")
-                .value;
-
-        const error =
-            document.getElementById("loginError");
-
-        error.textContent = "";
-
-        try {
-
-            const response = await fetch(
-                "http://127.0.0.1:5000/login",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    credentials: "include",
-
-                    body: JSON.stringify({
-                        username: username,
-                        password: password
-                    })
-                }
-            );
-
-            const data = await response.json();
-
-            if (!data.success) {
-
-                error.textContent =
-                    data.message;
-
-                return;
-            }
-
-            // 로그인 성공
-            document
-                .getElementById("loginPage")
-                .style.display = "none";
-
-            document
-                .getElementById("mainPage")
-                .style.display = "block";
-
-            console.log(
-                "로그인 성공:",
-                data.username
-            );
-
-        } catch (error) {
-
-            console.error(error);
-
-            document
-                .getElementById("loginError")
-                .textContent =
-                    "서버에 연결할 수 없습니다.";
-        }
-
-    });
 
 
 /* =========================================================
