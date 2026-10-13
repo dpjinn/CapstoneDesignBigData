@@ -4907,21 +4907,51 @@ function parseCSV(text) {
 ========================================================= */
 
 function findDate(review) {
-    // Steam CSV의 timestamp_created는 Unix timestamp(초)인 경우가 많다.
-    const possibleKeys = ["timestamp_created", "timestampCreated", "date", "Date", "created_at", "timestamp", "time", "작성일", "작성일자"];
-    for (const key of possibleKeys) {
-        const raw = review && review[key];
-        if (raw === undefined || raw === null || String(raw).trim() === "") continue;
-        let date;
-        if (typeof raw === "number" || /^\d{9,13}$/.test(String(raw).trim())) {
-            const numeric = Number(raw);
-            date = new Date(String(Math.trunc(numeric)).length <= 10 ? numeric * 1000 : numeric);
-        } else {
-            date = new Date(raw);
+
+    const possibleKeys = [
+
+        "date",
+        "Date",
+        "created_at",
+        "timestamp",
+        "time",
+        "작성일",
+        "작성일자"
+
+    ];
+
+
+    for (
+        const key of possibleKeys
+    ) {
+
+        if (
+            review[key]
+        ) {
+
+            const date =
+                new Date(
+                    review[key]
+                );
+
+
+            if (
+                !isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return date;
+
+            }
+
         }
-        if (!Number.isNaN(date.getTime())) return date;
+
     }
+
+
     return null;
+
 }
 
 
@@ -6000,7 +6030,7 @@ function updateCharts(reviews) {
     renderAnomalyPanel(daily, anomalies);
     renderKeywordCloud(reviews);
 
-    const anomalyMarkers = labels.map(day => anomalies.some(a => a.date === day) ? Math.max(daily[day].positive, daily[day].negative, 1) : null);
+    const anomalyMarkers = labels.map(day => anomalies.some(a => a.date === day) ? daily[day].negative : null);
     const trendCanvas = document.getElementById("reviewTrendChart");
     if (reviewTrendChart) reviewTrendChart.destroy();
     reviewTrendChart = new Chart(trendCanvas, {
@@ -6063,7 +6093,7 @@ function renderAnomalyPanel(daily, anomalies) {
     const list=document.getElementById("anomalyList");
     if (!summary || !list) return;
     const days=Object.keys(daily||{}).length;
-    summary.textContent = days ? `${days}일의 리뷰 데이터를 검사했습니다. ${anomalies.length ? `${anomalies.length}개의 이상 징후가 감지되었습니다.` : "기준을 초과한 이상 징후가 없습니다."} (직전 최대 7개 날짜 대비 2σ 기준)` : "날짜 정보가 있는 리뷰가 부족합니다. timestamp_created 컬럼이 포함된 CSV인지 확인해 주세요.";
+    summary.textContent = days ? `${days}일의 리뷰 데이터를 검사했습니다. ${anomalies.length ? `${anomalies.length}개의 이상 징후가 감지되었습니다.` : "기준을 초과한 이상 징후가 없습니다."} (직전 최대 7개 날짜 대비 2σ 기준)` : "날짜 정보가 있는 리뷰가 부족합니다.";
     list.innerHTML = anomalies.length ? anomalies.map(a => `<button class="anomaly-item" onclick="openAnomalyModal('${a.date}')"><strong>⚠ ${a.date}</strong><span>${a.reasons.map(escapeHtml).join(" · ")} · 부정 ${a.negative}개</span></button>`).join("") : `<div class="keyword-empty">이상 징후가 감지되면 이곳에 날짜별로 표시됩니다.</div>`;
 }
 
@@ -6080,75 +6110,29 @@ function openAnomalyModal(date, suppliedReviews) {
 function closeAnomalyModal(){const modal=document.getElementById("anomalyModal");if(modal){modal.classList.remove("open");modal.setAttribute("aria-hidden","true");}}
 
 function tokenizeForKeywords(text) {
-    const stop = new Set([
-        "this","that","with","have","from","they","them","were","been","very","just","game","games","play","playing","played","really","would","could","there","their","about","when","what","which","will","your","you","are","was","and","the","for","but","not","can","get","got","its","it's","has","had","all","one","out","too","much","more","good","bad","like","even","only","still","also","because","into","than","then",
-        "이거","저거","그냥","정말","너무","게임","하는","하고","하면","해서","있음","없음","입니다","하지만","그리고","그런데","때문","진짜","정도","같음","유저","리뷰","플레이","플레이어"
-    ]);
-    // 13700k 같은 숫자로 시작하는 CPU/GPU 모델명도 키워드에서 유지한다.
-    const matches = String(text || "").toLowerCase().match(/[a-z0-9][a-z0-9_'-]{2,}|[가-힣]{2,}/g) || [];
-    return matches.filter(w => !stop.has(w) && !/^\d+$/.test(w));
+    const stop=new Set(["this","that","with","have","from","they","them","were","been","very","just","game","play","playing","played","really","would","could","there","their","about","when","what","which","will","your","you","are","was","and","the","for","but","not","can","get","got","its","it's","has","had","all","one","out","too","much","more","good","bad","like","even","only","still","also","because","into","than","then","이거","저거","그냥","정말","너무","게임","하는","하고","하면","해서","있음","없음","입니다","하지만","그리고","그런데","때문","진짜","너무","정도","같음"]);
+    const matches=String(text||"").toLowerCase().match(/[a-z][a-z0-9_'-]{2,}|[가-힣]{2,}/g)||[];
+    return matches.filter(w=>!stop.has(w) && !/^\d+$/.test(w));
 }
 function renderKeywordCloud(reviews) {
-    const cloud = document.getElementById("keywordCloud");
-    const relations = document.getElementById("keywordRelations");
-    if (!cloud || !relations) return;
-
-    const negative = (reviews || []).filter(r => r.sentiment === "negative");
-    const freq = new Map();
-    const pairFreq = new Map();
-
-    negative.forEach(review => {
-        const tokens = tokenizeForKeywords(getReviewText(review));
-        const unique = [...new Set(tokens)];
-        // 리뷰 한 건 안에서 같은 단어가 반복돼도 키워드 빈도는 한 번만 센다.
-        unique.forEach(word => freq.set(word, (freq.get(word) || 0) + 1));
-        // 같은 리뷰에서 함께 나타난 단어 쌍을 집계한다.
-        for (let i = 0; i < unique.length; i++) {
-            for (let j = i + 1; j < Math.min(unique.length, i + 7); j++) {
-                const words = [unique[i], unique[j]].sort((a, b) => a.localeCompare(b));
-                const key = words.join("|||");
-                pairFreq.set(key, (pairFreq.get(key) || 0) + 1);
-            }
+    const cloud=document.getElementById("keywordCloud"), relations=document.getElementById("keywordRelations");
+    if(!cloud||!relations)return;
+    const negative=(reviews||[]).filter(r=>r.sentiment==="negative");
+    const freq=new Map(), pairs=new Map(), docs=[];
+    negative.forEach(r=>{
+        const tokens=tokenizeForKeywords(getReviewText(r));
+        const unique=[...new Set(tokens)]; docs.push(unique);
+        tokens.forEach(w=>freq.set(w,(freq.get(w)||0)+1));
+        for(let i=0;i<unique.length;i++) for(let j=i+1;j<Math.min(unique.length,i+5);j++){
+            const pair=[unique[i],unique[j]].sort().join("||| "); pairs.set(pair,(pairs.get(pair)||0)+1);
         }
     });
-
-    const top = [...freq.entries()]
-        .filter(([word]) => word.length >= 2)
-        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-        .slice(0, 35);
-
-    if (!negative.length) {
-        cloud.innerHTML = '<span class="keyword-empty">현재 게임의 부정 리뷰가 없습니다.</span>';
-        relations.innerHTML = "";
-        return;
-    }
-    if (!top.length) {
-        cloud.innerHTML = '<span class="keyword-empty">부정 리뷰는 있지만 추출할 키워드가 없습니다. 리뷰 텍스트 컬럼과 언어를 확인해 주세요.</span>';
-        relations.innerHTML = "";
-        return;
-    }
-
-    const maxCount = Math.max(1, top[0][1]);
-    cloud.innerHTML = top.map(([word, count]) => {
-        const size = Math.min(24, 12 + Math.round((count / maxCount) * 10));
-        const safeWord = escapeHtml(word).replace(/'/g, "&#39;");
-        return `<button class="keyword-chip" style="font-size:${size}px" onclick="filterNegativeByKeyword('${safeWord}')" title="관련 부정 리뷰 ${count}개">${safeWord}<small>${count}</small></button>`;
-    }).join("");
-
-    const topWords = new Set(top.slice(0, 18).map(([word]) => word));
-    const topPairs = [...pairFreq.entries()]
-        .map(([key, count]) => ({ words: key.split("|||"), count }))
-        .filter(pair => pair.words.length === 2 && pair.words.every(word => topWords.has(word)))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 15);
-
-    relations.innerHTML = topPairs.length
-        ? `<strong>연관 키워드 쌍</strong><div class="keyword-relation-list">${topPairs.map(pair => {
-            const first = escapeHtml(pair.words[0]).replace(/'/g, "&#39;");
-            const second = escapeHtml(pair.words[1]).replace(/'/g, "&#39;");
-            return `<button onclick="filterNegativeByKeyword('${first}')">${first} + ${second} <small>(${pair.count}개 리뷰에서 함께 등장)</small></button>`;
-        }).join("")}</div>`
-        : "키워드는 추출했지만 반복적으로 함께 등장하는 단어 쌍은 부족합니다.";
+    const top=[...freq.entries()].sort((a,b)=>b[1]-a[1]).slice(0,30);
+    if(!top.length){cloud.innerHTML='<span class="keyword-empty">분석할 부정 리뷰가 없습니다.</span>';relations.innerHTML="";return;}
+    cloud.innerHTML=top.map(([word,count],i)=>`<button class="keyword-chip" style="font-size:${Math.min(21,12+Math.floor(count/Math.max(1,top[0][1])*9))}px" onclick="filterNegativeByKeyword('${escapeHtml(word).replace(/'/g,"&#39;")}')">${escapeHtml(word)}<small>${count}</small></button>`).join("");
+    const topWords=new Set(top.slice(0,12).map(x=>x[0]));
+    const topPairs=[...pairs.entries()].map(([pair,count])=>({words:pair.split("||| "),count})).filter(p=>p.words.every(w=>topWords.has(w))).sort((a,b)=>b.count-a.count).slice(0,12);
+    relations.innerHTML=topPairs.length?`함께 등장하는 연관어: ${topPairs.map(p=>`<button onclick="filterNegativeByKeyword('${escapeHtml(p.words[0]).replace(/'/g,"&#39;")}')">${escapeHtml(p.words[0])} + ${escapeHtml(p.words[1])} (${p.count})</button>`).join(" · ")}`:"연관어 쌍을 만들 만큼 반복 등장한 단어 조합이 없습니다.";
 }
 function filterNegativeByKeyword(keyword) {
     const target=(currentReviews||[]).filter(r=>r.sentiment==="negative" && tokenizeForKeywords(getReviewText(r)).includes(String(keyword).toLowerCase()));
