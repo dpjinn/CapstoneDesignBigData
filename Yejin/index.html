@@ -4238,8 +4238,32 @@ document.addEventListener(
                 filterGameList
             );
 
+            // Enter 키를 누르면 현재 검색어로 게임 목록을 다시 검색한다.
+            gameSearch.addEventListener(
+                "keydown",
+                (event) => {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        filterGameList();
+                    }
+                }
+            );
+
         }
 
+        // 상단 게임 검색창에서도 Enter 키로 검색한다.
+        const globalSearch = document.getElementById("globalSearch");
+        if (globalSearch) {
+            globalSearch.addEventListener(
+                "keydown",
+                (event) => {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        searchGame();
+                    }
+                }
+            );
+        }
 
         /* 리뷰 검색 */
 
