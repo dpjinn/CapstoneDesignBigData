@@ -2166,9 +2166,8 @@
             <div class="comparison-controls" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
                 <div style="flex:1; min-width:220px;">
                     <label for="compareSelectB" style="display:block; font-size:13px; font-weight:600; margin-bottom:7px;">비교할 게임 선택하기</label>
-                    <select id="compareSelectB" aria-label="비교할 게임 선택하기" style="display:block; visibility:visible; opacity:1; box-sizing:border-box; width:100%; min-height:44px; height:44px; border:1px solid #9ca3af; border-radius:8px; padding:0 10px; background:#ffffff; color:#111827; font-size:14px; position:relative; z-index:2;">
-                        <option value="">비교할 게임 선택하기</option>
-                    </select>
+                    <input id="compareSelectB" type="search" list="comparisonGameOptions" aria-label="비교할 게임 검색" placeholder="게임 이름을 입력해 검색..." autocomplete="off" style="display:block; visibility:visible; opacity:1; box-sizing:border-box; width:100%; min-height:44px; height:44px; border:1px solid #9ca3af; border-radius:8px; padding:0 10px; background:#ffffff; color:#111827; font-size:14px; position:relative; z-index:2;">
+                    <datalist id="comparisonGameOptions"></datalist>
                     <small id="comparisonSelectHint" style="display:block; margin-top:6px; color:#6b7280;">게임 목록을 불러오는 중...</small>
                 </div>
                 <div style="display:flex; align-items:flex-end;">
@@ -6294,30 +6293,33 @@ function generateInsight(
 let comparisonReviewsCache = new Map();
 
 function populateComparisonGameOptions() {
-    const select = document.getElementById("compareSelectB");
+    const input = document.getElementById("compareSelectB");
+    const optionsList = document.getElementById("comparisonGameOptions");
     const hint = document.getElementById("comparisonSelectHint");
-    if (!select) return;
+    if (!input || !optionsList) return;
 
-    const previousValue = select.value;
-    select.innerHTML = '<option value="">비교할 게임 선택하기</option>';
+    const previousValue = input.value;
+    optionsList.innerHTML = "";
 
     if (!Array.isArray(games) || games.length === 0) {
         if (hint) hint.textContent = "게임 목록을 불러오지 못했거나 아직 로딩 중입니다.";
         return;
     }
 
-    games.forEach(game => {
-        if (!game || !game.gameName) return;
+    const uniqueNames = [...new Set(games
+        .filter(game => game && game.gameName)
+        .map(game => game.gameName))];
+
+    uniqueNames.forEach(gameName => {
         const option = document.createElement("option");
-        option.value = game.gameName;
-        option.textContent = game.gameName;
-        select.appendChild(option);
+        option.value = gameName;
+        optionsList.appendChild(option);
     });
 
-    if (previousValue && games.some(game => game.gameName === previousValue)) {
-        select.value = previousValue;
+    if (previousValue && uniqueNames.includes(previousValue)) {
+        input.value = previousValue;
     }
-    if (hint) hint.textContent = `비교 가능한 게임 ${select.options.length - 1}개`;
+    if (hint) hint.textContent = `게임 이름을 입력해 검색하거나 목록에서 선택하세요. (총 ${uniqueNames.length}개)`;
 }
 
 function getComparisonStats(gameName, reviews) {
@@ -6429,10 +6431,18 @@ async function runGameComparison() {
         return;
     }
 
-    const gameBName = select ? select.value : "";
+    const gameBName = select ? select.value.trim() : "";
     if (!gameBName) {
         if (title) title.textContent = "비교할 게임을 선택해주세요.";
-        if (text) text.textContent = "비교 대상 게임을 선택하면 두 게임의 리뷰 지표와 주요 이슈를 분석합니다.";
+        if (text) text.textContent = "게임 이름을 검색한 뒤 목록에 표시되는 정확한 게임명을 선택해주세요.";
+        return;
+    }
+    const matchedGame = Array.isArray(games)
+        ? games.find(game => game && game.gameName === gameBName)
+        : null;
+    if (!matchedGame) {
+        if (title) title.textContent = "검색 결과에서 게임을 선택해주세요.";
+        if (text) text.textContent = "입력한 이름과 정확히 일치하는 게임이 없습니다. 게임 이름 일부를 입력하고 제안 목록에서 선택해주세요.";
         return;
     }
     if (gameBName === currentGame.gameName) {
