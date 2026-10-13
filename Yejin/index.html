@@ -3036,19 +3036,18 @@ function filterGameList() {
    LIVE GAME SEARCH
 ========================================================= */
 
+/* 게임 선택 영역의 실제 검색창 ID는 gameSearch이다. */
 function filterGameList() {
 
     const searchInput =
         document.getElementById(
-            "searchInput"
+            "gameSearch"
         );
-
 
     const keyword =
         searchInput
             ? searchInput.value.trim()
             : "";
-
 
     renderGameList(
         keyword
