@@ -1547,7 +1547,32 @@
 
         }
 
-    </style>
+    
+
+        /* Review anomaly, keyword co-occurrence, report */
+        .analysis-tools-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin:20px 0}
+        .analysis-tool-card{min-width:0;padding:22px}
+        .analysis-tool-description{color:var(--muted,#7c8798);font-size:13px;line-height:1.65;margin:8px 0 16px}
+        .analysis-summary{font-size:13px;padding:10px 12px;border-radius:10px;background:rgba(127,140,160,.09);margin-bottom:12px;line-height:1.6}
+        .anomaly-list{display:flex;flex-direction:column;gap:8px}
+        .anomaly-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid rgba(239,68,68,.25);border-radius:10px;background:rgba(239,68,68,.055);text-align:left;cursor:pointer;color:inherit;width:100%}
+        .anomaly-item:hover{background:rgba(239,68,68,.12)}
+        .anomaly-item strong{color:#ef4444;font-size:13px}.anomaly-item span{font-size:12px;color:var(--muted,#7c8798)}
+        .keyword-cloud{display:flex;flex-wrap:wrap;align-items:center;gap:9px;min-height:105px;padding:8px 0}
+        .keyword-chip{border:1px solid rgba(100,116,139,.25);border-radius:999px;background:rgba(100,116,139,.08);padding:7px 11px;cursor:pointer;color:inherit;line-height:1.2}
+        .keyword-chip:hover,.keyword-chip.active{border-color:#6366f1;background:rgba(99,102,241,.14)}
+        .keyword-chip small{opacity:.65;margin-left:5px;font-size:10px}.keyword-empty{font-size:13px;color:var(--muted,#7c8798)}
+        .keyword-relations{border-top:1px solid rgba(127,140,160,.2);padding-top:12px;margin-top:8px;font-size:12px;line-height:1.8;color:var(--muted,#7c8798)}
+        .keyword-relations button{border:0;background:transparent;color:inherit;text-decoration:underline;cursor:pointer;padding:0 3px}
+        .analysis-modal{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:20px}
+        .analysis-modal.open{display:flex}.analysis-modal-backdrop{position:absolute;inset:0;background:rgba(7,12,24,.72)}
+        .analysis-modal-panel{position:relative;z-index:1;background:var(--card-bg,#fff);color:var(--text,#111827);border-radius:16px;padding:24px;width:min(760px,96vw);max-height:85vh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.3)}
+        .analysis-modal-panel h3{margin:0 40px 8px 0}.analysis-modal-panel p{font-size:13px;line-height:1.6;color:var(--muted,#7c8798)}
+        .analysis-modal-close{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:28px;cursor:pointer;color:inherit}
+        .anomaly-review-row{padding:12px 0;border-bottom:1px solid rgba(127,140,160,.2)}.anomaly-review-row strong{font-size:12px;color:#ef4444}.anomaly-review-row p{margin:5px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;color:inherit}
+        @media(max-width:900px){.analysis-tools-grid{grid-template-columns:1fr}}
+        @media print{.analysis-tools-grid,.analysis-modal,.comparison-picker-grid,button{display:none!important}}
+</style>
 </head>
 
 <!=======================================
@@ -1747,6 +1772,14 @@
             onclick="exportCSV()"
         >
             CSV
+        </button>
+
+        <button
+            class="header-btn"
+            onclick="exportPDFReport()"
+            title="대시보드 분석 결과를 PDF로 저장"
+        >
+            PDF Report
         </button>
 
     </div>
@@ -2162,6 +2195,31 @@
 
         </section>
 
+        <!-- ANOMALY + KEYWORD CO-OCCURRENCE -->
+        <section class="analysis-tools-grid">
+            <div class="card analysis-tool-card">
+                <div class="card-title">Review Anomaly Detection</div>
+                <p class="analysis-tool-description">일별 리뷰 수와 부정 리뷰 비율을 이동 평균 및 표준편차(2σ) 기준으로 검사합니다. 빨간 점을 선택하면 해당 날짜의 부정 리뷰를 확인할 수 있습니다.</p>
+                <div id="anomalySummary" class="analysis-summary">게임을 선택하면 이상 징후를 분석합니다.</div>
+                <div id="anomalyList" class="anomaly-list"></div>
+            </div>
+            <div class="card analysis-tool-card">
+                <div class="card-title">Negative Review Keywords</div>
+                <p class="analysis-tool-description">부정 리뷰에서 자주 등장하는 단어와 함께 등장하는 연관어를 추출합니다. 키워드를 선택하면 관련 부정 리뷰를 확인할 수 있습니다.</p>
+                <div id="keywordCloud" class="keyword-cloud"><span class="keyword-empty">게임을 선택하면 키워드가 표시됩니다.</span></div>
+                <div id="keywordRelations" class="keyword-relations"></div>
+            </div>
+        </section>
+
+        <div id="anomalyModal" class="analysis-modal" aria-hidden="true">
+            <div class="analysis-modal-backdrop" onclick="closeAnomalyModal()"></div>
+            <div class="analysis-modal-panel" role="dialog" aria-modal="true" aria-labelledby="anomalyModalTitle">
+                <button class="analysis-modal-close" onclick="closeAnomalyModal()" aria-label="닫기">×</button>
+                <h3 id="anomalyModalTitle">이상 징후 날짜 분석</h3>
+                <p id="anomalyModalDescription"></p>
+                <div id="anomalyModalReviews" class="anomaly-modal-reviews"></div>
+            </div>
+        </div>
 
         <!-- COMPARE: dedicated comparison workspace -->
         <section id="compare" class="card comparison-workspace">
@@ -5954,151 +6012,160 @@ function updateCharts(reviews) {
         );
 
 
-    /*
-     * Review trend
-     */
+    /* Daily Review Trend + anomaly markers */
+    const daily = {};
+    reviews.forEach(review => {
+        if (!review._date || Number.isNaN(review._date.getTime())) return;
+        const key = `${review._date.getFullYear()}-${String(review._date.getMonth()+1).padStart(2,"0")}-${String(review._date.getDate()).padStart(2,"0")}`;
+        if (!daily[key]) daily[key] = { positive: 0, negative: 0, total: 0 };
+        const sentiment = review.sentiment === "negative" ? "negative" : "positive";
+        daily[key][sentiment]++;
+        daily[key].total++;
+    });
+    const labels = Object.keys(daily).sort();
+    const positiveData = labels.map(day => daily[day].positive);
+    const negativeData = labels.map(day => daily[day].negative);
+    const anomalies = detectReviewAnomalies(daily, labels);
+    window.devInsightAnomalies = anomalies;
+    renderAnomalyPanel(daily, anomalies);
+    renderKeywordCloud(reviews);
 
-    const monthly =
-        {};
-
-
-    reviews.forEach(
-        review => {
-
-            if (
-                !review._date
-            ) return;
-
-
-            const key =
-                `${review._date.getFullYear()}-` +
-                `${String(
-                    review._date.getMonth() + 1
-                ).padStart(2, "0")}`;
-
-
-            if (
-                !monthly[key]
-            ) {
-
-                monthly[key] = {
-
-                    positive: 0,
-                    negative: 0
-
-                };
-
-            }
-
-
-            monthly[key][
-                review.sentiment
-            ]++;
-
+    const anomalyMarkers = labels.map(day => anomalies.some(a => a.date === day) ? daily[day].negative : null);
+    const trendCanvas = document.getElementById("reviewTrendChart");
+    if (reviewTrendChart) reviewTrendChart.destroy();
+    reviewTrendChart = new Chart(trendCanvas, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [
+                { label: "Positive", data: positiveData, tension: 0.3, borderColor: "#22c55e", backgroundColor: "rgba(34,197,94,.12)" },
+                { label: "Negative", data: negativeData, tension: 0.3, borderColor: "#64748b", backgroundColor: "rgba(100,116,139,.12)" },
+                { label: "Anomaly", data: anomalyMarkers, showLine: false, pointRadius: 7, pointHoverRadius: 10, pointBackgroundColor: "#ef4444", pointBorderColor: "#fff", pointBorderWidth: 2 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { intersect: false, mode: "index" },
+            plugins: { tooltip: { callbacks: { afterBody: items => {
+                const day = items && items.length ? labels[items[0].dataIndex] : "";
+                const anomaly = anomalies.find(a => a.date === day);
+                return anomaly ? [`⚠ 이상 징후: ${anomaly.reasons.join(", ")}`, "클릭하여 해당 날짜 부정 리뷰 보기"] : [];
+            } } } },
+            onClick: (event, elements) => {
+                if (!elements || !elements.length) return;
+                const day = labels[elements[0].index];
+                const anomaly = anomalies.find(a => a.date === day);
+                if (anomaly) openAnomalyModal(day, reviews);
+            },
+            scales: { x: { ticks: { maxTicksLimit: 12, maxRotation: 45, minRotation: 0 } } }
         }
-    );
-
-
-    const labels =
-        Object.keys(
-            monthly
-        ).sort();
-
-
-    const positiveData =
-        labels.map(
-            label =>
-                monthly[label].positive
-        );
-
-
-    const negativeData =
-        labels.map(
-            label =>
-                monthly[label].negative
-        );
-
-
-    const trendCanvas =
-        document
-            .getElementById(
-                "reviewTrendChart"
-            );
-
-
-    if (
-        reviewTrendChart
-    ) {
-
-        reviewTrendChart.destroy();
-
-    }
-
-
-    reviewTrendChart =
-        new Chart(
-            trendCanvas,
-            {
-
-                type: "line",
-
-                data: {
-
-                    labels,
-
-                    datasets: [
-
-                        {
-
-                            label:
-                                "Positive",
-
-                            data:
-                                positiveData,
-
-                            tension:
-                                0.3
-
-                        },
-
-                        {
-
-                            label:
-                                "Negative",
-
-                            data:
-                                negativeData,
-
-                            tension:
-                                0.3
-
-                        }
-
-                    ]
-
-                },
-
-                options: {
-
-                    responsive: true,
-
-                    maintainAspectRatio: false,
-
-                    interaction: {
-
-                        intersect: false,
-
-                        mode: "index"
-
-                    }
-
-                }
-
-            }
-        );
-
+    });
 }
 
+
+/* =========================================================
+   REVIEW ANOMALIES + KEYWORD CO-OCCURRENCE
+========================================================= */
+function detectReviewAnomalies(daily, labels) {
+    const result = [];
+    const windowSize = 7;
+    labels.forEach((date, index) => {
+        // Compare each date with the preceding 7 available dates; require at least 4 baseline days.
+        const baselineDates = labels.slice(Math.max(0, index - windowSize), index);
+        if (baselineDates.length < 4) return;
+        const countValues = baselineDates.map(d => daily[d].total);
+        const rateValues = baselineDates.map(d => daily[d].total ? daily[d].negative / daily[d].total : 0);
+        const mean = values => values.reduce((a,b)=>a+b,0) / values.length;
+        const sd = values => { const m=mean(values); return Math.sqrt(values.reduce((sum,v)=>sum+Math.pow(v-m,2),0)/values.length); };
+        const countMean=mean(countValues), countSd=sd(countValues);
+        const rateMean=mean(rateValues), rateSd=sd(rateValues);
+        const current=daily[date], currentRate=current.total ? current.negative/current.total : 0;
+        const reasons=[];
+        if (current.total > countMean + 2*countSd && current.total > countMean) reasons.push(`리뷰 수 급증 (${current.total}개)`);
+        if (currentRate > rateMean + 2*rateSd && currentRate > rateMean && current.total >= 3) reasons.push(`부정 비율 급증 (${Math.round(currentRate*100)}%)`);
+        if (reasons.length) result.push({date, total:current.total, negative:current.negative, negativeRate:Math.round(currentRate*100), reasons});
+    });
+    return result;
+}
+
+function renderAnomalyPanel(daily, anomalies) {
+    const summary=document.getElementById("anomalySummary");
+    const list=document.getElementById("anomalyList");
+    if (!summary || !list) return;
+    const days=Object.keys(daily||{}).length;
+    summary.textContent = days ? `${days}일의 리뷰 데이터를 검사했습니다. ${anomalies.length ? `${anomalies.length}개의 이상 징후가 감지되었습니다.` : "기준을 초과한 이상 징후가 없습니다."} (직전 최대 7개 날짜 대비 2σ 기준)` : "날짜 정보가 있는 리뷰가 부족합니다.";
+    list.innerHTML = anomalies.length ? anomalies.map(a => `<button class="anomaly-item" onclick="openAnomalyModal('${a.date}')"><strong>⚠ ${a.date}</strong><span>${a.reasons.map(escapeHtml).join(" · ")} · 부정 ${a.negative}개</span></button>`).join("") : `<div class="keyword-empty">이상 징후가 감지되면 이곳에 날짜별로 표시됩니다.</div>`;
+}
+
+function openAnomalyModal(date, suppliedReviews) {
+    const reviews = suppliedReviews || currentReviews || [];
+    const dayReviews=reviews.filter(r => r._date && `${r._date.getFullYear()}-${String(r._date.getMonth()+1).padStart(2,"0")}-${String(r._date.getDate()).padStart(2,"0")}`===date && r.sentiment==="negative");
+    const anomaly=(window.devInsightAnomalies||[]).find(a=>a.date===date);
+    const modal=document.getElementById("anomalyModal");
+    document.getElementById("anomalyModalTitle").textContent=`${date} 부정 리뷰 집중 분석`;
+    document.getElementById("anomalyModalDescription").textContent=`부정 리뷰 ${dayReviews.length}개${anomaly ? ` · 감지 사유: ${anomaly.reasons.join(", ")}` : " · 선택한 날짜의 부정 리뷰"}. 이상 징후는 통계적 기준에 따른 참고 신호이며, 실제 리뷰 폭탄 여부를 확정하지 않습니다.`;
+    document.getElementById("anomalyModalReviews").innerHTML=dayReviews.length ? dayReviews.slice(0,80).map((r,i)=>`<div class="anomaly-review-row"><strong>NEGATIVE REVIEW ${i+1}</strong><p>${escapeHtml(getReviewText(r)||"(리뷰 내용 없음)")}</p></div>`).join("") : `<p>해당 날짜에 표시할 부정 리뷰가 없습니다.</p>`;
+    modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
+}
+function closeAnomalyModal(){const modal=document.getElementById("anomalyModal");if(modal){modal.classList.remove("open");modal.setAttribute("aria-hidden","true");}}
+
+function tokenizeForKeywords(text) {
+    const stop=new Set(["this","that","with","have","from","they","them","were","been","very","just","game","play","playing","played","really","would","could","there","their","about","when","what","which","will","your","you","are","was","and","the","for","but","not","can","get","got","its","it's","has","had","all","one","out","too","much","more","good","bad","like","even","only","still","also","because","into","than","then","이거","저거","그냥","정말","너무","게임","하는","하고","하면","해서","있음","없음","입니다","하지만","그리고","그런데","때문","진짜","너무","정도","같음"]);
+    const matches=String(text||"").toLowerCase().match(/[a-z][a-z0-9_'-]{2,}|[가-힣]{2,}/g)||[];
+    return matches.filter(w=>!stop.has(w) && !/^\d+$/.test(w));
+}
+function renderKeywordCloud(reviews) {
+    const cloud=document.getElementById("keywordCloud"), relations=document.getElementById("keywordRelations");
+    if(!cloud||!relations)return;
+    const negative=(reviews||[]).filter(r=>r.sentiment==="negative");
+    const freq=new Map(), pairs=new Map(), docs=[];
+    negative.forEach(r=>{
+        const tokens=tokenizeForKeywords(getReviewText(r));
+        const unique=[...new Set(tokens)]; docs.push(unique);
+        tokens.forEach(w=>freq.set(w,(freq.get(w)||0)+1));
+        for(let i=0;i<unique.length;i++) for(let j=i+1;j<Math.min(unique.length,i+5);j++){
+            const pair=[unique[i],unique[j]].sort().join("||| "); pairs.set(pair,(pairs.get(pair)||0)+1);
+        }
+    });
+    const top=[...freq.entries()].sort((a,b)=>b[1]-a[1]).slice(0,30);
+    if(!top.length){cloud.innerHTML='<span class="keyword-empty">분석할 부정 리뷰가 없습니다.</span>';relations.innerHTML="";return;}
+    cloud.innerHTML=top.map(([word,count],i)=>`<button class="keyword-chip" style="font-size:${Math.min(21,12+Math.floor(count/Math.max(1,top[0][1])*9))}px" onclick="filterNegativeByKeyword('${escapeHtml(word).replace(/'/g,"&#39;")}')">${escapeHtml(word)}<small>${count}</small></button>`).join("");
+    const topWords=new Set(top.slice(0,12).map(x=>x[0]));
+    const topPairs=[...pairs.entries()].map(([pair,count])=>({words:pair.split("||| "),count})).filter(p=>p.words.every(w=>topWords.has(w))).sort((a,b)=>b.count-a.count).slice(0,12);
+    relations.innerHTML=topPairs.length?`함께 등장하는 연관어: ${topPairs.map(p=>`<button onclick="filterNegativeByKeyword('${escapeHtml(p.words[0]).replace(/'/g,"&#39;")}')">${escapeHtml(p.words[0])} + ${escapeHtml(p.words[1])} (${p.count})</button>`).join(" · ")}`:"연관어 쌍을 만들 만큼 반복 등장한 단어 조합이 없습니다.";
+}
+function filterNegativeByKeyword(keyword) {
+    const target=(currentReviews||[]).filter(r=>r.sentiment==="negative" && tokenizeForKeywords(getReviewText(r)).includes(String(keyword).toLowerCase()));
+    const modal=document.getElementById("anomalyModal");
+    document.getElementById("anomalyModalTitle").textContent=`키워드 '${keyword}' 관련 부정 리뷰`;
+    document.getElementById("anomalyModalDescription").textContent=`'${keyword}'가 포함된 부정 리뷰 ${target.length}개입니다. 상위 80개를 표시합니다.`;
+    document.getElementById("anomalyModalReviews").innerHTML=target.slice(0,80).map((r,i)=>`<div class="anomaly-review-row"><strong>${r._date?`${r._date.getFullYear()}-${String(r._date.getMonth()+1).padStart(2,"0")}-${String(r._date.getDate()).padStart(2,"0")}`:"날짜 없음"} · REVIEW ${i+1}</strong><p>${escapeHtml(getReviewText(r)||"(리뷰 내용 없음)")}</p></div>`).join("")||"<p>관련 리뷰가 없습니다.</p>";
+    modal.classList.add("open");modal.setAttribute("aria-hidden","false");
+}
+
+function exportPDFReport() {
+    if (!currentGame || !currentReviews || !currentReviews.length) { alert("먼저 게임을 선택하고 리뷰 데이터를 불러와 주세요."); return; }
+    const reviews=currentReviews;
+    const total=reviews.length, positive=reviews.filter(r=>r.sentiment==="positive").length, negative=total-positive;
+    const issues=(typeof analyzeIssues==="function"?analyzeIssues(reviews):[]).filter(i=>i.mentions>0).sort((a,b)=>b.mentions-a.mentions).slice(0,5);
+    const insightTitle=document.getElementById("insightTitle")?.innerText||"AI Insight";
+    const insightText=document.getElementById("insightText")?.innerText||"분석 요약이 없습니다.";
+    const chartImages=["sentimentChart","reviewTrendChart"].map(id=>{try{return document.getElementById(id).toDataURL("image/png");}catch(e){return "";}});
+    const anomalyCount=(window.devInsightAnomalies||[]).length;
+    const esc=escapeHtml;
+    const win=window.open("","_blank");
+    if(!win){alert("팝업이 차단되었습니다. 사이트의 팝업을 허용한 뒤 다시 시도해 주세요.");return;}
+    win.document.open();
+    win.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(currentGame.gameName)} - Executive Summary</title><style>
+      @page{size:A4;margin:16mm}*{box-sizing:border-box}body{font-family:Arial,'Malgun Gothic',sans-serif;color:#172033;margin:0;font-size:11px;line-height:1.6}h1{font-size:25px;margin:0 0 4px}h2{font-size:15px;border-bottom:2px solid #dbe2ee;padding-bottom:6px;margin:22px 0 10px}.sub{color:#667085}.hero{background:#101b34;color:white;padding:22px;border-radius:12px}.hero .sub{color:#d5deef}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat{border:1px solid #dbe2ee;padding:12px;border-radius:8px}.stat b{display:block;font-size:20px}.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}.charts img{width:100%;border:1px solid #e5e7eb;border-radius:8px}.insight{white-space:pre-wrap;background:#f4f6fb;padding:13px;border-radius:8px}.issue{padding:8px 0;border-bottom:1px solid #e5e7eb}.foot{margin-top:25px;color:#667085;font-size:9px}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+      </style></head><body><div class="hero"><div>DEVINSIGHT AI · EXECUTIVE SUMMARY</div><h1>${esc(currentGame.gameName)}</h1><div class="sub">리뷰 분석 보고서 · ${new Date().toLocaleString("ko-KR")}</div></div>
+      <div class="stats"><div class="stat">전체 리뷰<b>${total.toLocaleString()}</b></div><div class="stat">긍정 리뷰<b>${positive.toLocaleString()} (${Math.round(positive/total*100)}%)</b></div><div class="stat">부정 리뷰<b>${negative.toLocaleString()} (${Math.round(negative/total*100)}%)</b></div></div>
+      <h2>AI Insight</h2><div><b>${esc(insightTitle)}</b></div><div class="insight">${esc(insightText)}</div>
+      <h2>대시보드 차트</h2><div class="charts">${chartImages.filter(Boolean).map(src=>`<img src="${src}">`).join("")}</div>
+      <h2>주요 이슈 Top 5</h2>${issues.length?issues.map((i,n)=>`<div class="issue"><b>${n+1}. ${esc(i.issue)}</b> — 언급 ${Number(i.mentions).toLocaleString()}회${i.priority?` · 우선순위 ${esc(i.priority)}`:""}</div>`).join(""):'<p>집계된 주요 이슈가 없습니다.</p>'}
+      <h2>이상 징후</h2><p>감지된 날짜: ${anomalyCount}개. 통계적 이상 징후는 검토 대상 신호이며, 리뷰 폭탄 여부를 단독으로 확정하지 않습니다.</p><div class="foot">본 보고서는 현재 로드된 리뷰 데이터와 화면에 표시된 분석 결과를 기반으로 생성되었습니다.</div><script>window.onload=()=>setTimeout(()=>window.print(),500);<\/script></body></html>`);
+    win.document.close();
+}
 
 /* =========================================================
    AI INSIGHT
