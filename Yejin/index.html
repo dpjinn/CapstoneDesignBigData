@@ -2165,10 +2165,11 @@
 
             <div class="comparison-controls" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
                 <div style="flex:1; min-width:220px;">
-                    <label for="compareSelectB" style="display:block; font-size:13px; font-weight:600; margin-bottom:7px;">비교할 게임 선택</label>
-                    <select id="compareSelectB" style="width:100%; height:40px; border:1px solid #d1d5db; border-radius:8px; padding:0 10px; background:white;">
-                        <option value="">게임을 선택하세요</option>
+                    <label for="compareSelectB" style="display:block; font-size:13px; font-weight:600; margin-bottom:7px;">비교할 게임 선택하기</label>
+                    <select id="compareSelectB" aria-label="비교할 게임 선택하기" style="display:block; visibility:visible; opacity:1; box-sizing:border-box; width:100%; min-height:44px; height:44px; border:1px solid #9ca3af; border-radius:8px; padding:0 10px; background:#ffffff; color:#111827; font-size:14px; position:relative; z-index:2;">
+                        <option value="">비교할 게임 선택하기</option>
                     </select>
+                    <small id="comparisonSelectHint" style="display:block; margin-top:6px; color:#6b7280;">게임 목록을 불러오는 중...</small>
                 </div>
                 <div style="display:flex; align-items:flex-end;">
                     <button type="button" class="primary-btn" onclick="runGameComparison()">비교 분석</button>
@@ -2841,6 +2842,11 @@ async function loadGithubFiles() {
             error
         );
 
+
+        const comparisonHint = document.getElementById("comparisonSelectHint");
+        if (comparisonHint) {
+            comparisonHint.textContent = "게임 목록을 불러오지 못했습니다. GitHub 연결을 확인해주세요.";
+        }
 
         const list =
             document.getElementById(
@@ -6289,12 +6295,19 @@ let comparisonReviewsCache = new Map();
 
 function populateComparisonGameOptions() {
     const select = document.getElementById("compareSelectB");
+    const hint = document.getElementById("comparisonSelectHint");
     if (!select) return;
 
     const previousValue = select.value;
-    select.innerHTML = '<option value="">게임을 선택하세요</option>';
+    select.innerHTML = '<option value="">비교할 게임 선택하기</option>';
+
+    if (!Array.isArray(games) || games.length === 0) {
+        if (hint) hint.textContent = "게임 목록을 불러오지 못했거나 아직 로딩 중입니다.";
+        return;
+    }
 
     games.forEach(game => {
+        if (!game || !game.gameName) return;
         const option = document.createElement("option");
         option.value = game.gameName;
         option.textContent = game.gameName;
@@ -6304,6 +6317,7 @@ function populateComparisonGameOptions() {
     if (previousValue && games.some(game => game.gameName === previousValue)) {
         select.value = previousValue;
     }
+    if (hint) hint.textContent = `비교 가능한 게임 ${select.options.length - 1}개`;
 }
 
 function getComparisonStats(gameName, reviews) {
