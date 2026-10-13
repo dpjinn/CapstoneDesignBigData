@@ -978,12 +978,6 @@
             flex-direction: column;
 
             gap: 10px;
-
-            max-height: 600px;
-
-            overflow-y: auto;
-
-            padding-right: 4px;
         }
 
         .review-item {
@@ -2388,7 +2382,7 @@
 
 <!-- =========================================================
      AI CHAT
-========================================================= */
+========================================================= -->
 
 <div
     id="chatBox"
@@ -2665,6 +2659,93 @@ document.addEventListener(
 
 /* =========================================================
    LOAD GITHUB FILES
+========================================================= */
+
+async function loadGithubFiles() {
+
+    try {
+
+        const apiUrl =
+            "https://api.github.com/repos/dpjinn/CapstoneDesignBigData/contents/Yejin/data";
+
+        console.log("GitHub API URL:", apiUrl);
+
+        const response = await fetch(apiUrl);
+
+        console.log(
+            "GitHub response:",
+            response.status,
+            response.statusText
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                `GitHub API 오류 (HTTP ${response.status})`
+            );
+
+        }
+
+        const data = await response.json();
+
+        console.log(
+            "GitHub 전체 파일:",
+            data
+        );
+
+
+        // CSV만 선택
+        githubFiles = data.filter(file =>
+            file.type === "file" &&
+            file.name.toLowerCase().endsWith(".csv")
+        );
+
+
+        console.log(
+            "찾은 CSV 파일:",
+            githubFiles
+        );
+
+
+        createGameList();
+
+    }
+    catch (error) {
+
+        console.error(
+            "GitHub 파일 로딩 오류:",
+            error
+        );
+
+        alert(
+            "GitHub CSV 파일을 불러오지 못했습니다.\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+/* =========================================================
+   GITHUB GAME REVIEW SYSTEM
+   ---------------------------------------------------------
+   파일 구조:
+
+   Yejin/data/
+   ├─ Stardew_positive.csv
+   ├─ Stardew_negative.csv
+   ├─ 20XX_positive.csv
+   ├─ 20XX_negative.csv
+   ├─ A Hat in Time_positive.csv
+   └─ A Hat in Time_negative.csv
+
+   게임 이름은 "_positive.csv" 또는 "_negative.csv"
+   앞부분을 사용한다.
+========================================================= */
+
+
+/* =========================================================
+   LOAD GITHUB FILE LIST
 ========================================================= */
 
 async function loadGithubFiles() {
@@ -3014,7 +3095,23 @@ function filterGameList() {
 ========================================================= */
 
 /* 게임 선택 영역의 실제 검색창 ID는 gameSearch이다. */
+function filterGameList() {
 
+    const searchInput =
+        document.getElementById(
+            "gameSearch"
+        );
+
+    const keyword =
+        searchInput
+            ? searchInput.value.trim()
+            : "";
+
+    renderGameList(
+        keyword
+    );
+
+}
 
 
 /* =========================================================
@@ -3114,7 +3211,47 @@ function renderGameList(
             );
 
 
-            /* Positive / Negative status removed as requested */
+            /* Positive / Negative */
+
+            const status =
+                document.createElement(
+                    "div"
+                );
+
+
+            status.className =
+                "game-status";
+
+
+            if (
+                game.positiveFile
+            ) {
+
+                status.innerHTML += `
+                    <span class="positive-status">
+                        Positive
+                    </span>
+                `;
+
+            }
+
+
+            if (
+                game.negativeFile
+            ) {
+
+                status.innerHTML += `
+                    <span class="negative-status">
+                        Negative
+                    </span>
+                `;
+
+            }
+
+
+            item.appendChild(
+                status
+            );
 
 
             /* 클릭 */
@@ -3654,7 +3791,9 @@ async function loadCSV(
     ) {
 
         throw new Error(
-            `CSV load failed: HTTP ${response.status}\n파일: ${filePath}\nURL: ${url}`
+            `CSV load failed: HTTP ${response.status}\n` +
+            `파일: ${filePath}\n` +
+            `URL: ${url}`
         );
 
     }
@@ -3699,7 +3838,7 @@ function parseCSV(
     text =
         String(text)
             .replace(
-                /^﻿/,
+                /^\uFEFF/,
                 ""
             );
 
@@ -3789,13 +3928,13 @@ function parseCSV(
         if (
             (
                 char === "\n" ||
-                char === "\n"
+                char === "\r"
             ) &&
             !insideQuotes
         ) {
 
             if (
-                char === "\n" &&
+                char === "\r" &&
                 next === "\n"
             ) {
 
@@ -4445,7 +4584,31 @@ document.addEventListener(
    게임 이름에 특수문자가 있어도 안전하게 표시
 ========================================================= */
 
+function escapeHtml(value) {
 
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
 
 
 
@@ -4455,14 +4618,288 @@ document.addEventListener(
    LOAD CSV
 ========================================================= */
 
-async 
+async function loadCSV(filePath) {
+
+    try {
+
+        /*
+         * GitHub Contents API에서 받은
+         * file.path를 Raw GitHub URL로 변환
+         *
+         * 예:
+         * Yejin/data/Stardew_positive.csv
+         *
+         * →
+         * https://raw.githubusercontent.com/
+         * dpjinn/CapstoneDesignBigData/main/
+         * Yejin/data/Stardew_positive.csv
+         */
+
+        const url =
+            `https://raw.githubusercontent.com/` +
+            `dpjinn/CapstoneDesignBigData/main/` +
+            filePath
+                .split("/")
+                .map(part => encodeURIComponent(part))
+                .join("/");
+
+
+        console.log(
+            "CSV 로딩 URL:",
+            url
+        );
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `CSV load failed: HTTP ${response.status}\n` +
+                `파일: ${filePath}`
+            );
+
+        }
+
+
+        const text =
+            await response.text();
+
+
+        return parseCSV(text);
+
+    }
+    catch (error) {
+
+        console.error(
+            "CSV 로딩 오류:",
+            error
+        );
+
+        throw error;
+
+    }
+
+}
 
 
 /* =========================================================
    CSV PARSER
 ========================================================= */
 
+function parseCSV(text) {
 
+    const rows = [];
+
+    let row = [];
+
+    let cell = "";
+
+    let insideQuotes = false;
+
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char =
+            text[i];
+
+
+        const next =
+            text[i + 1];
+
+
+        /*
+         * 따옴표
+         */
+
+        if (
+            char === '"'
+        ) {
+
+            if (
+                insideQuotes &&
+                next === '"'
+            ) {
+
+                cell += '"';
+
+                i++;
+
+            } else {
+
+                insideQuotes =
+                    !insideQuotes;
+
+            }
+
+            continue;
+
+        }
+
+
+        /*
+         * 쉼표
+         */
+
+        if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            row.push(cell);
+
+            cell = "";
+
+            continue;
+
+        }
+
+
+        /*
+         * 줄바꿈
+         */
+
+        if (
+            (char === "\n" ||
+             char === "\r") &&
+            !insideQuotes
+        ) {
+
+            if (
+                char === "\r" &&
+                next === "\n"
+            ) {
+
+                i++;
+
+            }
+
+
+            row.push(cell);
+
+            cell = "";
+
+
+            if (
+                row.some(
+                    value =>
+                        value.trim() !== ""
+                )
+            ) {
+
+                rows.push(row);
+
+            }
+
+
+            row = [];
+
+            continue;
+
+        }
+
+
+        cell += char;
+
+    }
+
+
+    /*
+     * 마지막 셀
+     */
+
+    if (
+        cell !== "" ||
+        row.length > 0
+    ) {
+
+        row.push(cell);
+
+        rows.push(row);
+
+    }
+
+
+    if (
+        rows.length === 0
+    ) {
+
+        return [];
+
+    }
+
+
+    /*
+     * 첫 번째 줄 = Header
+     */
+
+    const headers =
+        rows[0].map(
+            header =>
+                header
+                    .replace(
+                        /^\uFEFF/,
+                        ""
+                    )
+                    .trim()
+        );
+
+
+    /*
+     * 객체 배열 생성
+     */
+
+    return rows
+        .slice(1)
+        .map(
+            values => {
+
+                const obj = {};
+
+
+                headers.forEach(
+                    (header, index) => {
+
+                        obj[header] =
+                            values[index]
+                            ?? "";
+
+                    }
+                );
+
+
+                /*
+                 * 내부적으로 사용하는
+                 * 공통 필드
+                 */
+
+                obj._text =
+                    Object.values(
+                        obj
+                    )
+                    .join(" ");
+
+
+                obj._date =
+                    findDate(obj);
+
+
+                obj._score =
+                    findScore(obj);
+
+
+                return obj;
+
+            }
+        );
+
+}
 
 
 /* =========================================================
@@ -5397,7 +5834,47 @@ if (reviewSearch) {
    GET REVIEW TEXT
 ========================================================= */
 
+function getReviewText(review) {
 
+    const possibleKeys = [
+
+        "review",
+        "Review",
+        "text",
+        "Text",
+        "content",
+        "Content",
+        "review_text",
+        "reviewText",
+        "리뷰",
+        "내용"
+
+    ];
+
+
+    for (
+        const key of possibleKeys
+    ) {
+
+        if (
+            review[key] &&
+            String(
+                review[key]
+            ).trim()
+        ) {
+
+            return String(
+                review[key]
+            );
+
+        }
+
+    }
+
+
+    return review._text;
+
+}
 
 
 /* =========================================================
@@ -5485,11 +5962,6 @@ function updateCharts(reviews) {
                             data: [
                                 positive,
                                 negative
-                            ],
-
-                            backgroundColor: [
-                                "#22c55e",
-                                "#ef4444"
                             ]
 
                         }
@@ -5982,7 +6454,7 @@ async function loadComparisonReviews(game) {
 }
 
 function comparisonIssueChips(issues) {
-    if (!issues || !issues.length) return "<span class="compare-issue-chip">뚜렷한 반복 이슈 없음</span>";
+    if (!issues || !issues.length) return "<span class=\"compare-issue-chip\">뚜렷한 반복 이슈 없음</span>";
     return issues.map(issue => `<span class="compare-issue-chip">${escapeHtml(issue.issue)} · ${Number(issue.mentions).toLocaleString()}회</span>`).join("");
 }
 
@@ -6111,10 +6583,7 @@ async function runGameComparison() {
         const metricContext = statsList.map(stats =>
             `${stats.gameName}: 전체 ${stats.total}개, 긍정 ${stats.positive}개(${stats.positiveRate}%), 부정 ${stats.negative}개(${stats.negativeRate}%), 주요 이슈 ${stats.topIssues.map(i => `${i.issue}(${i.mentions}회)`).join(", ") || "뚜렷한 반복 이슈 없음"}`
         ).join("\n");
-        const question = `다음 게임들을 비교 분석해줘. 아래 정량 지표와 리뷰 표본을 함께 근거로 사용해.
-${metricContext}
-
-분석 항목: 1) 게임별 핵심 특징과 이용자 반응 2) 공통점과 차이점 3) 긍정/부정 비율 차이에 대한 리뷰 근거 4) 게임별 반복 불만과 강점 5) 개발자 관점의 개선 우선순위 및 결론. 리뷰에 실제로 나타난 근거와 추정은 구분하고, 단순히 긍정 비율이 높은 게임이 무조건 우수하다고 단정하지 마. 한국어로 제목과 소제목을 활용해 구체적으로 작성해줘.`;
+        const question = `다음 게임들을 비교 분석해줘. 아래 정량 지표와 리뷰 표본을 함께 근거로 사용해.\n${metricContext}\n\n분석 항목: 1) 게임별 핵심 특징과 이용자 반응 2) 공통점과 차이점 3) 긍정/부정 비율 차이에 대한 리뷰 근거 4) 게임별 반복 불만과 강점 5) 개발자 관점의 개선 우선순위 및 결론. 리뷰에 실제로 나타난 근거와 추정은 구분하고, 단순히 긍정 비율이 높은 게임이 무조건 우수하다고 단정하지 마. 한국어로 제목과 소제목을 활용해 구체적으로 작성해줘.`;
         const response = await fetch("http://127.0.0.1:5000/chat", {
             method:"POST", headers:{"Content-Type":"application/json"},
             body:JSON.stringify({game:names.join(" vs "), question, reviews:aiReviews})
@@ -6485,7 +6954,7 @@ function exportCSV() {
     const blob =
         new Blob(
             [
-                "﻿" +
+                "\uFEFF" +
                 csv
             ],
             {
@@ -6812,7 +7281,35 @@ function showError(
    HTML ESCAPE
 ========================================================= */
 
+function escapeHtml(
+    value
+) {
 
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
 
 /* ================================
    로그인 / 회원가입
