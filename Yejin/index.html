@@ -825,28 +825,40 @@
            COMPARISON
         ========================================================= */
 
-        .comparison-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, 1fr);
-
-            gap: 14px;
-        }
-
-        .compare-game {
-            border: 1px solid #e5e7eb;
-
-            border-radius: 10px;
-
-            padding: 16px;
-        }
-
-        .compare-game h3 {
-            margin-bottom: 12px;
-
-            font-size: 16px;
-        }
+        .comparison-intro { color:#6b7280; font-size:13px; line-height:1.65; margin:7px 0 18px; }
+        .comparison-picker-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+        .comparison-picker { position:relative; min-width:0; padding:14px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; }
+        .comparison-picker-label { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; margin-bottom:8px; }
+        .comparison-picker-label span { display:inline-grid; place-items:center; width:24px; height:24px; border-radius:7px; background:#eef2ff; color:#4f46e5; }
+        .comparison-picker input { width:100%; height:42px; border:1px solid #d1d5db; border-radius:8px; padding:0 11px; outline:none; background:#fff; color:#111827; }
+        .comparison-picker input:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.12); }
+        .comparison-search-results { display:none; position:absolute; z-index:20; left:14px; right:14px; top:100px; max-height:220px; overflow-y:auto; border:1px solid #d1d5db; border-radius:9px; background:#fff; box-shadow:0 12px 25px rgba(15,23,42,.12); }
+        .comparison-search-results button { display:block; width:100%; padding:10px 12px; border:0; border-bottom:1px solid #f1f5f9; background:#fff; color:#111827; text-align:left; cursor:pointer; }
+        .comparison-search-results button:hover { background:#f3f4ff; }
+        .comparison-selected { color:#4f46e5; font-size:12px; margin-top:7px; min-height:17px; }
+        .comparison-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+        .comparison-actions .primary-btn { min-height:42px; padding:10px 18px; }
+        .comparison-status { font-size:12px; color:#6b7280; }
+        .comparison-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; align-items:stretch; }
+        .compare-game { min-width:0; border:1px solid #e5e7eb; border-radius:13px; padding:16px; background:#fff; box-shadow:0 2px 8px rgba(15,23,42,.025); }
+        .compare-game h3 { font-size:15px; line-height:1.4; min-height:42px; margin-bottom:13px; overflow-wrap:anywhere; }
+        .compare-game .compare-rank { display:inline-block; margin-bottom:9px; color:#6366f1; font-size:10px; letter-spacing:.08em; font-weight:800; }
+        .compare-game .compare-row { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 0; border-bottom:1px solid #f1f5f9; font-size:12px; }
+        .compare-game .compare-row span { color:#6b7280; }
+        .compare-game .compare-row strong { text-align:right; overflow-wrap:anywhere; }
+        .compare-rate-label { display:flex; justify-content:space-between; font-size:11px; color:#6b7280; margin:14px 0 6px; }
+        .compare-rate-track { height:7px; border-radius:99px; background:#fee2e2; overflow:hidden; }
+        .compare-rate-fill { height:100%; border-radius:99px; background:#6366f1; transition:width .25s ease; }
+        .compare-issues { margin-top:14px; }
+        .compare-issues-title { font-size:11px; color:#6b7280; font-weight:700; margin-bottom:7px; }
+        .compare-issue-chip { display:inline-block; margin:0 4px 5px 0; padding:5px 7px; border-radius:6px; background:#f3f4f6; color:#374151; font-size:10px; }
+        .comparison-ai-card { margin-top:18px; margin-bottom:0; }
+        .comparison-ai-heading { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
+        .comparison-ai-icon { display:grid; place-items:center; width:34px; height:34px; border-radius:10px; background:#e0e7ff; }
+        .comparison-ai-heading .insight-label { margin:0 0 3px; }
+        .comparison-ai-note { color:#6b7280; font-size:12px; line-height:1.6; margin-top:10px; }
+        @media (max-width:1050px) { .comparison-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width:650px) { .comparison-picker-grid,.comparison-grid { grid-template-columns:1fr; } .compare-game h3 { min-height:0; } }
 
         .compare-row {
             display: flex;
@@ -2152,134 +2164,39 @@
 
 
         <!-- COMPARE -->
+        <section id="compare" class="card">
+            <div class="card-title">게임 비교 분석</div>
+            <p class="comparison-intro">현재 선택한 게임을 기준으로 다른 게임을 최대 2개까지 추가해 한 화면에서 비교합니다. 리뷰 수와 긍정 비율뿐 아니라 반복 이슈를 나란히 확인하고, 연결된 AI가 리뷰 내용을 종합해 차이점과 시사점을 분석합니다.</p>
 
-        <section
-            id="compare"
-            class="card"
-        >
-
-            <div class="card-title">
-                Game Comparison
-            </div>
-
-
-            <div class="comparison-controls" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
-                <div style="flex:1; min-width:220px;">
-                    <label for="compareSelectB" style="display:block; font-size:13px; font-weight:600; margin-bottom:7px;">비교할 게임 선택하기</label>
-                    <input id="compareSelectB" type="search" aria-label="비교할 게임 검색" placeholder="비교할 게임 이름 입력..." autocomplete="off" oninput="searchComparisonGames()" onkeydown="handleComparisonSearchKey(event)" style="display:block; box-sizing:border-box; width:100%; min-height:44px; height:44px; border:1px solid #9ca3af; border-radius:8px; padding:0 10px; background:#ffffff; color:#111827; font-size:14px; position:relative; z-index:2;">
-                    <div id="comparisonSearchResults" role="listbox" style="display:none; margin-top:4px; max-height:220px; overflow-y:auto; border:1px solid #d1d5db; border-radius:8px; background:#ffffff; box-shadow:0 4px 12px rgba(0,0,0,.08);"></div>
-                    <small id="comparisonSelectHint" style="display:block; margin-top:6px; color:#6b7280;">비교할 게임 이름을 검색하세요.</small>
+            <div class="comparison-picker-grid">
+                <div class="comparison-picker">
+                    <div class="comparison-picker-label"><span>2</span> 두 번째 게임</div>
+                    <input id="compareSelectB" type="search" placeholder="비교할 게임 이름 검색..." autocomplete="off" oninput="searchComparisonGames('B')" onkeydown="handleComparisonSearchKey(event,'B')" aria-label="두 번째 게임 검색">
+                    <div id="comparisonSearchResultsB" class="comparison-search-results" role="listbox"></div>
+                    <div id="comparisonSelectedB" class="comparison-selected">게임을 검색해 선택하세요.</div>
                 </div>
-                <div style="display:flex; align-items:flex-end;">
-                    <button type="button" class="primary-btn" onclick="runGameComparison()">비교 분석</button>
+                <div class="comparison-picker">
+                    <div class="comparison-picker-label"><span>3</span> 세 번째 게임 <span style="font-weight:400;color:#9ca3af;">(선택 사항)</span></div>
+                    <input id="compareSelectC" type="search" placeholder="비교할 게임 이름 검색..." autocomplete="off" oninput="searchComparisonGames('C')" onkeydown="handleComparisonSearchKey(event,'C')" aria-label="세 번째 게임 검색">
+                    <div id="comparisonSearchResultsC" class="comparison-search-results" role="listbox"></div>
+                    <div id="comparisonSelectedC" class="comparison-selected">원하면 게임을 하나 더 선택하세요.</div>
                 </div>
             </div>
-
-            <div class="comparison-grid">
-
-                <div class="compare-game">
-
-                    <h3 id="compareGameA">
-                        선택된 게임
-                    </h3>
-
-
-                    <div class="compare-row">
-
-                        <span>
-                            Reviews
-                        </span>
-
-                        <strong id="compareReviewsA">
-                            -
-                        </strong>
-
-                    </div>
-
-
-                    <div class="compare-row">
-
-                        <span>
-                            Positive
-                        </span>
-
-                        <strong id="comparePositiveA">
-                            -
-                        </strong>
-
-                    </div>
-
-
-                    <div class="compare-row">
-
-                        <span>
-                            Negative
-                        </span>
-
-                        <strong id="compareNegativeA">
-                            -
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <div class="compare-game">
-
-                    <h3 id="compareGameB">
-                        비교할 게임
-                    </h3>
-
-
-                    <div class="compare-row">
-
-                        <span>
-                            Reviews
-                        </span>
-
-                        <strong id="compareReviewsB">
-                            -
-                        </strong>
-
-                    </div>
-
-
-                    <div class="compare-row">
-
-                        <span>
-                            Positive
-                        </span>
-
-                        <strong id="comparePositiveB">
-                            -
-                        </strong>
-
-                    </div>
-
-
-                    <div class="compare-row">
-
-                        <span>
-                            Negative
-                        </span>
-
-                        <strong id="compareNegativeB">
-                            -
-                        </strong>
-
-                    </div>
-
-                </div>
-
+            <div class="comparison-actions">
+                <button type="button" class="primary-btn" onclick="runGameComparison()">비교 분석 실행</button>
+                <button type="button" class="header-btn" onclick="clearComparisonSelection()">선택 초기화</button>
+                <span id="comparisonSelectHint" class="comparison-status">기준 게임은 대시보드에서 현재 선택한 게임입니다. 총 2~3개 게임을 비교할 수 있습니다.</span>
             </div>
 
-            <div id="comparisonAnalysis" class="insight-card" style="margin-top:16px; margin-bottom:0;">
-                <div class="insight-label">COMPARISON INSIGHT</div>
-                <div id="comparisonAnalysisTitle" class="insight-title" style="font-size:17px;">두 게임을 선택해 비교 분석을 진행하세요.</div>
-                <div id="comparisonAnalysisText" class="insight-text">리뷰 수, 긍정·부정 비율, 자주 언급되는 이슈를 기준으로 차이를 확인합니다.</div>
+            <div id="comparisonGrid" class="comparison-grid" aria-live="polite">
+                <div class="compare-game"><div class="compare-rank">GAME 01 · 기준 게임</div><h3 id="compareGameA">먼저 게임을 선택하세요</h3><div class="compare-row"><span>전체 리뷰</span><strong id="compareReviewsA">-</strong></div><div class="compare-row"><span>긍정 리뷰</span><strong id="comparePositiveA">-</strong></div><div class="compare-row"><span>부정 리뷰</span><strong id="compareNegativeA">-</strong></div><div class="compare-rate-label"><span>긍정 비율</span><strong id="compareRateA">-</strong></div><div class="compare-rate-track"><div id="compareRateBarA" class="compare-rate-fill" style="width:0%"></div></div><div class="compare-issues"><div class="compare-issues-title">주요 반복 이슈</div><div id="compareIssuesA">분석 전</div></div></div>
             </div>
 
+            <div id="comparisonAnalysis" class="insight-card comparison-ai-card">
+                <div class="comparison-ai-heading"><div class="comparison-ai-icon">✦</div><div><div class="insight-label">AI COMPARATIVE ANALYSIS</div><div id="comparisonAnalysisTitle" class="insight-title" style="font-size:17px;">게임을 선택하고 비교 분석을 실행하세요.</div></div></div>
+                <div id="comparisonAnalysisText" class="insight-text">AI는 리뷰의 공통점과 차이점, 긍정·부정 반응의 원인, 반복적으로 언급되는 이슈를 종합해 분석합니다.</div>
+                <div class="comparison-ai-note">AI 분석 결과는 제공된 리뷰 표본을 기반으로 생성됩니다. 리뷰 수가 게임마다 다를 수 있으므로 비율과 주요 주제를 함께 살펴보세요.</div>
+            </div>
         </section>
 
 
@@ -6284,101 +6201,106 @@ function generateInsight(
 
 
 /* =========================================================
-   GAME COMPARISON
-   - A: 현재 대시보드에서 선택한 게임
-   - B: 비교 선택 메뉴에서 고른 게임
-   - 비교용 CSV는 별도 로딩하여 현재 대시보드 데이터를 변경하지 않음
+   GAME COMPARISON (2–3 GAMES + AI ANALYSIS)
 ========================================================= */
-
 let comparisonReviewsCache = new Map();
 
 function populateComparisonGameOptions() {
-    const input = document.getElementById("compareSelectB");
-    const results = document.getElementById("comparisonSearchResults");
     const hint = document.getElementById("comparisonSelectHint");
-    if (!input || !results) return;
-
-    if (!Array.isArray(games) || games.length === 0) {
-        if (hint) hint.textContent = "게임 목록을 불러오지 못했거나 아직 로딩 중입니다.";
-        return;
-    }
-
-    const uniqueNames = [...new Set(games
-        .filter(game => game && game.gameName)
-        .map(game => game.gameName))];
-
-    if (hint) hint.textContent = `비교할 게임 이름을 입력해 검색하세요. (검색 가능한 게임 ${uniqueNames.length}개)`;
+    const count = Array.isArray(games) ? new Set(games.filter(g => g && g.gameName).map(g => g.gameName)).size : 0;
+    if (hint) hint.textContent = `기준 게임 + 비교 게임 최대 2개 · 검색 가능한 게임 ${count}개`;
 }
 
-function searchComparisonGames() {
-    const input = document.getElementById("compareSelectB");
-    const results = document.getElementById("comparisonSearchResults");
-    const hint = document.getElementById("comparisonSelectHint");
-    if (!input || !results) return;
+function getComparisonSelectedNames() {
+    return ["B", "C"].map(slot => {
+        const input = document.getElementById(`compareSelect${slot}`);
+        return input ? input.value.trim() : "";
+    }).filter(Boolean);
+}
 
+function searchComparisonGames(slot) {
+    slot = slot || "B";
+    const input = document.getElementById(`compareSelect${slot}`);
+    const results = document.getElementById(`comparisonSearchResults${slot}`);
+    const selected = document.getElementById(`comparisonSelected${slot}`);
+    if (!input || !results) return;
     const query = input.value.trim().toLocaleLowerCase();
     results.innerHTML = "";
+    if (!query) { results.style.display = "none"; return; }
 
-    if (!query) {
-        results.style.display = "none";
-        if (hint) hint.textContent = `비교할 게임 이름을 입력해 검색하세요. (검색 가능한 게임 ${Array.isArray(games) ? games.length : 0}개)`;
-        return;
-    }
-
+    const currentName = currentGame && currentGame.gameName;
+    const otherSlot = slot === "B" ? "C" : "B";
+    const otherInput = document.getElementById(`compareSelect${otherSlot}`);
+    const otherName = otherInput ? otherInput.value.trim() : "";
     const matches = [...new Map((Array.isArray(games) ? games : [])
         .filter(game => game && game.gameName && game.gameName.toLocaleLowerCase().includes(query))
-        .map(game => [game.gameName, game])).values()].slice(0, 15);
+        .filter(game => game.gameName !== currentName && game.gameName !== otherName)
+        .map(game => [game.gameName, game])).values()].slice(0, 12);
 
     if (!matches.length) {
-        results.style.display = "block";
         const empty = document.createElement("div");
-        empty.textContent = "일치하는 게임이 없습니다.";
-        empty.style.cssText = "padding:10px 12px;color:#6b7280;font-size:13px;";
+        empty.textContent = "일치하는 게임이 없거나 이미 선택된 게임입니다.";
+        empty.style.cssText = "padding:11px 12px;color:#6b7280;font-size:13px;";
         results.appendChild(empty);
-        if (hint) hint.textContent = "다른 게임 이름이나 이름의 일부를 입력해보세요.";
-        return;
+    } else {
+        matches.forEach(game => {
+            const option = document.createElement("button");
+            option.type = "button";
+            option.setAttribute("role", "option");
+            option.textContent = game.gameName;
+            option.addEventListener("click", () => selectComparisonSearchResult(game.gameName, slot));
+            results.appendChild(option);
+        });
     }
-
-    matches.forEach(game => {
-        const option = document.createElement("button");
-        option.type = "button";
-        option.setAttribute("role", "option");
-        option.textContent = game.gameName;
-        option.style.cssText = "display:block;width:100%;padding:10px 12px;border:0;border-bottom:1px solid #f1f5f9;background:#fff;color:#111827;text-align:left;font-size:14px;cursor:pointer;";
-        option.addEventListener("mouseenter", () => { option.style.background = "#f3f4f6"; });
-        option.addEventListener("mouseleave", () => { option.style.background = "#fff"; });
-        option.addEventListener("click", () => selectComparisonSearchResult(game.gameName));
-        results.appendChild(option);
-    });
     results.style.display = "block";
-    if (hint) hint.textContent = `${matches.length}${matches.length === 15 ? "+" : ""}개 검색 결과 · 비교할 게임을 클릭하세요.`;
+    if (selected) selected.textContent = matches.length ? `${matches.length}개 검색 결과 · 게임을 선택하세요.` : "검색 결과가 없습니다.";
 }
 
-function selectComparisonSearchResult(gameName) {
-    const input = document.getElementById("compareSelectB");
-    const results = document.getElementById("comparisonSearchResults");
-    const hint = document.getElementById("comparisonSelectHint");
+function selectComparisonSearchResult(gameName, slot) {
+    slot = slot || "B";
+    const input = document.getElementById(`compareSelect${slot}`);
+    const results = document.getElementById(`comparisonSearchResults${slot}`);
+    const selected = document.getElementById(`comparisonSelected${slot}`);
     if (input) input.value = gameName;
-    if (results) {
-        results.style.display = "none";
-        results.innerHTML = "";
-    }
-    if (hint) hint.textContent = `선택된 비교 대상: ${gameName}`;
+    if (results) { results.style.display = "none"; results.innerHTML = ""; }
+    if (selected) selected.textContent = `선택됨: ${gameName}`;
+    ["B", "C"].filter(other => other !== slot).forEach(other => {
+        const otherInput = document.getElementById(`compareSelect${other}`);
+        if (otherInput && otherInput.value.trim() === gameName) {
+            otherInput.value = "";
+            const otherSelected = document.getElementById(`comparisonSelected${other}`);
+            if (otherSelected) otherSelected.textContent = "중복 선택되어 초기화되었습니다. 다른 게임을 선택하세요.";
+        }
+    });
 }
 
-function handleComparisonSearchKey(event) {
+function handleComparisonSearchKey(event, slot) {
+    slot = slot || "B";
     if (event.key === "Escape") {
-        const results = document.getElementById("comparisonSearchResults");
+        const results = document.getElementById(`comparisonSearchResults${slot}`);
         if (results) results.style.display = "none";
-        return;
-    }
-    if (event.key === "Enter") {
+    } else if (event.key === "Enter") {
         event.preventDefault();
-        const results = document.getElementById("comparisonSearchResults");
-        const firstOption = results ? results.querySelector('button[role="option"]') : null;
-        if (firstOption && results.style.display !== "none") firstOption.click();
+        const results = document.getElementById(`comparisonSearchResults${slot}`);
+        const first = results && results.querySelector('button[role="option"]');
+        if (first && results.style.display !== "none") first.click();
         else runGameComparison();
     }
+}
+
+function clearComparisonSelection() {
+    ["B", "C"].forEach(slot => {
+        const input = document.getElementById(`compareSelect${slot}`);
+        const results = document.getElementById(`comparisonSearchResults${slot}`);
+        const selected = document.getElementById(`comparisonSelected${slot}`);
+        if (input) input.value = "";
+        if (results) { results.innerHTML = ""; results.style.display = "none"; }
+        if (selected) selected.textContent = slot === "B" ? "게임을 검색해 선택하세요." : "원하면 게임을 하나 더 선택하세요.";
+    });
+    const grid = document.getElementById("comparisonGrid");
+    if (grid) grid.innerHTML = `<div class="compare-game"><div class="compare-rank">GAME 01 · 기준 게임</div><h3 id="compareGameA">${escapeHtml(currentGame ? currentGame.gameName : "먼저 게임을 선택하세요")}</h3><div class="compare-row"><span>전체 리뷰</span><strong id="compareReviewsA">-</strong></div><div class="compare-row"><span>긍정 리뷰</span><strong id="comparePositiveA">-</strong></div><div class="compare-row"><span>부정 리뷰</span><strong id="compareNegativeA">-</strong></div><div class="compare-rate-label"><span>긍정 비율</span><strong id="compareRateA">-</strong></div><div class="compare-rate-track"><div id="compareRateBarA" class="compare-rate-fill" style="width:0%"></div></div><div class="compare-issues"><div class="compare-issues-title">주요 반복 이슈</div><div id="compareIssuesA">분석 전</div></div></div>`;
+    setTextIfExists("comparisonAnalysisTitle", "게임을 선택하고 비교 분석을 실행하세요.");
+    setTextIfExists("comparisonAnalysisText", "AI는 리뷰의 공통점과 차이점, 긍정·부정 반응의 원인, 반복적으로 언급되는 이슈를 종합해 분석합니다.");
 }
 
 function getComparisonStats(gameName, reviews) {
@@ -6386,85 +6308,72 @@ function getComparisonStats(gameName, reviews) {
     const negative = reviews.filter(r => r.sentiment === "negative").length;
     const total = reviews.length;
     const issues = typeof analyzeIssues === "function" ? analyzeIssues(reviews) : [];
-    const topIssues = [...issues]
-        .sort((a, b) => b.mentions - a.mentions)
-        .filter(issue => issue.mentions > 0)
-        .slice(0, 3);
-
-    return {
-        gameName,
-        reviews,
-        total,
-        positive,
-        negative,
+    const topIssues = [...issues].sort((a, b) => b.mentions - a.mentions).filter(issue => issue.mentions > 0).slice(0, 3);
+    return { gameName, reviews, total, positive, negative,
         positiveRate: total ? Math.round(positive / total * 100) : 0,
-        negativeRate: total ? Math.round(negative / total * 100) : 0,
-        topIssues
-    };
+        negativeRate: total ? Math.round(negative / total * 100) : 0, topIssues };
 }
 
 async function loadComparisonReviews(game) {
     if (!game) throw new Error("비교할 게임을 찾을 수 없습니다.");
-    if (comparisonReviewsCache.has(game.gameName)) {
-        return comparisonReviewsCache.get(game.gameName);
-    }
-
-    let positiveReviews = [];
-    let negativeReviews = [];
-
-    if (game.positiveFile) {
-        positiveReviews = (await loadCSV(game.positiveFile)).map(review => ({
-            ...review,
-            sentiment: "positive"
-        }));
-    }
-    if (game.negativeFile) {
-        negativeReviews = (await loadCSV(game.negativeFile)).map(review => ({
-            ...review,
-            sentiment: "negative"
-        }));
-    }
-
-    const reviews = [...positiveReviews, ...negativeReviews].map(review => {
-        review._text = getReviewText(review);
-        review._date = findDate(review);
-        review._score = findScore(review);
-        return review;
-    });
-
+    if (comparisonReviewsCache.has(game.gameName)) return comparisonReviewsCache.get(game.gameName);
+    let positiveReviews = [], negativeReviews = [];
+    if (game.positiveFile) positiveReviews = (await loadCSV(game.positiveFile)).map(review => ({...review, sentiment:"positive"}));
+    if (game.negativeFile) negativeReviews = (await loadCSV(game.negativeFile)).map(review => ({...review, sentiment:"negative"}));
+    const reviews = [...positiveReviews, ...negativeReviews].map(review => ({
+        ...review, _text:getReviewText(review), _date:findDate(review), _score:findScore(review)
+    }));
     comparisonReviewsCache.set(game.gameName, reviews);
     return reviews;
 }
 
-function setComparisonCard(suffix, stats) {
-    const setText = (id, value) => {
-        const element = document.getElementById(id);
-        if (element) element.textContent = value;
-    };
+function comparisonIssueChips(issues) {
+    if (!issues || !issues.length) return "<span class=\"compare-issue-chip\">뚜렷한 반복 이슈 없음</span>";
+    return issues.map(issue => `<span class="compare-issue-chip">${escapeHtml(issue.issue)} · ${Number(issue.mentions).toLocaleString()}회</span>`).join("");
+}
 
-    setText(`compareGame${suffix}`, stats.gameName);
-    setText(`compareReviews${suffix}`, stats.total.toLocaleString());
-    setText(`comparePositive${suffix}`, `${stats.positive.toLocaleString()} (${stats.positiveRate}%)`);
-    setText(`compareNegative${suffix}`, `${stats.negative.toLocaleString()} (${stats.negativeRate}%)`);
+function renderComparisonCards(statsList) {
+    const grid = document.getElementById("comparisonGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    statsList.forEach((stats, index) => {
+        const suffix = ["A", "B", "C"][index];
+        const card = document.createElement("article");
+        card.className = "compare-game";
+        card.innerHTML = `<div class="compare-rank">GAME 0${index+1}${index === 0 ? " · 기준 게임" : " · 비교 대상"}</div>
+            <h3 id="compareGame${suffix}"></h3>
+            <div class="compare-row"><span>전체 리뷰</span><strong id="compareReviews${suffix}"></strong></div>
+            <div class="compare-row"><span>긍정 리뷰</span><strong id="comparePositive${suffix}"></strong></div>
+            <div class="compare-row"><span>부정 리뷰</span><strong id="compareNegative${suffix}"></strong></div>
+            <div class="compare-rate-label"><span>긍정 비율</span><strong id="compareRate${suffix}"></strong></div>
+            <div class="compare-rate-track"><div id="compareRateBar${suffix}" class="compare-rate-fill"></div></div>
+            <div class="compare-issues"><div class="compare-issues-title">주요 반복 이슈</div><div id="compareIssues${suffix}"></div></div>`;
+        grid.appendChild(card);
+        setTextIfExists(`compareGame${suffix}`, stats.gameName);
+        setTextIfExists(`compareReviews${suffix}`, stats.total.toLocaleString());
+        setTextIfExists(`comparePositive${suffix}`, `${stats.positive.toLocaleString()} (${stats.positiveRate}%)`);
+        setTextIfExists(`compareNegative${suffix}`, `${stats.negative.toLocaleString()} (${stats.negativeRate}%)`);
+        setTextIfExists(`compareRate${suffix}`, `${stats.positiveRate}%`);
+        const bar = document.getElementById(`compareRateBar${suffix}`);
+        if (bar) bar.style.width = `${stats.positiveRate}%`;
+        const issueEl = document.getElementById(`compareIssues${suffix}`);
+        if (issueEl) issueEl.innerHTML = comparisonIssueChips(stats.topIssues);
+    });
 }
 
 function updateComparisonA(game) {
     if (!game) return;
-    const reviews = currentReviews.map(review => ({
-        ...review,
-        sentiment: review.sentiment || "negative",
-        _text: review._text || getReviewText(review)
-    }));
+    const reviews = currentReviews.map(review => ({...review, sentiment:review.sentiment || "negative", _text:review._text || getReviewText(review)}));
     const stats = getComparisonStats(game.gameName, reviews);
-    setComparisonCard("A", stats);
-
-    const select = document.getElementById("compareSelectB");
-    if (select && select.value === game.gameName) {
-        select.value = "";
-        setTextIfExists("compareGameB", "비교할 게임");
-        setTextIfExists("compareReviewsB", "-");
-        setTextIfExists("comparePositiveB", "-");
-        setTextIfExists("compareNegativeB", "-");
+    const existing = document.getElementById("compareGameA");
+    if (existing) {
+        setTextIfExists("compareGameA", stats.gameName);
+        setTextIfExists("compareReviewsA", stats.total.toLocaleString());
+        setTextIfExists("comparePositiveA", `${stats.positive.toLocaleString()} (${stats.positiveRate}%)`);
+        setTextIfExists("compareNegativeA", `${stats.negative.toLocaleString()} (${stats.negativeRate}%)`);
+        setTextIfExists("compareRateA", `${stats.positiveRate}%`);
+        const bar = document.getElementById("compareRateBarA"); if (bar) bar.style.width = `${stats.positiveRate}%`;
+        const issue = document.getElementById("compareIssuesA"); if (issue) issue.innerHTML = comparisonIssueChips(stats.topIssues);
     }
 }
 
@@ -6474,95 +6383,78 @@ function setTextIfExists(id, value) {
 }
 
 async function setComparisonGameB(gameName) {
-    const select = document.getElementById("compareSelectB");
-    if (select) select.value = gameName;
+    selectComparisonSearchResult(gameName, "B");
     return runGameComparison();
 }
 
 async function runGameComparison() {
     const title = document.getElementById("comparisonAnalysisTitle");
     const text = document.getElementById("comparisonAnalysisText");
-    const select = document.getElementById("compareSelectB");
-
-    if (!currentGame || !currentReviews.length) {
-        if (title) title.textContent = "먼저 기준이 되는 게임을 선택해주세요.";
+    if (!currentGame || !Array.isArray(currentReviews) || !currentReviews.length) {
+        if (title) title.textContent = "먼저 기준 게임을 선택해주세요.";
         if (text) text.textContent = "게임 목록에서 게임을 선택한 뒤 비교 분석을 진행할 수 있습니다.";
         return;
     }
-
-    const gameBName = select ? select.value.trim() : "";
-    if (!gameBName) {
-        if (title) title.textContent = "비교할 게임을 선택해주세요.";
-        if (text) text.textContent = "게임 이름을 검색한 뒤 목록에 표시되는 정확한 게임명을 선택해주세요.";
+    const names = [currentGame.gameName, ...getComparisonSelectedNames()];
+    if (names.length < 2) {
+        if (title) title.textContent = "비교할 게임을 하나 이상 선택해주세요.";
+        if (text) text.textContent = "두 번째 게임을 선택하면 비교를 시작할 수 있습니다. 세 번째 게임은 선택 사항입니다.";
         return;
     }
-    const matchedGame = Array.isArray(games)
-        ? games.find(game => game && game.gameName === gameBName)
-        : null;
-    if (!matchedGame) {
-        if (title) title.textContent = "검색 결과에서 게임을 선택해주세요.";
-        if (text) text.textContent = "입력한 이름과 정확히 일치하는 게임이 없습니다. 게임 이름 일부를 입력하고 제안 목록에서 선택해주세요.";
-        return;
-    }
-    if (gameBName === currentGame.gameName) {
+    if (new Set(names).size !== names.length) {
         if (title) title.textContent = "서로 다른 게임을 선택해주세요.";
-        if (text) text.textContent = "기준 게임과 비교 대상 게임이 같습니다.";
+        if (text) text.textContent = "같은 게임이 중복 선택되어 있습니다.";
         return;
     }
-
-    if (title) title.textContent = "비교 데이터를 분석하고 있습니다...";
-    if (text) text.textContent = "GitHub CSV 리뷰 데이터를 불러오는 중입니다.";
-
+    if (title) title.textContent = "게임 리뷰와 비교 지표를 불러오는 중...";
+    if (text) text.textContent = "선택한 게임의 리뷰를 모으고 있습니다. 이후 연결된 AI 모델에 비교 분석을 요청합니다.";
+    const button = document.querySelector('#compare button.primary-btn');
+    if (button) { button.disabled = true; button.textContent = "분석 중..."; }
     try {
-        const gameB = games.find(game => game.gameName === gameBName);
-        const reviewsB = await loadComparisonReviews(gameB);
-        const statsA = getComparisonStats(currentGame.gameName, currentReviews.map(review => ({
-            ...review,
-            _text: review._text || getReviewText(review)
-        })));
-        const statsB = getComparisonStats(gameB.gameName, reviewsB);
-
-        setComparisonCard("A", statsA);
-        setComparisonCard("B", statsB);
-
-        const rateDiff = statsA.positiveRate - statsB.positiveRate;
-        const reviewDiff = statsA.total - statsB.total;
-        const winner = rateDiff === 0
-            ? "긍정 리뷰 비율은 동일합니다."
-            : `${rateDiff > 0 ? statsA.gameName : statsB.gameName}의 긍정 리뷰 비율이 ${Math.abs(rateDiff)}%p 높습니다.`;
-
-        const issueNamesA = statsA.topIssues.map(issue => issue.issue);
-        const issueNamesB = statsB.topIssues.map(issue => issue.issue);
-        const sharedIssues = issueNamesA.filter(issue => issueNamesB.includes(issue));
-
-        if (title) {
-            title.textContent = `${statsA.gameName} vs ${statsB.gameName} 비교 결과`;
+        const statsList = [];
+        for (let i = 0; i < names.length; i++) {
+            const game = i === 0 ? currentGame : games.find(item => item && item.gameName === names[i]);
+            if (!game) throw new Error(`${names[i]} 게임 정보를 찾을 수 없습니다.`);
+            const reviews = i === 0
+                ? currentReviews.map(review => ({...review, _text:review._text || getReviewText(review)}))
+                : await loadComparisonReviews(game);
+            statsList.push(getComparisonStats(game.gameName, reviews));
         }
+        renderComparisonCards(statsList);
+        if (title) title.textContent = `${statsList.length}개 게임 비교 · AI 분석 중`;
+        if (text) text.textContent = "리뷰의 특징과 공통점·차이점을 AI가 분석하고 있습니다...";
 
-        const reviewComparison = reviewDiff === 0
-            ? "리뷰 수는 같습니다."
-            : `${reviewDiff > 0 ? statsA.gameName : statsB.gameName}의 리뷰가 ${Math.abs(reviewDiff).toLocaleString()}개 더 많습니다.`;
-        const issueComparison = sharedIssues.length
-            ? `두 게임에서 공통으로 많이 언급된 이슈는 ${sharedIssues.join(", ")}입니다.`
-            : "각 게임의 상위 이슈 목록에서 공통 항목이 확인되지 않았습니다.";
-        const topA = statsA.topIssues.length
-            ? statsA.topIssues.map(issue => `${issue.issue}(${issue.mentions}회)`).join(", ")
-            : "뚜렷한 반복 이슈 없음";
-        const topB = statsB.topIssues.length
-            ? statsB.topIssues.map(issue => `${issue.issue}(${issue.mentions}회)`).join(", ")
-            : "뚜렷한 반복 이슈 없음";
-
-        if (text) {
-            text.textContent =
-                `${winner} ${reviewComparison} ` +
-                `${statsA.gameName}: 긍정 ${statsA.positiveRate}%, 부정 ${statsA.negativeRate}%, 주요 이슈 ${topA}. ` +
-                `${statsB.gameName}: 긍정 ${statsB.positiveRate}%, 부정 ${statsB.negativeRate}%, 주요 이슈 ${topB}. ` +
-                `${issueComparison} 비율은 각 게임의 불러온 리뷰 중 긍정·부정 리뷰의 비중이며, 게임 간 리뷰 수 차이도 함께 고려해야 합니다.`;
-        }
+        // 기존 채팅과 동일한 /chat API 및 연결 모델을 재사용합니다.
+        // 게임별 리뷰를 구분해 전달하고, 전체 표본은 최대 120개로 제한합니다.
+        const aiReviews = [];
+        const perGameLimit = Math.max(1, Math.floor(120 / statsList.length));
+        statsList.forEach(stats => {
+            const sample = stats.reviews.slice(0, perGameLimit);
+            sample.forEach(review => aiReviews.push({
+                sentiment: review.sentiment,
+                review: `[게임: ${stats.gameName}] ${getReviewText(review)}`,
+                date: review._date instanceof Date ? review._date.toISOString() : "",
+                score: review._score ?? ""
+            }));
+        });
+        const metricContext = statsList.map(stats =>
+            `${stats.gameName}: 전체 ${stats.total}개, 긍정 ${stats.positive}개(${stats.positiveRate}%), 부정 ${stats.negative}개(${stats.negativeRate}%), 주요 이슈 ${stats.topIssues.map(i => `${i.issue}(${i.mentions}회)`).join(", ") || "뚜렷한 반복 이슈 없음"}`
+        ).join("\n");
+        const question = `다음 게임들을 비교 분석해줘. 아래 정량 지표와 리뷰 표본을 함께 근거로 사용해.\n${metricContext}\n\n분석 항목: 1) 게임별 핵심 특징과 이용자 반응 2) 공통점과 차이점 3) 긍정/부정 비율 차이에 대한 리뷰 근거 4) 게임별 반복 불만과 강점 5) 개발자 관점의 개선 우선순위 및 결론. 리뷰에 실제로 나타난 근거와 추정은 구분하고, 단순히 긍정 비율이 높은 게임이 무조건 우수하다고 단정하지 마. 한국어로 제목과 소제목을 활용해 구체적으로 작성해줘.`;
+        const response = await fetch("http://127.0.0.1:5000/chat", {
+            method:"POST", headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({game:names.join(" vs "), question, reviews:aiReviews})
+        });
+        if (!response.ok) throw new Error(`AI 서버 오류: ${response.status}`);
+        const data = await response.json();
+        if (title) title.textContent = `${statsList.length}개 게임 비교 분석 결과`;
+        if (text) text.textContent = data.answer || "AI 응답이 비어 있습니다. 잠시 후 다시 시도해주세요.";
     } catch (error) {
         console.error("게임 비교 분석 오류:", error);
-        if (title) title.textContent = "비교 분석에 실패했습니다.";
-        if (text) text.textContent = error.message || "비교 데이터를 불러오지 못했습니다. GitHub CSV 경로를 확인해주세요.";
+        if (title) title.textContent = "비교 지표는 표시했지만 AI 분석에 실패했습니다.";
+        if (text) text.textContent = `${error.message || "비교 데이터를 불러오지 못했습니다."} 기존 AI 채팅과 같은 서버(http://127.0.0.1:5000/chat)에 연결할 수 있는지 확인해주세요.`;
+    } finally {
+        if (button) { button.disabled = false; button.textContent = "비교 분석 실행"; }
     }
 }
 
