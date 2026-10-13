@@ -822,68 +822,59 @@
         }
 
         /* =========================================================
-           COMPARISON
+           COMPARISON WORKSPACE — comparison-first layout
         ========================================================= */
-
-        .comparison-intro { color:#6b7280; font-size:13px; line-height:1.65; margin:7px 0 18px; }
-        .comparison-picker-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
-        .comparison-picker { position:relative; min-width:0; padding:14px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; }
-        .comparison-picker-label { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; margin-bottom:8px; }
-        .comparison-picker-label span { display:inline-grid; place-items:center; width:24px; height:24px; border-radius:7px; background:#eef2ff; color:#4f46e5; }
-        .comparison-picker input { width:100%; height:42px; border:1px solid #d1d5db; border-radius:8px; padding:0 11px; outline:none; background:#fff; color:#111827; }
-        .comparison-picker input:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.12); }
-        .comparison-search-results { display:none; position:absolute; z-index:20; left:14px; right:14px; top:100px; max-height:220px; overflow-y:auto; border:1px solid #d1d5db; border-radius:9px; background:#fff; box-shadow:0 12px 25px rgba(15,23,42,.12); }
-        .comparison-search-results button { display:block; width:100%; padding:10px 12px; border:0; border-bottom:1px solid #f1f5f9; background:#fff; color:#111827; text-align:left; cursor:pointer; }
-        .comparison-search-results button:hover { background:#f3f4ff; }
-        .comparison-selected { color:#4f46e5; font-size:12px; margin-top:7px; min-height:17px; }
-        .comparison-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
-        .comparison-actions .primary-btn { min-height:42px; padding:10px 18px; }
-        .comparison-status { font-size:12px; color:#6b7280; }
-        .comparison-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; align-items:stretch; }
-        .compare-game { min-width:0; border:1px solid #e5e7eb; border-radius:13px; padding:16px; background:#fff; box-shadow:0 2px 8px rgba(15,23,42,.025); }
-        .compare-game h3 { font-size:15px; line-height:1.4; min-height:42px; margin-bottom:13px; overflow-wrap:anywhere; }
-        .compare-game .compare-rank { display:inline-block; margin-bottom:9px; color:#6366f1; font-size:10px; letter-spacing:.08em; font-weight:800; }
-        .compare-game .compare-row { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 0; border-bottom:1px solid #f1f5f9; font-size:12px; }
-        .compare-game .compare-row span { color:#6b7280; }
-        .compare-game .compare-row strong { text-align:right; overflow-wrap:anywhere; }
-        .compare-rate-label { display:flex; justify-content:space-between; font-size:11px; color:#6b7280; margin:14px 0 6px; }
-        .compare-rate-track { height:7px; border-radius:99px; background:#fee2e2; overflow:hidden; }
-        .compare-rate-fill { height:100%; border-radius:99px; background:#6366f1; transition:width .25s ease; }
-        .compare-issues { margin-top:14px; }
-        .compare-issues-title { font-size:11px; color:#6b7280; font-weight:700; margin-bottom:7px; }
-        .compare-issue-chip { display:inline-block; margin:0 4px 5px 0; padding:5px 7px; border-radius:6px; background:#f3f4f6; color:#374151; font-size:10px; }
-        .comparison-ai-card { margin-top:18px; margin-bottom:0; }
-        .comparison-ai-heading { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
-        .comparison-ai-icon { display:grid; place-items:center; width:34px; height:34px; border-radius:10px; background:#e0e7ff; }
-        .comparison-ai-heading .insight-label { margin:0 0 3px; }
-        .comparison-ai-note { color:#6b7280; font-size:12px; line-height:1.6; margin-top:10px; }
-        @media (max-width:1050px) {
-            .comparison-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-        }
-        @media (max-width:680px) {
-            .comparison-picker-grid, .comparison-grid { grid-template-columns:1fr; }
-            .comparison-picker { padding:12px; }
-            .comparison-search-results { left:12px; right:12px; }
-            .comparison-actions { align-items:stretch; }
-            .comparison-actions .primary-btn, .comparison-actions .header-btn { width:100%; }
-        }
-        @media (max-width:650px) { .comparison-picker-grid,.comparison-grid { grid-template-columns:1fr; } .compare-game h3 { min-height:0; } }
-
-        .compare-row {
-            display: flex;
-
-            justify-content: space-between;
-
-            padding: 8px 0;
-
-            border-bottom: 1px solid #f3f4f6;
-
-            font-size: 13px;
-        }
-
-        .compare-row:last-child {
-            border-bottom: none;
-        }
+        .comparison-workspace { padding:0 !important; overflow:hidden; }
+        .comparison-hero { padding:25px 26px 22px; color:#f8fafc; background:linear-gradient(120deg,#111827 0%,#252b5b 60%,#4338ca 100%); }
+        .comparison-kicker { color:#c7d2fe; font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; margin-bottom:8px; }
+        .comparison-hero h2 { font-size:24px; line-height:1.25; margin:0 0 8px; }
+        .comparison-hero p { max-width:850px; color:#dbeafe; font-size:13px; line-height:1.7; }
+        .comparison-body { padding:22px; }
+        .comparison-picker-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-bottom:15px; }
+        .comparison-picker { position:relative; min-width:0; padding:15px; border:1px solid #e2e8f0; border-radius:13px; background:#f8fafc; }
+        .comparison-picker-label { display:flex; align-items:center; gap:9px; font-size:13px; font-weight:750; color:#1e293b; margin-bottom:9px; }
+        .comparison-picker-label span:first-child { display:inline-grid; place-items:center; width:27px; height:27px; border-radius:8px; background:#e0e7ff; color:#4338ca; }
+        .comparison-picker input { width:100%; height:43px; border:1px solid #cbd5e1; border-radius:9px; padding:0 12px; outline:none; background:#fff; color:#0f172a; }
+        .comparison-picker input:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.13); }
+        .comparison-search-results { display:none; position:absolute; z-index:30; left:15px; right:15px; top:105px; max-height:230px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:10px; background:#fff; box-shadow:0 14px 32px rgba(15,23,42,.16); }
+        .comparison-search-results button { display:block; width:100%; padding:11px 13px; border:0; border-bottom:1px solid #f1f5f9; background:#fff; color:#0f172a; text-align:left; cursor:pointer; }
+        .comparison-search-results button:hover { background:#eef2ff; }
+        .comparison-selected { color:#64748b; font-size:12px; margin-top:8px; min-height:17px; }
+        .comparison-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:0 0 22px; padding-bottom:18px; border-bottom:1px solid #e2e8f0; }
+        .comparison-actions .primary-btn { min-height:43px; padding:10px 19px; box-shadow:0 5px 14px rgba(79,70,229,.18); }
+        .comparison-status { font-size:12px; line-height:1.5; color:#64748b; }
+        .comparison-results-heading { display:flex; justify-content:space-between; align-items:end; gap:12px; margin:0 0 12px; }
+        .comparison-results-heading h3 { font-size:17px; color:#0f172a; }
+        .comparison-results-heading p { font-size:12px; color:#64748b; margin-top:4px; }
+        .comparison-matrix-wrap { overflow-x:auto; border:1px solid #e2e8f0; border-radius:14px; background:#fff; }
+        .comparison-matrix { display:grid; min-width:660px; }
+        .matrix-cell { min-width:0; padding:15px 16px; border-bottom:1px solid #e9eef5; border-right:1px solid #edf2f7; }
+        .matrix-cell:last-child { border-right:0; }
+        .matrix-head { background:#f8fafc; min-height:94px; }
+        .matrix-label { color:#64748b; background:#f8fafc; font-size:12px; font-weight:750; }
+        .matrix-game-name { color:#0f172a; font-size:14px; line-height:1.45; font-weight:800; overflow-wrap:anywhere; margin:5px 0 0; }
+        .matrix-tag { display:inline-block; border-radius:5px; padding:4px 6px; font-size:9px; letter-spacing:.06em; font-weight:800; color:#4338ca; background:#e0e7ff; }
+        .matrix-value { color:#0f172a; font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; }
+        .matrix-subvalue { color:#64748b; font-size:11px; margin-top:4px; }
+        .matrix-positive { color:#047857; }
+        .matrix-negative { color:#b91c1c; }
+        .matrix-rate { display:flex; justify-content:space-between; gap:8px; font-size:12px; font-weight:800; margin-bottom:8px; }
+        .matrix-track { width:100%; height:8px; border-radius:99px; background:#fee2e2; overflow:hidden; }
+        .matrix-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,#10b981,#059669); }
+        .matrix-issues { display:flex; flex-wrap:wrap; gap:5px; }
+        .matrix-issue { border-radius:6px; background:#f1f5f9; color:#334155; padding:5px 7px; font-size:10px; line-height:1.4; }
+        .matrix-issue b { color:#4f46e5; font-weight:800; }
+        .comparison-empty { border:1px dashed #cbd5e1; border-radius:14px; background:#f8fafc; padding:30px 18px; text-align:center; color:#64748b; font-size:13px; line-height:1.7; }
+        .comparison-insights-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:14px; margin-top:20px; }
+        .comparison-ai-card { margin:0 !important; border:1px solid #c7d2fe; background:linear-gradient(135deg,#f8faff,#fff 65%); border-radius:14px; padding:20px; }
+        .comparison-ai-heading { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+        .comparison-ai-icon { display:grid; place-items:center; flex-shrink:0; width:38px; height:38px; border-radius:11px; color:#4338ca; background:#e0e7ff; font-size:19px; }
+        .comparison-ai-heading .insight-label { margin:0 0 4px; color:#6366f1; font-size:10px; letter-spacing:.1em; }
+        .comparison-ai-heading .insight-title { font-size:18px !important; color:#0f172a; }
+        #comparisonAnalysisText { white-space:pre-wrap; line-height:1.85; color:#334155; font-size:13px; }
+        .comparison-ai-note { color:#64748b; font-size:11px; line-height:1.6; margin-top:13px; padding-top:11px; border-top:1px solid #e2e8f0; }
+        @media (max-width:900px) { .comparison-hero { padding:22px 20px; } .comparison-body { padding:18px; } }
+        @media (max-width:680px) { .comparison-picker-grid { grid-template-columns:1fr; } .comparison-actions { align-items:stretch; } .comparison-actions .primary-btn,.comparison-actions .header-btn { width:100%; } .comparison-hero h2 { font-size:21px; } .comparison-results-heading { align-items:start; flex-direction:column; } }
 
         /* =========================================================
            ISSUE TABLE
@@ -2172,39 +2163,47 @@
         </section>
 
 
-        <!-- COMPARE -->
-        <section id="compare" class="card">
-            <div class="card-title">게임 비교 분석</div>
-            <p class="comparison-intro">현재 선택한 게임을 기준으로 다른 게임을 최대 2개까지 추가해 한 화면에서 비교합니다. 리뷰 수와 긍정 비율뿐 아니라 반복 이슈를 나란히 확인하고, 연결된 AI가 리뷰 내용을 종합해 차이점과 시사점을 분석합니다.</p>
-
-            <div class="comparison-picker-grid">
-                <div class="comparison-picker">
-                    <div class="comparison-picker-label"><span>2</span> 두 번째 게임</div>
-                    <input id="compareSelectB" type="search" placeholder="비교할 게임 이름 검색..." autocomplete="off" oninput="searchComparisonGames('B')" onkeydown="handleComparisonSearchKey(event,'B')" aria-label="두 번째 게임 검색">
-                    <div id="comparisonSearchResultsB" class="comparison-search-results" role="listbox"></div>
-                    <div id="comparisonSelectedB" class="comparison-selected">게임을 검색해 선택하세요.</div>
+        <!-- COMPARE: dedicated comparison workspace -->
+        <section id="compare" class="card comparison-workspace">
+            <div class="comparison-hero">
+                <div class="comparison-kicker">DEVINSIGHT · MULTI-GAME INTELLIGENCE</div>
+                <h2>게임 비교 분석 센터</h2>
+                <p>게임을 최대 3개까지 비교해 이용자 반응의 차이를 찾아보세요. 리뷰 수만 나열하는 대신 긍정 비율, 반복 이슈, 실제 리뷰 표본을 함께 살펴보고 AI가 개발 관점의 시사점까지 정리합니다.</p>
+            </div>
+            <div class="comparison-body">
+                <div class="comparison-picker-grid">
+                    <div class="comparison-picker">
+                        <div class="comparison-picker-label"><span>02</span> 비교 게임 2</div>
+                        <input id="compareSelectB" type="search" placeholder="게임 이름 검색 후 결과 선택" autocomplete="off" oninput="searchComparisonGames('B')" onkeydown="handleComparisonSearchKey(event,'B')" aria-label="두 번째 게임 검색">
+                        <div id="comparisonSearchResultsB" class="comparison-search-results" role="listbox"></div>
+                        <div id="comparisonSelectedB" class="comparison-selected">비교할 게임을 검색해 선택하세요.</div>
+                    </div>
+                    <div class="comparison-picker">
+                        <div class="comparison-picker-label"><span>03</span> 비교 게임 3 <span style="font-weight:500;color:#94a3b8;">선택 사항</span></div>
+                        <input id="compareSelectC" type="search" placeholder="세 번째 게임 이름 검색" autocomplete="off" oninput="searchComparisonGames('C')" onkeydown="handleComparisonSearchKey(event,'C')" aria-label="세 번째 게임 검색">
+                        <div id="comparisonSearchResultsC" class="comparison-search-results" role="listbox"></div>
+                        <div id="comparisonSelectedC" class="comparison-selected">선택하지 않으면 두 게임만 비교합니다.</div>
+                    </div>
                 </div>
-                <div class="comparison-picker">
-                    <div class="comparison-picker-label"><span>3</span> 세 번째 게임 <span style="font-weight:400;color:#9ca3af;">(선택 사항)</span></div>
-                    <input id="compareSelectC" type="search" placeholder="비교할 게임 이름 검색..." autocomplete="off" oninput="searchComparisonGames('C')" onkeydown="handleComparisonSearchKey(event,'C')" aria-label="세 번째 게임 검색">
-                    <div id="comparisonSearchResultsC" class="comparison-search-results" role="listbox"></div>
-                    <div id="comparisonSelectedC" class="comparison-selected">원하면 게임을 하나 더 선택하세요.</div>
+                <div class="comparison-actions">
+                    <button type="button" class="primary-btn" onclick="runGameComparison()">✦ 비교 분석 실행</button>
+                    <button type="button" class="header-btn" onclick="clearComparisonSelection()">선택 초기화</button>
+                    <span id="comparisonSelectHint" class="comparison-status">기준 게임은 대시보드에서 선택한 게임입니다. 전체 2~3개 게임을 비교할 수 있습니다.</span>
                 </div>
-            </div>
-            <div class="comparison-actions">
-                <button type="button" class="primary-btn" onclick="runGameComparison()">비교 분석 실행</button>
-                <button type="button" class="header-btn" onclick="clearComparisonSelection()">선택 초기화</button>
-                <span id="comparisonSelectHint" class="comparison-status">기준 게임은 대시보드에서 현재 선택한 게임입니다. 총 2~3개 게임을 비교할 수 있습니다.</span>
-            </div>
-
-            <div id="comparisonGrid" class="comparison-grid" aria-live="polite">
-                <div class="compare-game"><div class="compare-rank">GAME 01 · 기준 게임</div><h3 id="compareGameA">먼저 게임을 선택하세요</h3><div class="compare-row"><span>전체 리뷰</span><strong id="compareReviewsA">-</strong></div><div class="compare-row"><span>긍정 리뷰</span><strong id="comparePositiveA">-</strong></div><div class="compare-row"><span>부정 리뷰</span><strong id="compareNegativeA">-</strong></div><div class="compare-rate-label"><span>긍정 비율</span><strong id="compareRateA">-</strong></div><div class="compare-rate-track"><div id="compareRateBarA" class="compare-rate-fill" style="width:0%"></div></div><div class="compare-issues"><div class="compare-issues-title">주요 반복 이슈</div><div id="compareIssuesA">분석 전</div></div></div>
-            </div>
-
-            <div id="comparisonAnalysis" class="insight-card comparison-ai-card">
-                <div class="comparison-ai-heading"><div class="comparison-ai-icon">✦</div><div><div class="insight-label">AI COMPARATIVE ANALYSIS</div><div id="comparisonAnalysisTitle" class="insight-title" style="font-size:17px;">게임을 선택하고 비교 분석을 실행하세요.</div></div></div>
-                <div id="comparisonAnalysisText" class="insight-text">AI는 리뷰의 공통점과 차이점, 긍정·부정 반응의 원인, 반복적으로 언급되는 이슈를 종합해 분석합니다.</div>
-                <div class="comparison-ai-note">AI 분석 결과는 제공된 리뷰 표본을 기반으로 생성됩니다. 리뷰 수가 게임마다 다를 수 있으므로 비율과 주요 주제를 함께 살펴보세요.</div>
+                <div class="comparison-results-heading">
+                    <div><h3>게임별 핵심 지표</h3><p>같은 기준으로 지표를 나란히 비교합니다.</p></div>
+                    <div id="comparisonResultCount" class="comparison-status">비교 분석 전</div>
+                </div>
+                <div id="comparisonGrid" aria-live="polite">
+                    <div class="comparison-empty">먼저 대시보드에서 기준 게임을 선택하고, 위에서 비교할 게임을 검색하세요.<br>분석을 실행하면 지표 비교표와 AI 분석 결과가 이곳에 표시됩니다.</div>
+                </div>
+                <div class="comparison-insights-grid">
+                    <div id="comparisonAnalysis" class="insight-card comparison-ai-card">
+                        <div class="comparison-ai-heading"><div class="comparison-ai-icon">✦</div><div><div class="insight-label">AI COMPARATIVE ANALYSIS</div><div id="comparisonAnalysisTitle" class="insight-title">비교 분석 결과가 여기에 표시됩니다.</div></div></div>
+                        <div id="comparisonAnalysisText" class="insight-text">AI는 게임별 리뷰 표본과 정량 지표를 함께 살펴 공통점, 차이점, 강점, 반복 불만, 개발 우선순위를 분석합니다.</div>
+                        <div class="comparison-ai-note">분석 결과는 제공된 리뷰 표본과 통계에 근거합니다. 표본 수가 적은 게임은 결과 해석에 주의하세요.</div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -6318,9 +6317,10 @@ function clearComparisonSelection() {
         if (selected) selected.textContent = slot === "B" ? "게임을 검색해 선택하세요." : "원하면 게임을 하나 더 선택하세요.";
     });
     const grid = document.getElementById("comparisonGrid");
-    if (grid) grid.innerHTML = `<div class="compare-game"><div class="compare-rank">GAME 01 · 기준 게임</div><h3 id="compareGameA">${escapeHtml(currentGame ? currentGame.gameName : "먼저 게임을 선택하세요")}</h3><div class="compare-row"><span>전체 리뷰</span><strong id="compareReviewsA">-</strong></div><div class="compare-row"><span>긍정 리뷰</span><strong id="comparePositiveA">-</strong></div><div class="compare-row"><span>부정 리뷰</span><strong id="compareNegativeA">-</strong></div><div class="compare-rate-label"><span>긍정 비율</span><strong id="compareRateA">-</strong></div><div class="compare-rate-track"><div id="compareRateBarA" class="compare-rate-fill" style="width:0%"></div></div><div class="compare-issues"><div class="compare-issues-title">주요 반복 이슈</div><div id="compareIssuesA">분석 전</div></div></div>`;
-    setTextIfExists("comparisonAnalysisTitle", "게임을 선택하고 비교 분석을 실행하세요.");
-    setTextIfExists("comparisonAnalysisText", "AI는 리뷰의 공통점과 차이점, 긍정·부정 반응의 원인, 반복적으로 언급되는 이슈를 종합해 분석합니다.");
+    if (grid) grid.innerHTML = `<div class="comparison-empty">${escapeHtml(currentGame ? `기준 게임: ${currentGame.gameName}` : "먼저 대시보드에서 기준 게임을 선택하세요.")}<br>비교할 게임을 검색하고 비교 분석을 실행하세요.</div>`;
+    setTextIfExists("comparisonResultCount", "비교 분석 전");
+    setTextIfExists("comparisonAnalysisTitle", "비교 분석 결과가 여기에 표시됩니다.");
+    setTextIfExists("comparisonAnalysisText", "AI는 게임별 리뷰 표본과 정량 지표를 함께 살펴 공통점, 차이점, 강점, 반복 불만, 개발 우선순위를 분석합니다.");
 }
 
 function getComparisonStats(gameName, reviews) {
@@ -6354,31 +6354,35 @@ function comparisonIssueChips(issues) {
 
 function renderComparisonCards(statsList) {
     const grid = document.getElementById("comparisonGrid");
+    const count = document.getElementById("comparisonResultCount");
     if (!grid) return;
-    grid.innerHTML = "";
-    statsList.forEach((stats, index) => {
-        const suffix = ["A", "B", "C"][index];
-        const card = document.createElement("article");
-        card.className = "compare-game";
-        card.innerHTML = `<div class="compare-rank">GAME 0${index+1}${index === 0 ? " · 기준 게임" : " · 비교 대상"}</div>
-            <h3 id="compareGame${suffix}"></h3>
-            <div class="compare-row"><span>전체 리뷰</span><strong id="compareReviews${suffix}"></strong></div>
-            <div class="compare-row"><span>긍정 리뷰</span><strong id="comparePositive${suffix}"></strong></div>
-            <div class="compare-row"><span>부정 리뷰</span><strong id="compareNegative${suffix}"></strong></div>
-            <div class="compare-rate-label"><span>긍정 비율</span><strong id="compareRate${suffix}"></strong></div>
-            <div class="compare-rate-track"><div id="compareRateBar${suffix}" class="compare-rate-fill"></div></div>
-            <div class="compare-issues"><div class="compare-issues-title">주요 반복 이슈</div><div id="compareIssues${suffix}"></div></div>`;
-        grid.appendChild(card);
-        setTextIfExists(`compareGame${suffix}`, stats.gameName);
-        setTextIfExists(`compareReviews${suffix}`, stats.total.toLocaleString());
-        setTextIfExists(`comparePositive${suffix}`, `${stats.positive.toLocaleString()} (${stats.positiveRate}%)`);
-        setTextIfExists(`compareNegative${suffix}`, `${stats.negative.toLocaleString()} (${stats.negativeRate}%)`);
-        setTextIfExists(`compareRate${suffix}`, `${stats.positiveRate}%`);
-        const bar = document.getElementById(`compareRateBar${suffix}`);
-        if (bar) bar.style.width = `${stats.positiveRate}%`;
-        const issueEl = document.getElementById(`compareIssues${suffix}`);
-        if (issueEl) issueEl.innerHTML = comparisonIssueChips(stats.topIssues);
+    if (count) count.textContent = `${statsList.length}개 게임 비교 중`;
+    const columns = `minmax(132px, 0.78fr) repeat(${statsList.length}, minmax(175px, 1fr))`;
+    const rows = [];
+    const cell = (content, cls="") => `<div class="matrix-cell ${cls}">${content}</div>`;
+    rows.push(`<div class="comparison-matrix" style="grid-template-columns:${columns}">`);
+    rows.push(cell(`<span class="matrix-tag">METRIC</span><div class="matrix-game-name">비교 항목</div>`, "matrix-head matrix-label"));
+    statsList.forEach((stats, index) => rows.push(cell(`<span class="matrix-tag">${index === 0 ? "BASE GAME" : `GAME 0${index+1}`}</span><div class="matrix-game-name">${escapeHtml(stats.gameName)}</div>`, "matrix-head")));
+
+    rows.push(cell("전체 리뷰", "matrix-label"));
+    statsList.forEach(stats => rows.push(cell(`<div class="matrix-value">${stats.total.toLocaleString()}</div><div class="matrix-subvalue">분석된 리뷰</div>`)));
+    rows.push(cell("긍정 리뷰", "matrix-label"));
+    statsList.forEach(stats => rows.push(cell(`<div class="matrix-value matrix-positive">${stats.positive.toLocaleString()}</div><div class="matrix-subvalue">전체의 ${stats.positiveRate}%</div>`)));
+    rows.push(cell("부정 리뷰", "matrix-label"));
+    statsList.forEach(stats => rows.push(cell(`<div class="matrix-value matrix-negative">${stats.negative.toLocaleString()}</div><div class="matrix-subvalue">전체의 ${stats.negativeRate}%</div>`)));
+    rows.push(cell("긍정 비율", "matrix-label"));
+    statsList.forEach(stats => rows.push(cell(`<div class="matrix-rate"><span>긍정 반응</span><strong>${stats.positiveRate}%</strong></div><div class="matrix-track"><div class="matrix-fill" style="width:${Math.max(0,Math.min(100,stats.positiveRate))}%"></div></div>`)));
+    rows.push(cell("부정 비율", "matrix-label"));
+    statsList.forEach(stats => rows.push(cell(`<div class="matrix-rate"><span>부정 반응</span><strong>${stats.negativeRate}%</strong></div><div class="matrix-track"><div class="matrix-fill" style="width:${Math.max(0,Math.min(100,stats.negativeRate))}%;background:linear-gradient(90deg,#fca5a5,#dc2626)"></div></div>`)));
+    rows.push(cell("반복 이슈 TOP 3", "matrix-label"));
+    statsList.forEach(stats => {
+        const issues = stats.topIssues && stats.topIssues.length
+            ? stats.topIssues.map((issue, idx) => `<span class="matrix-issue"><b>${idx+1}.</b> ${escapeHtml(issue.issue)} · ${Number(issue.mentions).toLocaleString()}회</span>`).join("")
+            : `<span class="matrix-issue">뚜렷한 반복 이슈 없음</span>`;
+        rows.push(cell(`<div class="matrix-issues">${issues}</div>`));
     });
+    rows.push(`</div>`);
+    grid.innerHTML = `<div class="comparison-matrix-wrap">${rows.join("")}</div>`;
 }
 
 function updateComparisonA(game) {
