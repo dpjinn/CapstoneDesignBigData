@@ -2166,9 +2166,9 @@
             <div class="comparison-controls" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
                 <div style="flex:1; min-width:220px;">
                     <label for="compareSelectB" style="display:block; font-size:13px; font-weight:600; margin-bottom:7px;">비교할 게임 선택하기</label>
-                    <input id="compareSelectB" type="search" list="comparisonGameOptions" aria-label="비교할 게임 검색" placeholder="게임 이름을 입력해 검색..." autocomplete="off" style="display:block; visibility:visible; opacity:1; box-sizing:border-box; width:100%; min-height:44px; height:44px; border:1px solid #9ca3af; border-radius:8px; padding:0 10px; background:#ffffff; color:#111827; font-size:14px; position:relative; z-index:2;">
-                    <datalist id="comparisonGameOptions"></datalist>
-                    <small id="comparisonSelectHint" style="display:block; margin-top:6px; color:#6b7280;">게임 목록을 불러오는 중...</small>
+                    <input id="compareSelectB" type="search" aria-label="비교할 게임 검색" placeholder="비교할 게임 이름 입력..." autocomplete="off" oninput="searchComparisonGames()" onkeydown="handleComparisonSearchKey(event)" style="display:block; box-sizing:border-box; width:100%; min-height:44px; height:44px; border:1px solid #9ca3af; border-radius:8px; padding:0 10px; background:#ffffff; color:#111827; font-size:14px; position:relative; z-index:2;">
+                    <div id="comparisonSearchResults" role="listbox" style="display:none; margin-top:4px; max-height:220px; overflow-y:auto; border:1px solid #d1d5db; border-radius:8px; background:#ffffff; box-shadow:0 4px 12px rgba(0,0,0,.08);"></div>
+                    <small id="comparisonSelectHint" style="display:block; margin-top:6px; color:#6b7280;">비교할 게임 이름을 검색하세요.</small>
                 </div>
                 <div style="display:flex; align-items:flex-end;">
                     <button type="button" class="primary-btn" onclick="runGameComparison()">비교 분석</button>
@@ -6294,12 +6294,9 @@ let comparisonReviewsCache = new Map();
 
 function populateComparisonGameOptions() {
     const input = document.getElementById("compareSelectB");
-    const optionsList = document.getElementById("comparisonGameOptions");
+    const results = document.getElementById("comparisonSearchResults");
     const hint = document.getElementById("comparisonSelectHint");
-    if (!input || !optionsList) return;
-
-    const previousValue = input.value;
-    optionsList.innerHTML = "";
+    if (!input || !results) return;
 
     if (!Array.isArray(games) || games.length === 0) {
         if (hint) hint.textContent = "게임 목록을 불러오지 못했거나 아직 로딩 중입니다.";
@@ -6310,16 +6307,78 @@ function populateComparisonGameOptions() {
         .filter(game => game && game.gameName)
         .map(game => game.gameName))];
 
-    uniqueNames.forEach(gameName => {
-        const option = document.createElement("option");
-        option.value = gameName;
-        optionsList.appendChild(option);
-    });
+    if (hint) hint.textContent = `비교할 게임 이름을 입력해 검색하세요. (검색 가능한 게임 ${uniqueNames.length}개)`;
+}
 
-    if (previousValue && uniqueNames.includes(previousValue)) {
-        input.value = previousValue;
+function searchComparisonGames() {
+    const input = document.getElementById("compareSelectB");
+    const results = document.getElementById("comparisonSearchResults");
+    const hint = document.getElementById("comparisonSelectHint");
+    if (!input || !results) return;
+
+    const query = input.value.trim().toLocaleLowerCase();
+    results.innerHTML = "";
+
+    if (!query) {
+        results.style.display = "none";
+        if (hint) hint.textContent = `비교할 게임 이름을 입력해 검색하세요. (검색 가능한 게임 ${Array.isArray(games) ? games.length : 0}개)`;
+        return;
     }
-    if (hint) hint.textContent = `게임 이름을 입력해 검색하거나 목록에서 선택하세요. (총 ${uniqueNames.length}개)`;
+
+    const matches = [...new Map((Array.isArray(games) ? games : [])
+        .filter(game => game && game.gameName && game.gameName.toLocaleLowerCase().includes(query))
+        .map(game => [game.gameName, game])).values()].slice(0, 15);
+
+    if (!matches.length) {
+        results.style.display = "block";
+        const empty = document.createElement("div");
+        empty.textContent = "일치하는 게임이 없습니다.";
+        empty.style.cssText = "padding:10px 12px;color:#6b7280;font-size:13px;";
+        results.appendChild(empty);
+        if (hint) hint.textContent = "다른 게임 이름이나 이름의 일부를 입력해보세요.";
+        return;
+    }
+
+    matches.forEach(game => {
+        const option = document.createElement("button");
+        option.type = "button";
+        option.setAttribute("role", "option");
+        option.textContent = game.gameName;
+        option.style.cssText = "display:block;width:100%;padding:10px 12px;border:0;border-bottom:1px solid #f1f5f9;background:#fff;color:#111827;text-align:left;font-size:14px;cursor:pointer;";
+        option.addEventListener("mouseenter", () => { option.style.background = "#f3f4f6"; });
+        option.addEventListener("mouseleave", () => { option.style.background = "#fff"; });
+        option.addEventListener("click", () => selectComparisonSearchResult(game.gameName));
+        results.appendChild(option);
+    });
+    results.style.display = "block";
+    if (hint) hint.textContent = `${matches.length}${matches.length === 15 ? "+" : ""}개 검색 결과 · 비교할 게임을 클릭하세요.`;
+}
+
+function selectComparisonSearchResult(gameName) {
+    const input = document.getElementById("compareSelectB");
+    const results = document.getElementById("comparisonSearchResults");
+    const hint = document.getElementById("comparisonSelectHint");
+    if (input) input.value = gameName;
+    if (results) {
+        results.style.display = "none";
+        results.innerHTML = "";
+    }
+    if (hint) hint.textContent = `선택된 비교 대상: ${gameName}`;
+}
+
+function handleComparisonSearchKey(event) {
+    if (event.key === "Escape") {
+        const results = document.getElementById("comparisonSearchResults");
+        if (results) results.style.display = "none";
+        return;
+    }
+    if (event.key === "Enter") {
+        event.preventDefault();
+        const results = document.getElementById("comparisonSearchResults");
+        const firstOption = results ? results.querySelector('button[role="option"]') : null;
+        if (firstOption && results.style.display !== "none") firstOption.click();
+        else runGameComparison();
+    }
 }
 
 function getComparisonStats(gameName, reviews) {
