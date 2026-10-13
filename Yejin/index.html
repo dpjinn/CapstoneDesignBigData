@@ -2163,6 +2163,18 @@
             </div>
 
 
+            <div class="comparison-controls" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                <div style="flex:1; min-width:220px;">
+                    <label for="compareSelectB" style="display:block; font-size:13px; font-weight:600; margin-bottom:7px;">비교할 게임 선택</label>
+                    <select id="compareSelectB" style="width:100%; height:40px; border:1px solid #d1d5db; border-radius:8px; padding:0 10px; background:white;">
+                        <option value="">게임을 선택하세요</option>
+                    </select>
+                </div>
+                <div style="display:flex; align-items:flex-end;">
+                    <button type="button" class="primary-btn" onclick="runGameComparison()">비교 분석</button>
+                </div>
+            </div>
+
             <div class="comparison-grid">
 
                 <div class="compare-game">
@@ -2260,6 +2272,12 @@
 
                 </div>
 
+            </div>
+
+            <div id="comparisonAnalysis" class="insight-card" style="margin-top:16px; margin-bottom:0;">
+                <div class="insight-label">COMPARISON INSIGHT</div>
+                <div id="comparisonAnalysisTitle" class="insight-title" style="font-size:17px;">두 게임을 선택해 비교 분석을 진행하세요.</div>
+                <div id="comparisonAnalysisText" class="insight-text">리뷰 수, 긍정·부정 비율, 자주 언급되는 이슈를 기준으로 차이를 확인합니다.</div>
             </div>
 
         </section>
@@ -3034,6 +3052,7 @@ function createGameList() {
     ----------------------------------------- */
 
     renderGameList("");
+    populateComparisonGameOptions();
 
 }
 
@@ -3607,6 +3626,11 @@ async function loadGameReviews(
     ===================================================== */
 
     updateDashboard();
+
+    // 현재 선택한 게임을 비교 대상 A로 동기화
+    if (typeof updateComparisonA === "function") {
+        updateComparisonA(game);
+    }
 
 }
 /* =========================================================
@@ -6255,144 +6279,208 @@ function generateInsight(
 
 
 /* =========================================================
-   COMPARISON A
+   GAME COMPARISON
+   - A: 현재 대시보드에서 선택한 게임
+   - B: 비교 선택 메뉴에서 고른 게임
+   - 비교용 CSV는 별도 로딩하여 현재 대시보드 데이터를 변경하지 않음
 ========================================================= */
 
-function updateComparisonA(game) {
+let comparisonReviewsCache = new Map();
 
-    const reviews =
-        currentReviews;
+function populateComparisonGameOptions() {
+    const select = document.getElementById("compareSelectB");
+    if (!select) return;
 
+    const previousValue = select.value;
+    select.innerHTML = '<option value="">게임을 선택하세요</option>';
 
-    const positive =
-        reviews.filter(
-            review =>
-                review.sentiment ===
-                "positive"
-        ).length;
+    games.forEach(game => {
+        const option = document.createElement("option");
+        option.value = game.gameName;
+        option.textContent = game.gameName;
+        select.appendChild(option);
+    });
 
-
-    const negative =
-        reviews.length -
-        positive;
-
-
-    document
-        .getElementById(
-            "compareGameA"
-        )
-        .textContent =
-        game.gameName;
-
-
-    document
-        .getElementById(
-            "compareReviewsA"
-        )
-        .textContent =
-        reviews.length
-            .toLocaleString();
-
-
-    document
-        .getElementById(
-            "comparePositiveA"
-        )
-        .textContent =
-        positive
-            .toLocaleString();
-
-
-    document
-        .getElementById(
-            "compareNegativeA"
-        )
-        .textContent =
-        negative
-            .toLocaleString();
-
+    if (previousValue && games.some(game => game.gameName === previousValue)) {
+        select.value = previousValue;
+    }
 }
 
+function getComparisonStats(gameName, reviews) {
+    const positive = reviews.filter(r => r.sentiment === "positive").length;
+    const negative = reviews.filter(r => r.sentiment === "negative").length;
+    const total = reviews.length;
+    const issues = typeof analyzeIssues === "function" ? analyzeIssues(reviews) : [];
+    const topIssues = [...issues]
+        .sort((a, b) => b.mentions - a.mentions)
+        .filter(issue => issue.mentions > 0)
+        .slice(0, 3);
 
-/* =========================================================
-   COMPARISON B
-========================================================= */
+    return {
+        gameName,
+        reviews,
+        total,
+        positive,
+        negative,
+        positiveRate: total ? Math.round(positive / total * 100) : 0,
+        negativeRate: total ? Math.round(negative / total * 100) : 0,
+        topIssues
+    };
+}
 
-async function setComparisonGameB(gameName) {
-
-    const game =
-        games.find(
-            item =>
-                item.gameName ===
-                gameName
-        );
-
-
-    if (!game) return;
-
-
-    try {
-
-        const reviews =
-            await loadGameReviews(
-                game
-            );
-
-
-        const positive =
-            reviews.filter(
-                review =>
-                    review.sentiment ===
-                    "positive"
-            ).length;
-
-
-        const negative =
-            reviews.length -
-            positive;
-
-
-        document
-            .getElementById(
-                "compareGameB"
-            )
-            .textContent =
-            game.gameName;
-
-
-        document
-            .getElementById(
-                "compareReviewsB"
-            )
-            .textContent =
-            reviews.length
-                .toLocaleString();
-
-
-        document
-            .getElementById(
-                "comparePositiveB"
-            )
-            .textContent =
-            positive
-                .toLocaleString();
-
-
-        document
-            .getElementById(
-                "compareNegativeB"
-            )
-            .textContent =
-            negative
-                .toLocaleString();
-
-
-    } catch (error) {
-
-        console.error(error);
-
+async function loadComparisonReviews(game) {
+    if (!game) throw new Error("비교할 게임을 찾을 수 없습니다.");
+    if (comparisonReviewsCache.has(game.gameName)) {
+        return comparisonReviewsCache.get(game.gameName);
     }
 
+    let positiveReviews = [];
+    let negativeReviews = [];
+
+    if (game.positiveFile) {
+        positiveReviews = (await loadCSV(game.positiveFile)).map(review => ({
+            ...review,
+            sentiment: "positive"
+        }));
+    }
+    if (game.negativeFile) {
+        negativeReviews = (await loadCSV(game.negativeFile)).map(review => ({
+            ...review,
+            sentiment: "negative"
+        }));
+    }
+
+    const reviews = [...positiveReviews, ...negativeReviews].map(review => {
+        review._text = getReviewText(review);
+        review._date = findDate(review);
+        review._score = findScore(review);
+        return review;
+    });
+
+    comparisonReviewsCache.set(game.gameName, reviews);
+    return reviews;
+}
+
+function setComparisonCard(suffix, stats) {
+    const setText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    };
+
+    setText(`compareGame${suffix}`, stats.gameName);
+    setText(`compareReviews${suffix}`, stats.total.toLocaleString());
+    setText(`comparePositive${suffix}`, `${stats.positive.toLocaleString()} (${stats.positiveRate}%)`);
+    setText(`compareNegative${suffix}`, `${stats.negative.toLocaleString()} (${stats.negativeRate}%)`);
+}
+
+function updateComparisonA(game) {
+    if (!game) return;
+    const reviews = currentReviews.map(review => ({
+        ...review,
+        sentiment: review.sentiment || "negative",
+        _text: review._text || getReviewText(review)
+    }));
+    const stats = getComparisonStats(game.gameName, reviews);
+    setComparisonCard("A", stats);
+
+    const select = document.getElementById("compareSelectB");
+    if (select && select.value === game.gameName) {
+        select.value = "";
+        setTextIfExists("compareGameB", "비교할 게임");
+        setTextIfExists("compareReviewsB", "-");
+        setTextIfExists("comparePositiveB", "-");
+        setTextIfExists("compareNegativeB", "-");
+    }
+}
+
+function setTextIfExists(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
+
+async function setComparisonGameB(gameName) {
+    const select = document.getElementById("compareSelectB");
+    if (select) select.value = gameName;
+    return runGameComparison();
+}
+
+async function runGameComparison() {
+    const title = document.getElementById("comparisonAnalysisTitle");
+    const text = document.getElementById("comparisonAnalysisText");
+    const select = document.getElementById("compareSelectB");
+
+    if (!currentGame || !currentReviews.length) {
+        if (title) title.textContent = "먼저 기준이 되는 게임을 선택해주세요.";
+        if (text) text.textContent = "게임 목록에서 게임을 선택한 뒤 비교 분석을 진행할 수 있습니다.";
+        return;
+    }
+
+    const gameBName = select ? select.value : "";
+    if (!gameBName) {
+        if (title) title.textContent = "비교할 게임을 선택해주세요.";
+        if (text) text.textContent = "비교 대상 게임을 선택하면 두 게임의 리뷰 지표와 주요 이슈를 분석합니다.";
+        return;
+    }
+    if (gameBName === currentGame.gameName) {
+        if (title) title.textContent = "서로 다른 게임을 선택해주세요.";
+        if (text) text.textContent = "기준 게임과 비교 대상 게임이 같습니다.";
+        return;
+    }
+
+    if (title) title.textContent = "비교 데이터를 분석하고 있습니다...";
+    if (text) text.textContent = "GitHub CSV 리뷰 데이터를 불러오는 중입니다.";
+
+    try {
+        const gameB = games.find(game => game.gameName === gameBName);
+        const reviewsB = await loadComparisonReviews(gameB);
+        const statsA = getComparisonStats(currentGame.gameName, currentReviews.map(review => ({
+            ...review,
+            _text: review._text || getReviewText(review)
+        })));
+        const statsB = getComparisonStats(gameB.gameName, reviewsB);
+
+        setComparisonCard("A", statsA);
+        setComparisonCard("B", statsB);
+
+        const rateDiff = statsA.positiveRate - statsB.positiveRate;
+        const reviewDiff = statsA.total - statsB.total;
+        const winner = rateDiff === 0
+            ? "긍정 리뷰 비율은 동일합니다."
+            : `${rateDiff > 0 ? statsA.gameName : statsB.gameName}의 긍정 리뷰 비율이 ${Math.abs(rateDiff)}%p 높습니다.`;
+
+        const issueNamesA = statsA.topIssues.map(issue => issue.issue);
+        const issueNamesB = statsB.topIssues.map(issue => issue.issue);
+        const sharedIssues = issueNamesA.filter(issue => issueNamesB.includes(issue));
+
+        if (title) {
+            title.textContent = `${statsA.gameName} vs ${statsB.gameName} 비교 결과`;
+        }
+
+        const reviewComparison = reviewDiff === 0
+            ? "리뷰 수는 같습니다."
+            : `${reviewDiff > 0 ? statsA.gameName : statsB.gameName}의 리뷰가 ${Math.abs(reviewDiff).toLocaleString()}개 더 많습니다.`;
+        const issueComparison = sharedIssues.length
+            ? `두 게임에서 공통으로 많이 언급된 이슈는 ${sharedIssues.join(", ")}입니다.`
+            : "각 게임의 상위 이슈 목록에서 공통 항목이 확인되지 않았습니다.";
+        const topA = statsA.topIssues.length
+            ? statsA.topIssues.map(issue => `${issue.issue}(${issue.mentions}회)`).join(", ")
+            : "뚜렷한 반복 이슈 없음";
+        const topB = statsB.topIssues.length
+            ? statsB.topIssues.map(issue => `${issue.issue}(${issue.mentions}회)`).join(", ")
+            : "뚜렷한 반복 이슈 없음";
+
+        if (text) {
+            text.textContent =
+                `${winner} ${reviewComparison} ` +
+                `${statsA.gameName}: 긍정 ${statsA.positiveRate}%, 부정 ${statsA.negativeRate}%, 주요 이슈 ${topA}. ` +
+                `${statsB.gameName}: 긍정 ${statsB.positiveRate}%, 부정 ${statsB.negativeRate}%, 주요 이슈 ${topB}. ` +
+                `${issueComparison} 비율은 각 게임의 불러온 리뷰 중 긍정·부정 리뷰의 비중이며, 게임 간 리뷰 수 차이도 함께 고려해야 합니다.`;
+        }
+    } catch (error) {
+        console.error("게임 비교 분석 오류:", error);
+        if (title) title.textContent = "비교 분석에 실패했습니다.";
+        if (text) text.textContent = error.message || "비교 데이터를 불러오지 못했습니다. GitHub CSV 경로를 확인해주세요.";
+    }
 }
 
 
