@@ -3219,7 +3219,47 @@ function renderGameList(
             );
 
 
-            /* Positive / Negative status removed as requested */
+            /* Positive / Negative */
+
+            const status =
+                document.createElement(
+                    "div"
+                );
+
+
+            status.className =
+                "game-status";
+
+
+            if (
+                game.positiveFile
+            ) {
+
+                status.innerHTML += `
+                    <span class="positive-status">
+                        Positive
+                    </span>
+                `;
+
+            }
+
+
+            if (
+                game.negativeFile
+            ) {
+
+                status.innerHTML += `
+                    <span class="negative-status">
+                        Negative
+                    </span>
+                `;
+
+            }
+
+
+            item.appendChild(
+                status
+            );
 
 
             /* 클릭 */
