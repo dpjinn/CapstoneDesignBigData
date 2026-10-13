@@ -8,7 +8,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>DevInsight AI</title>
+    <title>DevInsight AI - 3 Game Comparison</title>
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -857,7 +857,16 @@
         .comparison-ai-icon { display:grid; place-items:center; width:34px; height:34px; border-radius:10px; background:#e0e7ff; }
         .comparison-ai-heading .insight-label { margin:0 0 3px; }
         .comparison-ai-note { color:#6b7280; font-size:12px; line-height:1.6; margin-top:10px; }
-        @media (max-width:1050px) { .comparison-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width:1050px) {
+            .comparison-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        }
+        @media (max-width:680px) {
+            .comparison-picker-grid, .comparison-grid { grid-template-columns:1fr; }
+            .comparison-picker { padding:12px; }
+            .comparison-search-results { left:12px; right:12px; }
+            .comparison-actions { align-items:stretch; }
+            .comparison-actions .primary-btn, .comparison-actions .header-btn { width:100%; }
+        }
         @media (max-width:650px) { .comparison-picker-grid,.comparison-grid { grid-template-columns:1fr; } .compare-game h3 { min-height:0; } }
 
         .compare-row {
@@ -6212,9 +6221,11 @@ function populateComparisonGameOptions() {
 }
 
 function getComparisonSelectedNames() {
+    // 검색창에 입력만 한 게임은 비교 대상에 포함하지 않고,
+    // 검색 결과를 실제로 클릭해 선택한 게임만 가져옵니다.
     return ["B", "C"].map(slot => {
         const input = document.getElementById(`compareSelect${slot}`);
-        return input ? input.value.trim() : "";
+        return input && input.dataset.selectedGame ? input.dataset.selectedGame : "";
     }).filter(Boolean);
 }
 
@@ -6224,6 +6235,11 @@ function searchComparisonGames(slot) {
     const results = document.getElementById(`comparisonSearchResults${slot}`);
     const selected = document.getElementById(`comparisonSelected${slot}`);
     if (!input || !results) return;
+    // 선택 후 사용자가 검색어를 수정하면 기존 선택을 해제합니다.
+    if (input.dataset.selectedGame && input.value.trim() !== input.dataset.selectedGame) {
+        input.dataset.selectedGame = "";
+        if (selected) selected.textContent = "검색 결과에서 게임을 다시 선택하세요.";
+    }
     const query = input.value.trim().toLocaleLowerCase();
     results.innerHTML = "";
     if (!query) { results.style.display = "none"; return; }
@@ -6261,13 +6277,17 @@ function selectComparisonSearchResult(gameName, slot) {
     const input = document.getElementById(`compareSelect${slot}`);
     const results = document.getElementById(`comparisonSearchResults${slot}`);
     const selected = document.getElementById(`comparisonSelected${slot}`);
-    if (input) input.value = gameName;
+    if (input) {
+        input.value = gameName;
+        input.dataset.selectedGame = gameName;
+    }
     if (results) { results.style.display = "none"; results.innerHTML = ""; }
     if (selected) selected.textContent = `선택됨: ${gameName}`;
     ["B", "C"].filter(other => other !== slot).forEach(other => {
         const otherInput = document.getElementById(`compareSelect${other}`);
-        if (otherInput && otherInput.value.trim() === gameName) {
+        if (otherInput && (otherInput.dataset.selectedGame === gameName || otherInput.value.trim() === gameName)) {
             otherInput.value = "";
+            otherInput.dataset.selectedGame = "";
             const otherSelected = document.getElementById(`comparisonSelected${other}`);
             if (otherSelected) otherSelected.textContent = "중복 선택되어 초기화되었습니다. 다른 게임을 선택하세요.";
         }
@@ -6293,7 +6313,7 @@ function clearComparisonSelection() {
         const input = document.getElementById(`compareSelect${slot}`);
         const results = document.getElementById(`comparisonSearchResults${slot}`);
         const selected = document.getElementById(`comparisonSelected${slot}`);
-        if (input) input.value = "";
+        if (input) { input.value = ""; input.dataset.selectedGame = ""; }
         if (results) { results.innerHTML = ""; results.style.display = "none"; }
         if (selected) selected.textContent = slot === "B" ? "게임을 검색해 선택하세요." : "원하면 게임을 하나 더 선택하세요.";
     });
@@ -6429,7 +6449,20 @@ async function runGameComparison() {
         const aiReviews = [];
         const perGameLimit = Math.max(1, Math.floor(120 / statsList.length));
         statsList.forEach(stats => {
-            const sample = stats.reviews.slice(0, perGameLimit);
+            // 긍정 리뷰가 배열 앞부분을 차지하는 편향을 줄이기 위해
+            // 긍정/부정 리뷰를 나눠 균형 있게 표본을 구성합니다.
+            const positiveSample = stats.reviews.filter(review => review.sentiment === "positive");
+            const negativeSample = stats.reviews.filter(review => review.sentiment === "negative");
+            const positiveLimit = Math.ceil(perGameLimit / 2);
+            const negativeLimit = Math.floor(perGameLimit / 2);
+            let sample = [
+                ...positiveSample.slice(0, positiveLimit),
+                ...negativeSample.slice(0, negativeLimit)
+            ];
+            if (sample.length < perGameLimit) {
+                const selected = new Set(sample);
+                sample = sample.concat(stats.reviews.filter(review => !selected.has(review)).slice(0, perGameLimit - sample.length));
+            }
             sample.forEach(review => aiReviews.push({
                 sentiment: review.sentiment,
                 review: `[게임: ${stats.gameName}] ${getReviewText(review)}`,
