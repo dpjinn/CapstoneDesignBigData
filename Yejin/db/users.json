@@ -3,6 +3,10 @@
     {
       "username": "test",
       "password": "scrypt:32768:8:1$smGYLAz3qSHY0ZKz$47f62ff124a0b9b1cbbcd21f3a9d6c64be961e12b160930434f1d6d7861a44408285b4c04ec8d70fc5d3c077ed7725083b636606252f221681970b40f6856031"
+    },
+    {
+      "username": "hello",
+      "password": "scrypt:32768:8:1$wxXeIj89F9U29eQl$0d1a43ed7d953120bcba0b8fe924e18e43b53deb9875b7b5bb5b906ce231a21db41ce8db44997373afed25001b90fd40022338dd007a61aa6b59c4b91065c881"
     }
   ]
 }
